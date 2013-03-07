@@ -1,5 +1,5 @@
-Threads
-=======
+线程
+====
 
 Wait a minute? Why are we on threads? Aren't event loops supposed to be **the
 way** to do *web-scale programming*? Well no. Threads are still the medium in
@@ -30,8 +30,8 @@ running in one thread (the main thread)**. No other thread interacts
 with the event loop (except using ``uv_async_send``). :doc:`multiple` covers
 running event loops in different threads and managing them.
 
-Core thread operations
-----------------------
+线程核心操作(Core thread operations)
+------------------------------------
 
 There isn't much here, you just start a thread using ``uv_thread_create()`` and
 wait for it to close using ``uv_thread_join()``.
@@ -64,15 +64,15 @@ Unlike ``pthread_join()`` which allows the target thread to pass back a value to
 the calling thread using a second parameter, ``uv_thread_join()`` does not. To
 send values use :ref:`inter-thread-communication`.
 
-Synchronization Primitives
---------------------------
+同步原语(Synchronization Primitives)
+-------------------------------------
 
 This section is purposely spartan. This book is not about threads, so I only
 catalogue any surprises in the libuv APIs here. For the rest you can look at
 the pthreads `man pages <pthreads>`_.
 
-Mutexes
-~~~~~~~
+互斥量(Mutexes)
+~~~~~~~~~~~~~~~
 
 The mutex functions are a **direct** map to the pthread equivalents.
 
@@ -106,8 +106,8 @@ return an error in the second call to ``uv_mutex_lock()``.
     Mutexes on linux support attributes for a recursive mutex, but the API is
     not exposed via libuv.
 
-Locks
-~~~~~
+锁(Locks)
+~~~~~~~~~
 
 Read-write locks are a more granular access mechanism. Two readers can access
 shared memory at the same time. A writer may not acquire the lock when it is
@@ -125,8 +125,8 @@ multiple writers, schedulers will usually give them higher priority, so if you
 add two writers, you'll see that both writers tend to finish first before the
 readers get a chance again.
 
-Others
-~~~~~~
+其他
+~~~~
 
 libuv also supports semaphores_, `condition variables`_ and barriers_ with APIs
 very similar to their pthread counterparts.
@@ -170,8 +170,8 @@ After all threads are done, ``i == 1``.
 
 .. _libuv-work-queue:
 
-libuv work queue
-----------------
+libuv 工作队列
+--------------
 
 ``uv_queue_work()`` is a convenience function that allows an application to run
 a task in a separate thread, and have a callback that is triggered when the
@@ -222,8 +222,8 @@ is to use a baton to exchange data.
 
 .. _inter-thread-communication:
 
-Inter-thread communication
---------------------------
+线程间通信(Inter-thread communication)
+--------------------------------------
 
 Sometimes you want various threads to actually send each other messages *while*
 they are running. For example you might be running some long duration task in

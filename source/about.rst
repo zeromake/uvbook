@@ -1,4 +1,4 @@
-About
+关于
 =====
 
 `Nikhil Marathe <http://nikhilism.com>`_ started writing this book one
@@ -19,8 +19,8 @@ describes much of the semantics of the two libraries.
 This book was made using `Sphinx <http://sphinx.pocoo.org/>`_ and `vim
 <http://www.vim.org>`_.
 
-Licensing
----------
+许可权(Licensing)
+-----------------
 
 The contents of this book are licensed as `Creative Commons - Attribution
 <http://creativecommons.org/licenses/by/3.0/>`_. All code is in the **public

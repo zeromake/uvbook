@@ -1,4 +1,4 @@
-Filesystem
+文件系统
 ==========
 
 Simple filesystem read/write is achieved using the ``uv_fs_*`` functions and the
@@ -21,10 +21,10 @@ is specified. The return value of functions is the equivalent Unix return value
 The *asynchronous* form is called when a callback is passed and the return
 value is 0.
 
-Reading/Writing files
----------------------
+读写文件
+--------
 
-A file descriptor is obtained using
+文件描述符可以采用如下方式获得:
 
 .. code-block:: c
 
@@ -41,7 +41,7 @@ File descriptors are closed using
     int uv_fs_close(uv_loop_t* loop, uv_fs_t* req, uv_file file, uv_fs_cb cb)
 
 
-Filesystem operation callbacks have the signature:
+文件系统操作的回调函数具有如下签名:
 
 .. code-block:: c
 
@@ -119,8 +119,8 @@ We set the dominos rolling in ``main()``:
     :lines: 50-54
     :emphasize-lines: 2
 
-Filesystem operations
----------------------
+文件系统相关操作(Filesystem operations)
+---------------------------------------
 
 All the standard filesystem operations like ``unlink``, ``rmdir``, ``stat`` are
 supported asynchronously and have intuitive argument order. They follow the
@@ -135,8 +135,8 @@ Callbacks should free the ``uv_fs_t`` argument using ``uv_fs_req_cleanup()``.
 
 .. _buffers-and-streams:
 
-Buffers and Streams
--------------------
+缓冲区与流(Buffers and Streams)
+-------------------------------
 
 The basic I/O tool in libuv is the stream (``uv_stream_t``). TCP sockets, UDP
 sockets, and pipes for file I/O and IPC are all treated as stream subclasses.
@@ -226,8 +226,8 @@ unwrap it in the callbacks.
 
 .. _aborting on receiving a SIGPIPE: http://pod.tst.eu/http://cvs.schmorp.de/libev/ev.pod#The_special_problem_of_SIGPIPE
 
-File change events
-------------------
+文件变更事件(File change events)
+---------------------------------
 
 All modern operating systems provide APIs to put watches on individual files or
 directories and be informed when the files are modified. libuv wraps common
