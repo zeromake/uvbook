@@ -19,7 +19,7 @@ describes much of the semantics of the two libraries.
 This book was made using `Sphinx <http://sphinx.pocoo.org/>`_ and `vim
 <http://www.vim.org>`_.
 
-许可权(Licensing)
+授权(Licensing)
 -----------------
 
 The contents of this book are licensed as `Creative Commons - Attribution
