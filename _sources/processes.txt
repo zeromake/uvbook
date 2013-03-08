@@ -1,5 +1,5 @@
-Processes
-=========
+进程
+====
 
 libuv offers considerable child process management, abstracting the platform
 differences and allowing communication with the child process using streams or
@@ -19,8 +19,8 @@ workaround can be to launch multiple processes instead, with each process
 running an event loop, and each process getting assigned to a separate CPU
 core.
 
-Spawning child processes
-------------------------
+创建子进程(Spawning child processes)
+------------------------------------
 
 The simplest case is when you simply want to launch a process and know when it
 exits. This is achieved using ``uv_spawn``.
@@ -54,26 +54,26 @@ which caused the exit.
 
 It is **required** to close the process watcher after the process exits.
 
-Changing process parameters
----------------------------
+改变进程参数(Changing process parameters)
+-----------------------------------------
 
 Before the child process is launched you can control the execution environment
 using fields in ``uv_process_options_t``.
 
-Change execution directory
-++++++++++++++++++++++++++
+改变执行目录(Change execution directory)
+++++++++++++++++++++++++++++++++++++++++
 
-Set ``uv_process_options_t.cwd`` to the corresponding directory.
+设置 ``uv_process_options_t.cwd`` 参数改变进程的执行路径.
 
-Set environment variables
-+++++++++++++++++++++++++
+设置环境变量(Set environment variables)
++++++++++++++++++++++++++++++++++++++++
 
 ``uv_process_options_t.env`` is an array of strings, each of the form
 ``VAR=VALUE`` used to set up the environment variables for the process. Set
 this to ``NULL`` to inherit the environment from the parent (this) process.
 
-Option flags
-++++++++++++
+选项参数(Option flags)
+++++++++++++++++++++++
 
 Setting ``uv_process_options_t.flags`` to a bitwise OR of the following flags,
 modifies the child process behaviour:
@@ -89,8 +89,8 @@ Windows with ``UV_ENOTSUP``.
 * ``UV_PROCESS_DETACHED`` - Starts the child process in a new session, which
   will keep running after the parent process exits. See example below.
 
-Detaching processes
--------------------
+进程分离(Detaching processes)
+-----------------------------
 
 Passing the flag ``UV_PROCESS_DETACHED`` can be used to launch daemons, or
 child processes which are independent of the parent so that the parent exiting
@@ -105,8 +105,8 @@ does not affect it.
 Just remember that the watcher is still monitoring the child, so your program
 won't exit. Use ``uv_unref()`` if you want to be more *fire-and-forget*.
 
-Sending signals to processes
-----------------------------
+向进程发送信号(Sending signals to processes)
+--------------------------------------------
 
 libuv wraps the standard ``kill(2)`` system call on Unix and implements one
 with similar semantics on Windows, with *one caveat*: all of ``SIGTERM``,
@@ -119,8 +119,8 @@ For processes started using libuv, you may use ``uv_process_kill`` instead,
 which accepts the ``uv_process_t`` watcher as the first argument, rather than
 the pid. In this case, **remember to call** ``uv_close`` on the watcher.
 
-Signals
--------
+信号(Signals)
+-------------
 
 TODO: update based on https://github.com/joyent/libuv/issues/668
 
@@ -147,8 +147,8 @@ useful. A server using multiple event loops could ensure that all data was
 safely saved before termination, simply by every loop adding a watcher for
 ``SIGINT``.
 
-Child Process I/O
------------------
+子进程 I/O
+----------
 
 A normal, newly spawned process has its own set of file descriptors, with 0,
 1 and 2 being ``stdin``, ``stdout`` and ``stderr`` respectively. Sometimes you
@@ -223,8 +223,8 @@ is great. Just be warned that creating processes is a costly task.
 
 .. _pipes:
 
-Pipes
------
+管道(Pipes)
+-----------
 
 libuv's ``uv_pipe_t`` structure is slightly confusing to Unix programmers,
 because it immediately conjures up ``|`` and `pipe(7)`_. But ``uv_pipe_t`` is
@@ -244,16 +244,16 @@ not related to anonymous pipes, rather it has two uses:
 .. _Unix Domain Socket: http://www.kernel.org/doc/man-pages/online/pages/man7/unix.7.html
 .. _Windows Named Pipe: http://msdn.microsoft.com/en-us/library/windows/desktop/aa365590(v=vs.85).aspx
 
-Parent-child IPC
-++++++++++++++++
+父子进程间通信
+++++++++++++++
 
 A parent and child can have one or two way communication over a pipe created by
 settings ``uv_stdio_container_t.flags`` to a bit-wise combination of
 ``UV_CREATE_PIPE`` and ``UV_READABLE_PIPE`` or ``UV_WRITABLE_PIPE``. The
 read/write flag is from the perspective of the child process.
 
-Arbitrary process IPC
-+++++++++++++++++++++
+任意进程间通信
+++++++++++++++
 
 Since domain sockets [#]_ can have a well known name and a location in the
 file-system they can be used for IPC between unrelated processes. The D-BUS_
@@ -288,8 +288,8 @@ where ``name`` will be ``echo.sock`` or similar.
 
 .. _netcat: http://netcat.sf.net
 
-Sending file descriptors over pipes
-+++++++++++++++++++++++++++++++++++
+通过管道发送文件描述符(Sending file descriptors over pipes)
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 The cool thing about domain sockets is that file descriptors can be exchanged
 between processes by sending them over a domain socket. This allows processes

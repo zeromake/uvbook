@@ -1,13 +1,13 @@
-Basics of libuv
-===============
+Libuv 基础
+==========
 
 libuv enforces an **asynchronous**, **event-driven** style of programming.  Its
 core job is to provide an event loop and callback based notifications of I/O
 and other activities.  libuv offers core utilities like timers, non-blocking
 networking support, asynchronous file system access, child processes and more.
 
-Event loops
------------
+事件循环(Event loops)
+---------------------
 
 In event-driven programming, an application expresses interest in certain events
 and respond to them when they occur. The responsibility of gathering events
@@ -66,15 +66,6 @@ that other events can continue to be handled as fast they come in [#]_.
     processor, libuv and OSes will usually run background/worker threads and/or
     polling to perform tasks in a non-blocking manner.
 
-Bert Belder, one of the libuv core developers has a small video explaining the
-architecture of libuv and its background. If you have no prior experience with
-either libuv or libev, it is a quick, useful watch.
-
-.. raw:: html
-
-    <iframe width="560" height="315"
-    src="https://www.youtube-nocookie.com/embed/nGn60vDSxQ4" frameborder="0"
-    allowfullscreen></iframe>
 
 Hello World
 -----------
@@ -90,8 +81,8 @@ This program quits immediately because it has no events to process. A libuv
 event loop has to be told to watch out for events using the various API
 functions.
 
-Default loop
-++++++++++++
+libuv 的默认事件循环(Default loop)
+++++++++++++++++++++++++++++++++++
 
 A default loop is provided by libuv and can be accessed using
 ``uv_default_loop()``. You should use this loop if you only want a single
@@ -102,8 +93,8 @@ loop.
     node.js uses the default loop as its main loop. If you are writing bindings
     you should be aware of this.
 
-Watchers
---------
+监视器(Watchers)
+----------------
 
 Watchers are how users of libuv express interest in particular events. Watchers
 are opaque structs named as ``uv_TYPE_t`` where type signifies what the watcher
@@ -142,8 +133,8 @@ implemented in the callback. For example, an IO watcher's callback will receive
 the data read from a file, a timer callback will be triggered on timeout and so
 on.
 
-Idling
-++++++
+空转(Idling)
+++++++++++++
 
 Here is an example of using a watcher. An idle watcher's callback is repeatedly
 called. There are some deeper semantics, discussed in :doc:`utilities`, but

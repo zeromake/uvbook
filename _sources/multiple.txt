@@ -1,26 +1,26 @@
-Multiple event loops
-====================
+多路事件循环(Multiple event loops)
+==================================
 
 It is possible to use multiple event loops in the same thread. But this usually
 makes no sense since the `uv_run()` call of one loop will block and stop the
 other loop from running at all. With a careful combination of `uv_run_once()`
 you could do some really fun things though.
 
-Modality
---------
+多路事件循环的形式(Modality)
+----------------------------
 
 You can use multiple loops to create a 'modal' step in your program, where the
 second event loop 'pauses' the first event loop until some action occurs (a
 user presses Return or you get a new event or something). An
 
-One loop per thread
--------------------
+各线程拥有自己的事件循环(One loop per thread)
+---------------------------------------------
 
 This is the 'standard model', no different from spawning multiple processes
 like we did in the :doc:`processes` chapter.
 
-Using two loops for synchronization
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+使用两个事件循环来同步(sing two loops for synchronization)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 There is a very specific use-case where two event loops can be used as
 a synchronization mechanism in place of conditional variables. I used it in

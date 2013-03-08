@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Table of Contents
-=================
+本书目录
+========
 
 .. toctree::
    :maxdepth: 2
@@ -19,10 +19,10 @@ Table of Contents
    utilities
    about
 
-Alternate formats
+其他格式
 -----------------
 
-The book is also available in:
+本书提供了其他格式供读者下载:
 
 .. raw:: html
 

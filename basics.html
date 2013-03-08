@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Basics of libuv &mdash; An Introduction to libuv</title>
+    <title>Libuv 基础 &mdash; An Introduction to libuv</title>
     
     <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -30,8 +30,8 @@
     <script type="text/javascript" src="_static/theme_extras.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="top" title="An Introduction to libuv" href="index.html" />
-    <link rel="next" title="Filesystem" href="filesystem.html" />
-    <link rel="prev" title="Introduction" href="introduction.html" />
+    <link rel="next" title="文件系统" href="filesystem.html" />
+    <link rel="prev" title="序言" href="introduction.html" />
 <script type="text/javascript">
 
   var _gaq = _gaq || [];
@@ -50,30 +50,30 @@
   <body>
       <div class="header"><h1 class="heading"><a href="index.html">
           <span>An Introduction to libuv</span></a></h1>
-        <h2 class="heading"><span>Basics of libuv</span></h2>
+        <h2 class="heading"><span>Libuv 基础</span></h2>
       </div>
       <div class="topnav">
       
         <p>
-        «&#160;&#160;<a href="introduction.html">Introduction</a>
+        «&#160;&#160;<a href="introduction.html">序言</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="filesystem.html">Filesystem</a>&#160;&#160;»
+        <a href="filesystem.html">文件系统</a>&#160;&#160;»
         </p>
 
       </div>
       <div class="content">
         
         
-  <div class="section" id="basics-of-libuv">
-<h1>Basics of libuv<a class="headerlink" href="#basics-of-libuv" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="libuv">
+<h1>Libuv 基础<a class="headerlink" href="#libuv" title="Permalink to this headline">¶</a></h1>
 <p>libuv enforces an <strong>asynchronous</strong>, <strong>event-driven</strong> style of programming.  Its
 core job is to provide an event loop and callback based notifications of I/O
 and other activities.  libuv offers core utilities like timers, non-blocking
 networking support, asynchronous file system access, child processes and more.</p>
 <div class="section" id="event-loops">
-<h2>Event loops<a class="headerlink" href="#event-loops" title="Permalink to this headline">¶</a></h2>
+<h2>事件循环(Event loops)<a class="headerlink" href="#event-loops" title="Permalink to this headline">¶</a></h2>
 <p>In event-driven programming, an application expresses interest in certain events
 and respond to them when they occur. The responsibility of gathering events
 from the operating system or monitoring other sources of events is handled by
@@ -125,12 +125,7 @@ way our computer hardware works, with the thread as the basic unit of the
 processor, libuv and OSes will usually run background/worker threads and/or
 polling to perform tasks in a non-blocking manner.</p>
 </div>
-<p>Bert Belder, one of the libuv core developers has a small video explaining the
-architecture of libuv and its background. If you have no prior experience with
-either libuv or libev, it is a quick, useful watch.</p>
-<iframe width="560" height="315"
-src="https://www.youtube-nocookie.com/embed/nGn60vDSxQ4" frameborder="0"
-allowfullscreen></iframe></div>
+</div>
 <div class="section" id="hello-world">
 <h2>Hello World<a class="headerlink" href="#hello-world" title="Permalink to this headline">¶</a></h2>
 <p>With the basics out of the way, lets write our first libuv program. It does
@@ -150,7 +145,7 @@ nothing, except start a loop which will exit immediately.</p>
 <span class="cp">#include &lt;uv.h&gt;</span>
 
 <span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-    <span class="kt">uv_loop_t</span> <span class="o">*</span><span class="n">loop</span> <span class="o">=</span> <span class="n">uv_loop_new</span><span class="p">();</span>
+    <span class="n">uv_loop_t</span> <span class="o">*</span><span class="n">loop</span> <span class="o">=</span> <span class="n">uv_loop_new</span><span class="p">();</span>
 
     <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Now quitting.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
     <span class="n">uv_run</span><span class="p">(</span><span class="n">loop</span><span class="p">,</span> <span class="n">UV_RUN_DEFAULT</span><span class="p">);</span>
@@ -162,8 +157,8 @@ nothing, except start a loop which will exit immediately.</p>
 <p>This program quits immediately because it has no events to process. A libuv
 event loop has to be told to watch out for events using the various API
 functions.</p>
-<div class="section" id="default-loop">
-<h3>Default loop<a class="headerlink" href="#default-loop" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="libuv-default-loop">
+<h3>libuv 的默认事件循环(Default loop)<a class="headerlink" href="#libuv-default-loop" title="Permalink to this headline">¶</a></h3>
 <p>A default loop is provided by libuv and can be accessed using
 <tt class="docutils literal"><span class="pre">uv_default_loop()</span></tt>. You should use this loop if you only want a single
 loop.</p>
@@ -175,29 +170,29 @@ you should be aware of this.</p>
 </div>
 </div>
 <div class="section" id="watchers">
-<h2>Watchers<a class="headerlink" href="#watchers" title="Permalink to this headline">¶</a></h2>
+<h2>监视器(Watchers)<a class="headerlink" href="#watchers" title="Permalink to this headline">¶</a></h2>
 <p>Watchers are how users of libuv express interest in particular events. Watchers
 are opaque structs named as <tt class="docutils literal"><span class="pre">uv_TYPE_t</span></tt> where type signifies what the watcher
 is used for. A full list of watchers supported by libuv is:</p>
 <p class="rubric">libuv watchers</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_loop_s</span> <span class="kt">uv_loop_t</span><span class="p">;</span>
-<span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_err_s</span> <span class="kt">uv_err_t</span><span class="p">;</span>
-<span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_handle_s</span> <span class="kt">uv_handle_t</span><span class="p">;</span>
-<span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_stream_s</span> <span class="kt">uv_stream_t</span><span class="p">;</span>
-<span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_tcp_s</span> <span class="kt">uv_tcp_t</span><span class="p">;</span>
-<span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_udp_s</span> <span class="kt">uv_udp_t</span><span class="p">;</span>
-<span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_pipe_s</span> <span class="kt">uv_pipe_t</span><span class="p">;</span>
-<span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_tty_s</span> <span class="kt">uv_tty_t</span><span class="p">;</span>
-<span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_poll_s</span> <span class="kt">uv_poll_t</span><span class="p">;</span>
-<span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_timer_s</span> <span class="kt">uv_timer_t</span><span class="p">;</span>
-<span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_prepare_s</span> <span class="kt">uv_prepare_t</span><span class="p">;</span>
-<span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_check_s</span> <span class="kt">uv_check_t</span><span class="p">;</span>
-<span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_idle_s</span> <span class="kt">uv_idle_t</span><span class="p">;</span>
-<span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_async_s</span> <span class="kt">uv_async_t</span><span class="p">;</span>
-<span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_process_s</span> <span class="kt">uv_process_t</span><span class="p">;</span>
-<span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_fs_event_s</span> <span class="kt">uv_fs_event_t</span><span class="p">;</span>
-<span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_fs_poll_s</span> <span class="kt">uv_fs_poll_t</span><span class="p">;</span>
-<span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_signal_s</span> <span class="kt">uv_signal_t</span><span class="p">;</span>
+<div class="highlight-c"><div class="highlight"><pre><span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_loop_s</span> <span class="n">uv_loop_t</span><span class="p">;</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_err_s</span> <span class="n">uv_err_t</span><span class="p">;</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_handle_s</span> <span class="n">uv_handle_t</span><span class="p">;</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_stream_s</span> <span class="n">uv_stream_t</span><span class="p">;</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_tcp_s</span> <span class="n">uv_tcp_t</span><span class="p">;</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_udp_s</span> <span class="n">uv_udp_t</span><span class="p">;</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_pipe_s</span> <span class="n">uv_pipe_t</span><span class="p">;</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_tty_s</span> <span class="n">uv_tty_t</span><span class="p">;</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_poll_s</span> <span class="n">uv_poll_t</span><span class="p">;</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_timer_s</span> <span class="n">uv_timer_t</span><span class="p">;</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_prepare_s</span> <span class="n">uv_prepare_t</span><span class="p">;</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_check_s</span> <span class="n">uv_check_t</span><span class="p">;</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_idle_s</span> <span class="n">uv_idle_t</span><span class="p">;</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_async_s</span> <span class="n">uv_async_t</span><span class="p">;</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_process_s</span> <span class="n">uv_process_t</span><span class="p">;</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_fs_event_s</span> <span class="n">uv_fs_event_t</span><span class="p">;</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_fs_poll_s</span> <span class="n">uv_fs_poll_t</span><span class="p">;</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_signal_s</span> <span class="n">uv_signal_t</span><span class="p">;</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -228,9 +223,9 @@ implemented in the callback. For example, an IO watcher&#8217;s callback will re
 the data read from a file, a timer callback will be triggered on timeout and so
 on.</p>
 <div class="section" id="idling">
-<h3>Idling<a class="headerlink" href="#idling" title="Permalink to this headline">¶</a></h3>
+<h3>空转(Idling)<a class="headerlink" href="#idling" title="Permalink to this headline">¶</a></h3>
 <p>Here is an example of using a watcher. An idle watcher&#8217;s callback is repeatedly
-called. There are some deeper semantics, discussed in <a class="reference internal" href="utilities.html"><em>Utilities</em></a>, but
+called. There are some deeper semantics, discussed in <a class="reference internal" href="utilities.html"><em>工具集</em></a>, but
 we&#8217;ll ignore them for now. Let&#8217;s just use an idle watcher to look at the
 watcher life cycle and see how <tt class="docutils literal"><span class="pre">uv_run()</span></tt> will now block because a watcher is
 present. The idle watcher is stopped when the count is reached and <tt class="docutils literal"><span class="pre">uv_run()</span></tt>
@@ -241,7 +236,7 @@ exits since no event watchers are active.</p>
 
 <span class="kt">int64_t</span> <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 
-<span class="hll"><span class="kt">void</span> <span class="nf">wait_for_a_while</span><span class="p">(</span><span class="kt">uv_idle_t</span><span class="o">*</span> <span class="n">handle</span><span class="p">,</span> <span class="kt">int</span> <span class="n">status</span><span class="p">)</span> <span class="p">{</span>
+<span class="hll"><span class="kt">void</span> <span class="nf">wait_for_a_while</span><span class="p">(</span><span class="n">uv_idle_t</span><span class="o">*</span> <span class="n">handle</span><span class="p">,</span> <span class="kt">int</span> <span class="n">status</span><span class="p">)</span> <span class="p">{</span>
 </span>    <span class="n">counter</span><span class="o">++</span><span class="p">;</span>
 
     <span class="k">if</span> <span class="p">(</span><span class="n">counter</span> <span class="o">&gt;=</span> <span class="mf">10e6</span><span class="p">)</span>
@@ -249,7 +244,7 @@ exits since no event watchers are active.</p>
 </span><span class="p">}</span>
 
 <span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-<span class="hll">    <span class="kt">uv_idle_t</span> <span class="n">idler</span><span class="p">;</span>
+<span class="hll">    <span class="n">uv_idle_t</span> <span class="n">idler</span><span class="p">;</span>
 </span><span class="hll">
 </span><span class="hll">    <span class="n">uv_idle_init</span><span class="p">(</span><span class="n">uv_default_loop</span><span class="p">(),</span> <span class="o">&amp;</span><span class="n">idler</span><span class="p">);</span>
 </span><span class="hll">    <span class="n">uv_idle_start</span><span class="p">(</span><span class="o">&amp;</span><span class="n">idler</span><span class="p">,</span> <span class="n">wait_for_a_while</span><span class="p">);</span>
@@ -279,11 +274,11 @@ exits since no event watchers are active.</p>
       <div class="bottomnav">
       
         <p>
-        «&#160;&#160;<a href="introduction.html">Introduction</a>
+        «&#160;&#160;<a href="introduction.html">序言</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="filesystem.html">Filesystem</a>&#160;&#160;»
+        <a href="filesystem.html">文件系统</a>&#160;&#160;»
         </p>
 
       </div>

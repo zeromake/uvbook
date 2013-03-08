@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Networking &mdash; An Introduction to libuv</title>
+    <title>网络 &mdash; An Introduction to libuv</title>
     
     <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -30,8 +30,8 @@
     <script type="text/javascript" src="_static/theme_extras.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="top" title="An Introduction to libuv" href="index.html" />
-    <link rel="next" title="Threads" href="threads.html" />
-    <link rel="prev" title="Filesystem" href="filesystem.html" />
+    <link rel="next" title="线程" href="threads.html" />
+    <link rel="prev" title="文件系统" href="filesystem.html" />
 <script type="text/javascript">
 
   var _gaq = _gaq || [];
@@ -50,24 +50,24 @@
   <body>
       <div class="header"><h1 class="heading"><a href="index.html">
           <span>An Introduction to libuv</span></a></h1>
-        <h2 class="heading"><span>Networking</span></h2>
+        <h2 class="heading"><span>网络</span></h2>
       </div>
       <div class="topnav">
       
         <p>
-        «&#160;&#160;<a href="filesystem.html">Filesystem</a>
+        «&#160;&#160;<a href="filesystem.html">文件系统</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="threads.html">Threads</a>&#160;&#160;»
+        <a href="threads.html">线程</a>&#160;&#160;»
         </p>
 
       </div>
       <div class="content">
         
         
-  <div class="section" id="networking">
-<h1>Networking<a class="headerlink" href="#networking" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="id1">
+<h1>网络<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
 <p>Networking in libuv is not much different from directly using the BSD socket
 interface, some things are easier, all are non-blocking, but the concepts stay
 the same. In addition libuv offers utility functions to abstract the annoying,
@@ -79,7 +79,7 @@ structures, DNS lookup, and tweaking various socket parameters.</p>
 <p>TCP is a connection oriented, stream protocol and is therefore based on the
 libuv streams infrastructure.</p>
 <div class="section" id="server">
-<h3>Server<a class="headerlink" href="#server" title="Permalink to this headline">¶</a></h3>
+<h3>服务器(Server)<a class="headerlink" href="#server" title="Permalink to this headline">¶</a></h3>
 <p>Server sockets proceed by:</p>
 <ol class="arabic simple">
 <li><tt class="docutils literal"><span class="pre">uv_tcp_init</span></tt> the TCP watcher.</li>
@@ -109,12 +109,12 @@ client.</li>
 15</pre></div></td><td class="code"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
     <span class="n">loop</span> <span class="o">=</span> <span class="n">uv_default_loop</span><span class="p">();</span>
 
-<span class="hll">    <span class="kt">uv_tcp_t</span> <span class="n">server</span><span class="p">;</span>
+<span class="hll">    <span class="n">uv_tcp_t</span> <span class="n">server</span><span class="p">;</span>
 </span><span class="hll">    <span class="n">uv_tcp_init</span><span class="p">(</span><span class="n">loop</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">server</span><span class="p">);</span>
 </span>
 <span class="hll">    <span class="k">struct</span> <span class="n">sockaddr_in</span> <span class="n">bind_addr</span> <span class="o">=</span> <span class="n">uv_ip4_addr</span><span class="p">(</span><span class="s">&quot;0.0.0.0&quot;</span><span class="p">,</span> <span class="mi">7000</span><span class="p">);</span>
 </span><span class="hll">    <span class="n">uv_tcp_bind</span><span class="p">(</span><span class="o">&amp;</span><span class="n">server</span><span class="p">,</span> <span class="n">bind_addr</span><span class="p">);</span>
-</span><span class="hll">    <span class="kt">int</span> <span class="n">r</span> <span class="o">=</span> <span class="n">uv_listen</span><span class="p">((</span><span class="kt">uv_stream_t</span><span class="o">*</span><span class="p">)</span> <span class="o">&amp;</span><span class="n">server</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="n">on_new_connection</span><span class="p">);</span>
+</span><span class="hll">    <span class="kt">int</span> <span class="n">r</span> <span class="o">=</span> <span class="n">uv_listen</span><span class="p">((</span><span class="n">uv_stream_t</span><span class="o">*</span><span class="p">)</span> <span class="o">&amp;</span><span class="n">server</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="n">on_new_connection</span><span class="p">);</span>
 </span>    <span class="k">if</span> <span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;Listen error %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">uv_err_name</span><span class="p">(</span><span class="n">uv_last_error</span><span class="p">(</span><span class="n">loop</span><span class="p">)));</span>
         <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
@@ -152,19 +152,19 @@ In this case we also establish interest in reading from this stream.</p>
 12
 13
 14
-15</pre></div></td><td class="code"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">on_new_connection</span><span class="p">(</span><span class="kt">uv_stream_t</span> <span class="o">*</span><span class="n">server</span><span class="p">,</span> <span class="kt">int</span> <span class="n">status</span><span class="p">)</span> <span class="p">{</span>
+15</pre></div></td><td class="code"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">on_new_connection</span><span class="p">(</span><span class="n">uv_stream_t</span> <span class="o">*</span><span class="n">server</span><span class="p">,</span> <span class="kt">int</span> <span class="n">status</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">status</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
         <span class="c1">// error!</span>
         <span class="k">return</span><span class="p">;</span>
     <span class="p">}</span>
 
-    <span class="kt">uv_tcp_t</span> <span class="o">*</span><span class="n">client</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uv_tcp_t</span><span class="o">*</span><span class="p">)</span> <span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="kt">uv_tcp_t</span><span class="p">));</span>
+    <span class="n">uv_tcp_t</span> <span class="o">*</span><span class="n">client</span> <span class="o">=</span> <span class="p">(</span><span class="n">uv_tcp_t</span><span class="o">*</span><span class="p">)</span> <span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">uv_tcp_t</span><span class="p">));</span>
     <span class="n">uv_tcp_init</span><span class="p">(</span><span class="n">loop</span><span class="p">,</span> <span class="n">client</span><span class="p">);</span>
-<span class="hll">    <span class="k">if</span> <span class="p">(</span><span class="n">uv_accept</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="p">(</span><span class="kt">uv_stream_t</span><span class="o">*</span><span class="p">)</span> <span class="n">client</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-</span><span class="hll">        <span class="n">uv_read_start</span><span class="p">((</span><span class="kt">uv_stream_t</span><span class="o">*</span><span class="p">)</span> <span class="n">client</span><span class="p">,</span> <span class="n">alloc_buffer</span><span class="p">,</span> <span class="n">echo_read</span><span class="p">);</span>
+<span class="hll">    <span class="k">if</span> <span class="p">(</span><span class="n">uv_accept</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="p">(</span><span class="n">uv_stream_t</span><span class="o">*</span><span class="p">)</span> <span class="n">client</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class="hll">        <span class="n">uv_read_start</span><span class="p">((</span><span class="n">uv_stream_t</span><span class="o">*</span><span class="p">)</span> <span class="n">client</span><span class="p">,</span> <span class="n">alloc_buffer</span><span class="p">,</span> <span class="n">echo_read</span><span class="p">);</span>
 </span>    <span class="p">}</span>
     <span class="k">else</span> <span class="p">{</span>
-        <span class="n">uv_close</span><span class="p">((</span><span class="kt">uv_handle_t</span><span class="o">*</span><span class="p">)</span> <span class="n">client</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+        <span class="n">uv_close</span><span class="p">((</span><span class="n">uv_handle_t</span><span class="o">*</span><span class="p">)</span> <span class="n">client</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
     <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -175,14 +175,14 @@ required. This can be done even in the <tt class="docutils literal"><span class=
 interested in accepting the connection.</p>
 </div>
 <div class="section" id="client">
-<h3>Client<a class="headerlink" href="#client" title="Permalink to this headline">¶</a></h3>
+<h3>客户端(Client)<a class="headerlink" href="#client" title="Permalink to this headline">¶</a></h3>
 <p>Where you do bind/listen/accept, on the client side its simply a matter of
 calling <tt class="docutils literal"><span class="pre">uv_tcp_connect</span></tt>. The same <tt class="docutils literal"><span class="pre">uv_connect_cb</span></tt> style callback of
 <tt class="docutils literal"><span class="pre">uv_listen</span></tt> is used by <tt class="docutils literal"><span class="pre">uv_tcp_connect</span></tt>. Try:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="kt">uv_tcp_t</span> <span class="n">socket</span><span class="p">;</span>
+<div class="highlight-c"><div class="highlight"><pre><span class="n">uv_tcp_t</span> <span class="n">socket</span><span class="p">;</span>
 <span class="n">uv_tcp_init</span><span class="p">(</span><span class="n">loop</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">socket</span><span class="p">);</span>
 
-<span class="kt">uv_connect_t</span> <span class="n">connect</span><span class="p">;</span>
+<span class="n">uv_connect_t</span> <span class="n">connect</span><span class="p">;</span>
 
 <span class="k">struct</span> <span class="n">sockaddr_in</span> <span class="n">dest</span> <span class="o">=</span> <span class="n">uv_ip4_addr</span><span class="p">(</span><span class="s">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="mi">80</span><span class="p">);</span>
 
@@ -230,9 +230,9 @@ numbers below 1024.</p>
 21
 22
 23
-24</pre></div></td><td class="code"><div class="highlight"><pre><span class="kt">uv_loop_t</span> <span class="o">*</span><span class="n">loop</span><span class="p">;</span>
-<span class="kt">uv_udp_t</span> <span class="n">send_socket</span><span class="p">;</span>
-<span class="kt">uv_udp_t</span> <span class="n">recv_socket</span><span class="p">;</span>
+24</pre></div></td><td class="code"><div class="highlight"><pre><span class="n">uv_loop_t</span> <span class="o">*</span><span class="n">loop</span><span class="p">;</span>
+<span class="n">uv_udp_t</span> <span class="n">send_socket</span><span class="p">;</span>
+<span class="n">uv_udp_t</span> <span class="n">recv_socket</span><span class="p">;</span>
 
 <span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
     <span class="n">loop</span> <span class="o">=</span> <span class="n">uv_default_loop</span><span class="p">();</span>
@@ -246,8 +246,8 @@ numbers below 1024.</p>
 <span class="hll">    <span class="n">uv_udp_bind</span><span class="p">(</span><span class="o">&amp;</span><span class="n">send_socket</span><span class="p">,</span> <span class="n">uv_ip4_addr</span><span class="p">(</span><span class="s">&quot;0.0.0.0&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">0</span><span class="p">);</span>
 </span><span class="hll">    <span class="n">uv_udp_set_broadcast</span><span class="p">(</span><span class="o">&amp;</span><span class="n">send_socket</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
 </span>
-    <span class="kt">uv_udp_send_t</span> <span class="n">send_req</span><span class="p">;</span>
-    <span class="kt">uv_buf_t</span> <span class="n">discover_msg</span> <span class="o">=</span> <span class="n">make_discover_msg</span><span class="p">(</span><span class="o">&amp;</span><span class="n">send_req</span><span class="p">);</span>
+    <span class="n">uv_udp_send_t</span> <span class="n">send_req</span><span class="p">;</span>
+    <span class="n">uv_buf_t</span> <span class="n">discover_msg</span> <span class="o">=</span> <span class="n">make_discover_msg</span><span class="p">(</span><span class="o">&amp;</span><span class="n">send_req</span><span class="p">);</span>
 
     <span class="k">struct</span> <span class="n">sockaddr_in</span> <span class="n">send_addr</span> <span class="o">=</span> <span class="n">uv_ip4_addr</span><span class="p">(</span><span class="s">&quot;255.255.255.255&quot;</span><span class="p">,</span> <span class="mi">67</span><span class="p">);</span>
 <span class="hll">    <span class="n">uv_udp_send</span><span class="p">(</span><span class="o">&amp;</span><span class="n">send_req</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">send_socket</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">discover_msg</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">send_addr</span><span class="p">,</span> <span class="n">on_send</span><span class="p">);</span>
@@ -267,7 +267,7 @@ randomly assigns a port.</p>
 client) and start a read watcher on it. Then we setup a similar send socket and
 use <tt class="docutils literal"><span class="pre">uv_udp_send</span></tt> to send a <em>broadcast message</em> on port 67 (DHCP server).</p>
 <p>It is <strong>necessary</strong> to set the broadcast flag, otherwise you will get an
-<tt class="docutils literal"><span class="pre">EACCES</span></tt> error <a class="footnote-reference" href="#id5" id="id1">[1]</a>. The exact message being sent is irrelevant to this book
+<tt class="docutils literal"><span class="pre">EACCES</span></tt> error <a class="footnote-reference" href="#id6" id="id2">[1]</a>. The exact message being sent is irrelevant to this book
 and you can study the code if you are interested. As usual the read and write
 callbacks will receive a status code of -1 if something went wrong.</p>
 <p>Since UDP sockets are not connected to a particular peer, the read callback
@@ -292,10 +292,10 @@ data that could not fit</em> (That&#8217;s UDP for you!).</p>
 14
 15
 16
-17</pre></div></td><td class="code"><div class="highlight"><pre><span class="hll"><span class="kt">void</span> <span class="nf">on_read</span><span class="p">(</span><span class="kt">uv_udp_t</span> <span class="o">*</span><span class="n">req</span><span class="p">,</span> <span class="kt">ssize_t</span> <span class="n">nread</span><span class="p">,</span> <span class="kt">uv_buf_t</span> <span class="n">buf</span><span class="p">,</span> <span class="k">struct</span> <span class="n">sockaddr</span> <span class="o">*</span><span class="n">addr</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="n">flags</span><span class="p">)</span> <span class="p">{</span>
+17</pre></div></td><td class="code"><div class="highlight"><pre><span class="hll"><span class="kt">void</span> <span class="nf">on_read</span><span class="p">(</span><span class="n">uv_udp_t</span> <span class="o">*</span><span class="n">req</span><span class="p">,</span> <span class="kt">ssize_t</span> <span class="n">nread</span><span class="p">,</span> <span class="n">uv_buf_t</span> <span class="n">buf</span><span class="p">,</span> <span class="k">struct</span> <span class="n">sockaddr</span> <span class="o">*</span><span class="n">addr</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="n">flags</span><span class="p">)</span> <span class="p">{</span>
 </span>    <span class="k">if</span> <span class="p">(</span><span class="n">nread</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;Read error %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">uv_err_name</span><span class="p">(</span><span class="n">uv_last_error</span><span class="p">(</span><span class="n">loop</span><span class="p">)));</span>
-        <span class="n">uv_close</span><span class="p">((</span><span class="kt">uv_handle_t</span><span class="o">*</span><span class="p">)</span> <span class="n">req</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+        <span class="n">uv_close</span><span class="p">((</span><span class="n">uv_handle_t</span><span class="o">*</span><span class="p">)</span> <span class="n">req</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
         <span class="n">free</span><span class="p">(</span><span class="n">buf</span><span class="p">.</span><span class="n">base</span><span class="p">);</span>
         <span class="k">return</span><span class="p">;</span>
     <span class="p">}</span>
@@ -311,38 +311,38 @@ data that could not fit</em> (That&#8217;s UDP for you!).</p>
 </span><span class="p">}</span>
 </pre></div>
 </td></tr></table></div>
-<div class="section" id="udp-options">
-<h3>UDP Options<a class="headerlink" href="#udp-options" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="time-to-live">
-<h4>Time-to-live<a class="headerlink" href="#time-to-live" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="udp-udp-options">
+<h3>UDP 选项(UDP Options)<a class="headerlink" href="#udp-udp-options" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="ttl-time-to-live">
+<h4>生存时间TTL(Time-to-live)<a class="headerlink" href="#ttl-time-to-live" title="Permalink to this headline">¶</a></h4>
 <p>The TTL of packets sent on the socket can be changed using <tt class="docutils literal"><span class="pre">uv_udp_set_ttl</span></tt>.</p>
 </div>
-<div class="section" id="ipv6-stack-only">
-<h4>IPv6 stack only<a class="headerlink" href="#ipv6-stack-only" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="ipv6">
+<h4>仅使用 IPv6 协议<a class="headerlink" href="#ipv6" title="Permalink to this headline">¶</a></h4>
 <p>IPv6 sockets can be used for both IPv4 and IPv6 communication. If you want to
 restrict the socket to IPv6 only, pass the <tt class="docutils literal"><span class="pre">UV_UDP_IPV6ONLY</span></tt> flag to
-<tt class="docutils literal"><span class="pre">uv_udp_bind6</span></tt> <a class="footnote-reference" href="#id6" id="id2">[2]</a>.</p>
+<tt class="docutils literal"><span class="pre">uv_udp_bind6</span></tt> <a class="footnote-reference" href="#id7" id="id3">[2]</a>.</p>
 </div>
 <div class="section" id="multicast">
-<h4>Multicast<a class="headerlink" href="#multicast" title="Permalink to this headline">¶</a></h4>
+<h4>多播(Multicast)<a class="headerlink" href="#multicast" title="Permalink to this headline">¶</a></h4>
 <p>A socket can (un)subscribe to a multicast group using:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="nf">uv_udp_set_membership</span><span class="p">(</span><span class="kt">uv_udp_t</span><span class="o">*</span> <span class="n">handle</span><span class="p">,</span>
+<div class="highlight-c"><div class="highlight"><pre><span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="n">uv_udp_set_membership</span><span class="p">(</span><span class="n">uv_udp_t</span><span class="o">*</span> <span class="n">handle</span><span class="p">,</span>
     <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">multicast_addr</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">interface_addr</span><span class="p">,</span>
     <span class="n">uv_membership</span> <span class="n">membership</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>where <tt class="docutils literal"><span class="pre">membership</span></tt> is <tt class="docutils literal"><span class="pre">UV_JOIN_GROUP</span></tt> or <tt class="docutils literal"><span class="pre">UV_LEAVE_GROUP</span></tt>.</p>
-<p>Local loopback of multicast packets is enabled by default <a class="footnote-reference" href="#id7" id="id3">[3]</a>, use
+<p>Local loopback of multicast packets is enabled by default <a class="footnote-reference" href="#id8" id="id4">[3]</a>, use
 <tt class="docutils literal"><span class="pre">uv_udp_set_multicast_loop</span></tt> to switch it off.</p>
 <p>The packet time-to-live for multicast packets can be changed using
 <tt class="docutils literal"><span class="pre">uv_udp_set_multicast_ttl</span></tt>.</p>
 </div>
 </div>
 </div>
-<div class="section" id="querying-dns">
-<h2>Querying DNS<a class="headerlink" href="#querying-dns" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="dns-querying-dns">
+<h2>DNS 查询(Querying DNS)<a class="headerlink" href="#dns-querying-dns" title="Permalink to this headline">¶</a></h2>
 <p>libuv provides asynchronous DNS resolution. For this it provides its own
-<tt class="docutils literal"><span class="pre">getaddrinfo</span></tt> replacement <a class="footnote-reference" href="#id8" id="id4">[4]</a>. In the callback you can
+<tt class="docutils literal"><span class="pre">getaddrinfo</span></tt> replacement <a class="footnote-reference" href="#id9" id="id5">[4]</a>. In the callback you can
 perform normal socket operations on the retrieved addresses. Let&#8217;s connect to
 Freenode to see an example of DNS resolution.</p>
 <p class="rubric">dns/main.c</p>
@@ -373,7 +373,7 @@ Freenode to see an example of DNS resolution.</p>
     <span class="n">hints</span><span class="p">.</span><span class="n">ai_protocol</span> <span class="o">=</span> <span class="n">IPPROTO_TCP</span><span class="p">;</span>
     <span class="n">hints</span><span class="p">.</span><span class="n">ai_flags</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 
-    <span class="kt">uv_getaddrinfo_t</span> <span class="n">resolver</span><span class="p">;</span>
+    <span class="n">uv_getaddrinfo_t</span> <span class="n">resolver</span><span class="p">;</span>
     <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;irc.freenode.net is... &quot;</span><span class="p">);</span>
 <span class="hll">    <span class="kt">int</span> <span class="n">r</span> <span class="o">=</span> <span class="n">uv_getaddrinfo</span><span class="p">(</span><span class="n">loop</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">resolver</span><span class="p">,</span> <span class="n">on_resolved</span><span class="p">,</span> <span class="s">&quot;irc.freenode.net&quot;</span><span class="p">,</span> <span class="s">&quot;6667&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">hints</span><span class="p">);</span>
 </span>
@@ -411,7 +411,7 @@ call <tt class="docutils literal"><span class="pre">uv_freeaddrinfo</span></tt> 
 16
 17
 18
-19</pre></div></td><td class="code"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">on_resolved</span><span class="p">(</span><span class="kt">uv_getaddrinfo_t</span> <span class="o">*</span><span class="n">resolver</span><span class="p">,</span> <span class="kt">int</span> <span class="n">status</span><span class="p">,</span> <span class="k">struct</span> <span class="n">addrinfo</span> <span class="o">*</span><span class="n">res</span><span class="p">)</span> <span class="p">{</span>
+19</pre></div></td><td class="code"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">on_resolved</span><span class="p">(</span><span class="n">uv_getaddrinfo_t</span> <span class="o">*</span><span class="n">resolver</span><span class="p">,</span> <span class="kt">int</span> <span class="n">status</span><span class="p">,</span> <span class="k">struct</span> <span class="n">addrinfo</span> <span class="o">*</span><span class="n">res</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">status</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;getaddrinfo callback error %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">uv_err_name</span><span class="p">(</span><span class="n">uv_last_error</span><span class="p">(</span><span class="n">loop</span><span class="p">)));</span>
         <span class="k">return</span><span class="p">;</span>
@@ -421,8 +421,8 @@ call <tt class="docutils literal"><span class="pre">uv_freeaddrinfo</span></tt> 
 <span class="hll">    <span class="n">uv_ip4_name</span><span class="p">((</span><span class="k">struct</span> <span class="n">sockaddr_in</span><span class="o">*</span><span class="p">)</span> <span class="n">res</span><span class="o">-&gt;</span><span class="n">ai_addr</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="mi">16</span><span class="p">);</span>
 </span>    <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;%s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">addr</span><span class="p">);</span>
 
-    <span class="kt">uv_connect_t</span> <span class="o">*</span><span class="n">connect_req</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uv_connect_t</span><span class="o">*</span><span class="p">)</span> <span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="kt">uv_connect_t</span><span class="p">));</span>
-    <span class="kt">uv_tcp_t</span> <span class="o">*</span><span class="n">socket</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uv_tcp_t</span><span class="o">*</span><span class="p">)</span> <span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="kt">uv_tcp_t</span><span class="p">));</span>
+    <span class="n">uv_connect_t</span> <span class="o">*</span><span class="n">connect_req</span> <span class="o">=</span> <span class="p">(</span><span class="n">uv_connect_t</span><span class="o">*</span><span class="p">)</span> <span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">uv_connect_t</span><span class="p">));</span>
+    <span class="n">uv_tcp_t</span> <span class="o">*</span><span class="n">socket</span> <span class="o">=</span> <span class="p">(</span><span class="n">uv_tcp_t</span><span class="o">*</span><span class="p">)</span> <span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">uv_tcp_t</span><span class="p">));</span>
     <span class="n">uv_tcp_init</span><span class="p">(</span><span class="n">loop</span><span class="p">,</span> <span class="n">socket</span><span class="p">);</span>
 
     <span class="n">connect_req</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="p">)</span> <span class="n">socket</span><span class="p">;</span>
@@ -434,7 +434,7 @@ call <tt class="docutils literal"><span class="pre">uv_freeaddrinfo</span></tt> 
 </td></tr></table></div>
 </div>
 <div class="section" id="network-interfaces">
-<h2>Network interfaces<a class="headerlink" href="#network-interfaces" title="Permalink to this headline">¶</a></h2>
+<h2>网络接口(Network interfaces)<a class="headerlink" href="#network-interfaces" title="Permalink to this headline">¶</a></h2>
 <p>Information about the system&#8217;s network interfaces can be obtained through libuv
 using <tt class="docutils literal"><span class="pre">uv_interface_addresses</span></tt>. This simple program just prints out all the
 interface details so you get an idea of the fields that are available. This is
@@ -477,7 +477,7 @@ useful to allow your service to bind to IP addresses when it starts.</p>
 
 <span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
     <span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="mi">512</span><span class="p">];</span>
-    <span class="kt">uv_interface_address_t</span> <span class="o">*</span><span class="n">info</span><span class="p">;</span>
+    <span class="n">uv_interface_address_t</span> <span class="o">*</span><span class="n">info</span><span class="p">;</span>
     <span class="kt">int</span> <span class="n">count</span><span class="p">,</span> <span class="n">i</span><span class="p">;</span>
 
 <span class="hll">    <span class="n">uv_interface_addresses</span><span class="p">(</span><span class="o">&amp;</span><span class="n">info</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">count</span><span class="p">);</span>
@@ -485,7 +485,7 @@ useful to allow your service to bind to IP addresses when it starts.</p>
 
     <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Number of interfaces: %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">count</span><span class="p">);</span>
     <span class="k">while</span> <span class="p">(</span><span class="n">i</span><span class="o">--</span><span class="p">)</span> <span class="p">{</span>
-        <span class="kt">uv_interface_address_t</span> <span class="n">interface</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+        <span class="n">uv_interface_address_t</span> <span class="n">interface</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
 
         <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Name: %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">interface</span><span class="p">.</span><span class="n">name</span><span class="p">);</span>
 <span class="hll">        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Internal? %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">interface</span><span class="p">.</span><span class="n">is_internal</span> <span class="o">?</span> <span class="s">&quot;Yes&quot;</span> <span class="o">:</span> <span class="s">&quot;No&quot;</span><span class="p">);</span>
@@ -511,28 +511,28 @@ useful to allow your service to bind to IP addresses when it starts.</p>
 interface has multiple IPv4/IPv6 addresses, the name will be reported multiple
 times, with each address being reported once.</p>
 <hr class="docutils" />
-<table class="docutils footnote" frame="void" id="id5" rules="none">
-<colgroup><col class="label" /><col /></colgroup>
-<tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td><a class="reference external" href="http://beej.us/guide/bgnet/output/html/multipage/advanced.html#broadcast">http://beej.us/guide/bgnet/output/html/multipage/advanced.html#broadcast</a></td></tr>
-</tbody>
-</table>
 <table class="docutils footnote" frame="void" id="id6" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id2">[2]</a></td><td>on Windows only supported on Windows Vista and later.</td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id2">[1]</a></td><td><a class="reference external" href="http://beej.us/guide/bgnet/output/html/multipage/advanced.html#broadcast">http://beej.us/guide/bgnet/output/html/multipage/advanced.html#broadcast</a></td></tr>
 </tbody>
 </table>
 <table class="docutils footnote" frame="void" id="id7" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id3">[3]</a></td><td><a class="reference external" href="http://www.tldp.org/HOWTO/Multicast-HOWTO-6.html#ss6.1">http://www.tldp.org/HOWTO/Multicast-HOWTO-6.html#ss6.1</a></td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id3">[2]</a></td><td>on Windows only supported on Windows Vista and later.</td></tr>
 </tbody>
 </table>
 <table class="docutils footnote" frame="void" id="id8" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id4">[4]</a></td><td>libuv use the system <tt class="docutils literal"><span class="pre">getaddrinfo</span></tt> in the libuv threadpool. libuv
+<tr><td class="label"><a class="fn-backref" href="#id4">[3]</a></td><td><a class="reference external" href="http://www.tldp.org/HOWTO/Multicast-HOWTO-6.html#ss6.1">http://www.tldp.org/HOWTO/Multicast-HOWTO-6.html#ss6.1</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id9" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id5">[4]</a></td><td>libuv use the system <tt class="docutils literal"><span class="pre">getaddrinfo</span></tt> in the libuv threadpool. libuv
 v0.8.0 and earlier also included <a class="reference external" href="http://c-ares.haxx.se">c-ares</a> as an alternative, but this has been
 removed in v0.9.0.</td></tr>
 </tbody>
@@ -545,11 +545,11 @@ removed in v0.9.0.</td></tr>
       <div class="bottomnav">
       
         <p>
-        «&#160;&#160;<a href="filesystem.html">Filesystem</a>
+        «&#160;&#160;<a href="filesystem.html">文件系统</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="threads.html">Threads</a>&#160;&#160;»
+        <a href="threads.html">线程</a>&#160;&#160;»
         </p>
 
       </div>

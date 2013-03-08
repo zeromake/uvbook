@@ -1,13 +1,13 @@
-Utilities
-=========
+工具集
+======
 
 This chapter catalogues tools and techniques which are useful for common tasks.
 The `libev man page`_ already covers some patterns which can be adopted to
 libuv through simple API changes. It also covers parts of the libuv API that
 don't require entire chapters dedicated to them.
 
-Timers
-------
+定时器(Timers)
+--------------
 
 Timers invoke the callback after a certain time has elapsed since the timer was
 started. libuv timers can also be set to invoke at regular intervals instead of
@@ -59,8 +59,8 @@ An actual timer example is in the :ref:`reference count section
 
 .. _reference-count:
 
-Event loop reference count
---------------------------
+事件循环引用计数(Event loop reference count)
+--------------------------------------------
 
 The event loop only runs as long as there are active watchers. This system
 works by having every watcher increase the reference count of the event loop
@@ -95,8 +95,8 @@ We initialize the garbage collector timer, then immediately ``unref`` it.
 Observe how after 9 seconds, when the fake job is done, the program
 automatically exits, even though the garbage collector is still running.
 
-Idle watcher pattern
---------------------
+空闲监视器模式(Idle watcher pattern)
+------------------------------------
 
 The callbacks of idle watchers are only invoked when the event loop has no
 other pending events. In such a situation they are invoked once every iteration
@@ -129,8 +129,8 @@ keep calling the idle callback again.
 
 .. _baton:
 
-Passing data to worker thread
------------------------------
+向工作者线程传递数据(Passing data to worker thread)
+---------------------------------------------------
 
 When using ``uv_queue_work`` you'll usually need to pass complex data through
 to the worker thread. The solution is to use a ``struct`` and set
@@ -186,8 +186,8 @@ Now the task function can extract the data it needs:
 
 We then free the baton which also frees the watcher.
 
-External I/O with polling
--------------------------
+轮询方式下的外部 I/O(External I/O with polling)
+-----------------------------------------------
 
 Usually third-party libraries will handle their own I/O, and keep track of
 their sockets and other files internally. In this case it isn't possible to use
@@ -287,13 +287,13 @@ about transfer progress. In our case we are only interested in transfers that
 are completed. So we extract these messages, and clean up handles whose
 transfers are done.
 
-Check & Prepare watchers
-------------------------
+检查并预备监视器(Check & Prepare watchers)
+------------------------------------------
 
 TODO
 
-Loading libraries
------------------
+库的加载(Loading libraries)
+---------------------------
 
 libuv provides a cross platform API to dynamically load `shared libraries`_.
 This can be used to implement your own plugin/extension/module system and is

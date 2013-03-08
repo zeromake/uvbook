@@ -1,5 +1,5 @@
-Networking
-==========
+网络
+====
 
 Networking in libuv is not much different from directly using the BSD socket
 interface, some things are easier, all are non-blocking, but the concepts stay
@@ -15,8 +15,8 @@ TCP
 TCP is a connection oriented, stream protocol and is therefore based on the
 libuv streams infrastructure.
 
-Server
-++++++
+服务器(Server)
+++++++++++++++
 
 Server sockets proceed by:
 
@@ -64,8 +64,8 @@ be found in the code. Just remember to call ``uv_close`` when the socket isn't
 required. This can be done even in the ``uv_listen`` callback if you are not
 interested in accepting the connection.
 
-Client
-++++++
+客户端(Client)
+++++++++++++++
 
 Where you do bind/listen/accept, on the client side its simply a matter of
 calling ``uv_tcp_connect``. The same ``uv_connect_cb`` style callback of
@@ -132,23 +132,23 @@ data that could not fit* (That's UDP for you!).
     :lines: 15-27,38-41
     :emphasize-lines: 1,16
 
-UDP Options
-+++++++++++
+UDP 选项(UDP Options)
++++++++++++++++++++++
 
-Time-to-live
-~~~~~~~~~~~~
+生存时间TTL(Time-to-live)
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The TTL of packets sent on the socket can be changed using ``uv_udp_set_ttl``.
 
-IPv6 stack only
-~~~~~~~~~~~~~~~
+仅使用 IPv6 协议
+~~~~~~~~~~~~~~~~
 
 IPv6 sockets can be used for both IPv4 and IPv6 communication. If you want to
 restrict the socket to IPv6 only, pass the ``UV_UDP_IPV6ONLY`` flag to
 ``uv_udp_bind6`` [#]_.
 
-Multicast
-~~~~~~~~~
+多播(Multicast)
+~~~~~~~~~~~~~~~
 
 A socket can (un)subscribe to a multicast group using:
 
@@ -163,8 +163,8 @@ Local loopback of multicast packets is enabled by default [#]_, use
 The packet time-to-live for multicast packets can be changed using
 ``uv_udp_set_multicast_ttl``.
 
-Querying DNS
-------------
+DNS 查询(Querying DNS)
+----------------------
 
 libuv provides asynchronous DNS resolution. For this it provides its own
 ``getaddrinfo`` replacement [#]_. In the callback you can
@@ -192,8 +192,8 @@ call ``uv_freeaddrinfo`` in the callback.
     :lines: 41-59
     :emphasize-lines: 8,16
 
-Network interfaces
-------------------
+网络接口(Network interfaces)
+----------------------------
 
 Information about the system's network interfaces can be obtained through libuv
 using ``uv_interface_addresses``. This simple program just prints out all the

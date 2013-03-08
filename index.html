@@ -2,6 +2,7 @@
 <html>
   <head>
     <meta charset='utf-8'>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
@@ -13,14 +14,45 @@
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="top" title="An Introduction to libuv" href="#" />
+    <link rel="next" title="序言" href="introduction.html" />
+    <script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-33699076-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+    </script>
     <title>Uvbook中文翻译 by forhappy</title>
   </head>
 
   <body>
     <header>
       <div class="inner">
-        <h1>Uvbook中文翻译</h1>
-        <h2>《An Introduction to libuv》中文翻译</h2>
         <a href="https://github.com/forhappy/uvbook" class="button"><small>View project on</small>GitHub</a>
       </div>
     </header>
@@ -28,32 +60,115 @@
     <div id="content-wrapper">
       <div class="inner clearfix">
         <section id="main-content">
-          <h3>Welcome to GitHub Pages.</h3>
+<div class="header"><h1 class="heading"><a href="#">
+          <span>An Introduction to libuv</span></a></h1>
+      </div>
+      <div class="topnav">
+        <p>
+        <a class="uplink" href="#">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="introduction.html">序言</a>&#160;&#160;»
+        </p>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+      </div>
+      <div class="content">
+<div class="section" id="id1">
+<h1>本书目录<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">序言</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#id2">本书为谁而写?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#id3">背景</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#id4">本书代码</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="basics.html">Libuv 基础</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="basics.html#event-loops">事件循环(Event loops)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basics.html#hello-world">Hello World</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basics.html#watchers">监视器(Watchers)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="filesystem.html">文件系统</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="filesystem.html#id2">读写文件</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filesystem.html#filesystem-operations">文件系统相关操作(Filesystem operations)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filesystem.html#buffers-and-streams">缓冲区与流(Buffers and Streams)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filesystem.html#file-change-events">文件变更事件(File change events)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="networking.html">网络</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="networking.html#tcp">TCP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networking.html#udp">UDP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networking.html#dns-querying-dns">DNS 查询(Querying DNS)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="networking.html#network-interfaces">网络接口(Network interfaces)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="threads.html">线程</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="threads.html#core-thread-operations">线程核心操作(Core thread operations)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="threads.html#synchronization-primitives">同步原语(Synchronization Primitives)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="threads.html#libuv">libuv 工作队列</a></li>
+<li class="toctree-l2"><a class="reference internal" href="threads.html#inter-thread-communication">线程间通信(Inter-thread communication)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="processes.html">进程</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="processes.html#spawning-child-processes">创建子进程(Spawning child processes)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="processes.html#changing-process-parameters">改变进程参数(Changing process parameters)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="processes.html#detaching-processes">进程分离(Detaching processes)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="processes.html#sending-signals-to-processes">向进程发送信号(Sending signals to processes)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="processes.html#signals">信号(Signals)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="processes.html#i-o">子进程 I/O</a></li>
+<li class="toctree-l2"><a class="reference internal" href="processes.html#pipes">管道(Pipes)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="multiple.html">多路事件循环(Multiple event loops)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="multiple.html#modality">多路事件循环的形式(Modality)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multiple.html#one-loop-per-thread">各线程拥有自己的事件循环(One loop per thread)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="utilities.html">工具集</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="utilities.html#timers">定时器(Timers)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utilities.html#event-loop-reference-count">事件循环引用计数(Event loop reference count)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utilities.html#idle-watcher-pattern">空闲监视器模式(Idle watcher pattern)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utilities.html#passing-data-to-worker-thread">向工作者线程传递数据(Passing data to worker thread)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utilities.html#i-o-external-i-o-with-polling">轮询方式下的外部 I/O(External I/O with polling)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utilities.html#check-prepare-watchers">检查并预备监视器(Check &amp; Prepare watchers)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utilities.html#loading-libraries">库的加载(Loading libraries)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utilities.html#tty">TTY</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="about.html">关于</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="about.html#licensing">授权(Licensing)</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h2>其他格式<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>本书提供了其他格式供读者下载:</p>
+<ul>
+<li>
+<a href="http://nikhilm.github.com/uvbook/An%20Introduction%20to%20libuv.pdf" onClick="_gaq.push(['_trackEvent', 'Downloads', 'Download', 'PDF']);">PDF</a>
+</li>
+<li>
+<a href="http://nikhilm.github.com/uvbook/An%20Introduction%20to%20libuv.epub" onClick="_gaq.push(['_trackEvent', 'Downloads', 'Download', 'ePub']);">ePub</a>
+</li>
+</ul></div>
+</div>
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+      </div>
+      <div class="bottomnav">
+        <p>
+        <a class="uplink" href="#">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="introduction.html">序言</a>&#160;&#160;»
+        </p>
 
-<h3>Designer Templates</h3>
+      </div>
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
-
-<h3>Rather Drive Stick?</h3>
-
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
-
-<h3>Authors and Contributors</h3>
-
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
-
-<h3>Support or Contact</h3>
-
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
+    <div class="footer">
+        &copy; Copyright 2013, forhappy.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
         </section>
 
         <aside id="sidebar">

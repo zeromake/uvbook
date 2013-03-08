@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Multiple event loops &mdash; An Introduction to libuv</title>
+    <title>多路事件循环(Multiple event loops) &mdash; An Introduction to libuv</title>
     
     <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -30,8 +30,8 @@
     <script type="text/javascript" src="_static/theme_extras.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="top" title="An Introduction to libuv" href="index.html" />
-    <link rel="next" title="Utilities" href="utilities.html" />
-    <link rel="prev" title="Processes" href="processes.html" />
+    <link rel="next" title="工具集" href="utilities.html" />
+    <link rel="prev" title="进程" href="processes.html" />
 <script type="text/javascript">
 
   var _gaq = _gaq || [];
@@ -50,16 +50,16 @@
   <body>
       <div class="header"><h1 class="heading"><a href="index.html">
           <span>An Introduction to libuv</span></a></h1>
-        <h2 class="heading"><span>Multiple event loops</span></h2>
+        <h2 class="heading"><span>多路事件循环(Multiple event loops)</span></h2>
       </div>
       <div class="topnav">
       
         <p>
-        «&#160;&#160;<a href="processes.html">Processes</a>
+        «&#160;&#160;<a href="processes.html">进程</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="utilities.html">Utilities</a>&#160;&#160;»
+        <a href="utilities.html">工具集</a>&#160;&#160;»
         </p>
 
       </div>
@@ -67,23 +67,23 @@
         
         
   <div class="section" id="multiple-event-loops">
-<h1>Multiple event loops<a class="headerlink" href="#multiple-event-loops" title="Permalink to this headline">¶</a></h1>
+<h1>多路事件循环(Multiple event loops)<a class="headerlink" href="#multiple-event-loops" title="Permalink to this headline">¶</a></h1>
 <p>It is possible to use multiple event loops in the same thread. But this usually
 makes no sense since the <cite>uv_run()</cite> call of one loop will block and stop the
 other loop from running at all. With a careful combination of <cite>uv_run_once()</cite>
 you could do some really fun things though.</p>
 <div class="section" id="modality">
-<h2>Modality<a class="headerlink" href="#modality" title="Permalink to this headline">¶</a></h2>
+<h2>多路事件循环的形式(Modality)<a class="headerlink" href="#modality" title="Permalink to this headline">¶</a></h2>
 <p>You can use multiple loops to create a &#8216;modal&#8217; step in your program, where the
 second event loop &#8216;pauses&#8217; the first event loop until some action occurs (a
 user presses Return or you get a new event or something). An</p>
 </div>
 <div class="section" id="one-loop-per-thread">
-<h2>One loop per thread<a class="headerlink" href="#one-loop-per-thread" title="Permalink to this headline">¶</a></h2>
+<h2>各线程拥有自己的事件循环(One loop per thread)<a class="headerlink" href="#one-loop-per-thread" title="Permalink to this headline">¶</a></h2>
 <p>This is the &#8216;standard model&#8217;, no different from spawning multiple processes
-like we did in the <a class="reference internal" href="processes.html"><em>Processes</em></a> chapter.</p>
-<div class="section" id="using-two-loops-for-synchronization">
-<h3>Using two loops for synchronization<a class="headerlink" href="#using-two-loops-for-synchronization" title="Permalink to this headline">¶</a></h3>
+like we did in the <a class="reference internal" href="processes.html"><em>进程</em></a> chapter.</p>
+<div class="section" id="sing-two-loops-for-synchronization">
+<h3>使用两个事件循环来同步(sing two loops for synchronization)<a class="headerlink" href="#sing-two-loops-for-synchronization" title="Permalink to this headline">¶</a></h3>
 <p>There is a very specific use-case where two event loops can be used as
 a synchronization mechanism in place of conditional variables. I used it in
 <a class="reference external" href="https://github.com/nikhilm/node-taglib">node-taglib</a>. libuv did not have
@@ -131,11 +131,11 @@ can continue.</li>
       <div class="bottomnav">
       
         <p>
-        «&#160;&#160;<a href="processes.html">Processes</a>
+        «&#160;&#160;<a href="processes.html">进程</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="utilities.html">Utilities</a>&#160;&#160;»
+        <a href="utilities.html">工具集</a>&#160;&#160;»
         </p>
 
       </div>

@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Threads &mdash; An Introduction to libuv</title>
+    <title>线程 &mdash; An Introduction to libuv</title>
     
     <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -30,8 +30,8 @@
     <script type="text/javascript" src="_static/theme_extras.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="top" title="An Introduction to libuv" href="index.html" />
-    <link rel="next" title="Processes" href="processes.html" />
-    <link rel="prev" title="Networking" href="networking.html" />
+    <link rel="next" title="进程" href="processes.html" />
+    <link rel="prev" title="网络" href="networking.html" />
 <script type="text/javascript">
 
   var _gaq = _gaq || [];
@@ -50,24 +50,24 @@
   <body>
       <div class="header"><h1 class="heading"><a href="index.html">
           <span>An Introduction to libuv</span></a></h1>
-        <h2 class="heading"><span>Threads</span></h2>
+        <h2 class="heading"><span>线程</span></h2>
       </div>
       <div class="topnav">
       
         <p>
-        «&#160;&#160;<a href="networking.html">Networking</a>
+        «&#160;&#160;<a href="networking.html">网络</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="processes.html">Processes</a>&#160;&#160;»
+        <a href="processes.html">进程</a>&#160;&#160;»
         </p>
 
       </div>
       <div class="content">
         
         
-  <div class="section" id="threads">
-<h1>Threads<a class="headerlink" href="#threads" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="id1">
+<h1>线程<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
 <p>Wait a minute? Why are we on threads? Aren&#8217;t event loops supposed to be <strong>the
 way</strong> to do <em>web-scale programming</em>? Well no. Threads are still the medium in
 which the processor does its job, and threads are mighty useful sometimes, even
@@ -89,10 +89,10 @@ event loop.</p>
 threads are different on all platforms, with different levels of completeness.</p>
 <p>This chapter makes the following assumption: <strong>There is only one event loop,
 running in one thread (the main thread)</strong>. No other thread interacts
-with the event loop (except using <tt class="docutils literal"><span class="pre">uv_async_send</span></tt>). <a class="reference internal" href="multiple.html"><em>Multiple event loops</em></a> covers
+with the event loop (except using <tt class="docutils literal"><span class="pre">uv_async_send</span></tt>). <a class="reference internal" href="multiple.html"><em>多路事件循环(Multiple event loops)</em></a> covers
 running event loops in different threads and managing them.</p>
 <div class="section" id="core-thread-operations">
-<h2>Core thread operations<a class="headerlink" href="#core-thread-operations" title="Permalink to this headline">¶</a></h2>
+<h2>线程核心操作(Core thread operations)<a class="headerlink" href="#core-thread-operations" title="Permalink to this headline">¶</a></h2>
 <p>There isn&#8217;t much here, you just start a thread using <tt class="docutils literal"><span class="pre">uv_thread_create()</span></tt> and
 wait for it to close using <tt class="docutils literal"><span class="pre">uv_thread_join()</span></tt>.</p>
 <p class="rubric" id="thread-create-example">thread-create/main.c</p>
@@ -108,8 +108,8 @@ wait for it to close using <tt class="docutils literal"><span class="pre">uv_thr
 10
 11</pre></div></td><td class="code"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
     <span class="kt">int</span> <span class="n">tracklen</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
-<span class="hll">    <span class="kt">uv_thread_t</span> <span class="n">hare_id</span><span class="p">;</span>
-</span><span class="hll">    <span class="kt">uv_thread_t</span> <span class="n">tortoise_id</span><span class="p">;</span>
+<span class="hll">    <span class="n">uv_thread_t</span> <span class="n">hare_id</span><span class="p">;</span>
+</span><span class="hll">    <span class="n">uv_thread_t</span> <span class="n">tortoise_id</span><span class="p">;</span>
 </span><span class="hll">    <span class="n">uv_thread_create</span><span class="p">(</span><span class="o">&amp;</span><span class="n">hare_id</span><span class="p">,</span> <span class="n">hare</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">tracklen</span><span class="p">);</span>
 </span><span class="hll">    <span class="n">uv_thread_create</span><span class="p">(</span><span class="o">&amp;</span><span class="n">tortoise_id</span><span class="p">,</span> <span class="n">tortoise</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">tracklen</span><span class="p">);</span>
 </span><span class="hll">
@@ -150,22 +150,22 @@ thread, scheduled pre-emptively by the operating system:</p>
 </td></tr></table></div>
 <p>Unlike <tt class="docutils literal"><span class="pre">pthread_join()</span></tt> which allows the target thread to pass back a value to
 the calling thread using a second parameter, <tt class="docutils literal"><span class="pre">uv_thread_join()</span></tt> does not. To
-send values use <a class="reference internal" href="#inter-thread-communication"><em>Inter-thread communication</em></a>.</p>
+send values use <a class="reference internal" href="#inter-thread-communication"><em>线程间通信(Inter-thread communication)</em></a>.</p>
 </div>
 <div class="section" id="synchronization-primitives">
-<h2>Synchronization Primitives<a class="headerlink" href="#synchronization-primitives" title="Permalink to this headline">¶</a></h2>
+<h2>同步原语(Synchronization Primitives)<a class="headerlink" href="#synchronization-primitives" title="Permalink to this headline">¶</a></h2>
 <p>This section is purposely spartan. This book is not about threads, so I only
 catalogue any surprises in the libuv APIs here. For the rest you can look at
 the pthreads <a class="reference external" href="pthreads">man pages</a>.</p>
 <div class="section" id="mutexes">
-<h3>Mutexes<a class="headerlink" href="#mutexes" title="Permalink to this headline">¶</a></h3>
+<h3>互斥量(Mutexes)<a class="headerlink" href="#mutexes" title="Permalink to this headline">¶</a></h3>
 <p>The mutex functions are a <strong>direct</strong> map to the pthread equivalents.</p>
 <p class="rubric">libuv mutex functions</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="nf">uv_mutex_init</span><span class="p">(</span><span class="kt">uv_mutex_t</span><span class="o">*</span> <span class="n">handle</span><span class="p">);</span>
-<span class="n">UV_EXTERN</span> <span class="kt">void</span> <span class="nf">uv_mutex_destroy</span><span class="p">(</span><span class="kt">uv_mutex_t</span><span class="o">*</span> <span class="n">handle</span><span class="p">);</span>
-<span class="n">UV_EXTERN</span> <span class="kt">void</span> <span class="nf">uv_mutex_lock</span><span class="p">(</span><span class="kt">uv_mutex_t</span><span class="o">*</span> <span class="n">handle</span><span class="p">);</span>
-<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="nf">uv_mutex_trylock</span><span class="p">(</span><span class="kt">uv_mutex_t</span><span class="o">*</span> <span class="n">handle</span><span class="p">);</span>
-<span class="n">UV_EXTERN</span> <span class="kt">void</span> <span class="nf">uv_mutex_unlock</span><span class="p">(</span><span class="kt">uv_mutex_t</span><span class="o">*</span> <span class="n">handle</span><span class="p">);</span>
+<div class="highlight-c"><div class="highlight"><pre><span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="n">uv_mutex_init</span><span class="p">(</span><span class="n">uv_mutex_t</span><span class="o">*</span> <span class="n">handle</span><span class="p">);</span>
+<span class="n">UV_EXTERN</span> <span class="kt">void</span> <span class="n">uv_mutex_destroy</span><span class="p">(</span><span class="n">uv_mutex_t</span><span class="o">*</span> <span class="n">handle</span><span class="p">);</span>
+<span class="n">UV_EXTERN</span> <span class="kt">void</span> <span class="n">uv_mutex_lock</span><span class="p">(</span><span class="n">uv_mutex_t</span><span class="o">*</span> <span class="n">handle</span><span class="p">);</span>
+<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="n">uv_mutex_trylock</span><span class="p">(</span><span class="n">uv_mutex_t</span><span class="o">*</span> <span class="n">handle</span><span class="p">);</span>
+<span class="n">UV_EXTERN</span> <span class="kt">void</span> <span class="n">uv_mutex_unlock</span><span class="p">(</span><span class="n">uv_mutex_t</span><span class="o">*</span> <span class="n">handle</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>The <tt class="docutils literal"><span class="pre">uv_mutex_init()</span></tt> and <tt class="docutils literal"><span class="pre">uv_mutex_trylock()</span></tt> functions will return 0 on
@@ -193,7 +193,7 @@ not exposed via libuv.</p>
 </div>
 </div>
 <div class="section" id="locks">
-<h3>Locks<a class="headerlink" href="#locks" title="Permalink to this headline">¶</a></h3>
+<h3>锁(Locks)<a class="headerlink" href="#locks" title="Permalink to this headline">¶</a></h3>
 <p>Read-write locks are a more granular access mechanism. Two readers can access
 shared memory at the same time. A writer may not acquire the lock when it is
 held by a reader. A reader or writer may not acquire a lock when a writer is
@@ -259,8 +259,8 @@ example.</p>
 57</pre></div></td><td class="code"><div class="highlight"><pre><span class="cp">#include &lt;stdio.h&gt;</span>
 <span class="cp">#include &lt;uv.h&gt;</span>
 
-<span class="kt">uv_barrier_t</span> <span class="n">blocker</span><span class="p">;</span>
-<span class="kt">uv_rwlock_t</span> <span class="n">numlock</span><span class="p">;</span>
+<span class="n">uv_barrier_t</span> <span class="n">blocker</span><span class="p">;</span>
+<span class="n">uv_rwlock_t</span> <span class="n">numlock</span><span class="p">;</span>
 <span class="kt">int</span> <span class="n">shared_num</span><span class="p">;</span>
 
 <span class="kt">void</span> <span class="nf">reader</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">n</span><span class="p">)</span>
@@ -299,7 +299,7 @@ example.</p>
     <span class="n">shared_num</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 <span class="hll">    <span class="n">uv_rwlock_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">numlock</span><span class="p">);</span>
 </span>
-    <span class="kt">uv_thread_t</span> <span class="n">threads</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+    <span class="n">uv_thread_t</span> <span class="n">threads</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
 
     <span class="kt">int</span> <span class="n">thread_nums</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">};</span>
     <span class="n">uv_thread_create</span><span class="p">(</span><span class="o">&amp;</span><span class="n">threads</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">reader</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">thread_nums</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
@@ -320,18 +320,18 @@ multiple writers, schedulers will usually give them higher priority, so if you
 add two writers, you&#8217;ll see that both writers tend to finish first before the
 readers get a chance again.</p>
 </div>
-<div class="section" id="others">
-<h3>Others<a class="headerlink" href="#others" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id2">
+<h3>其他<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <p>libuv also supports <a class="reference external" href="http://en.wikipedia.org/wiki/Semaphore_(programming)">semaphores</a>, <a class="reference external" href="http://en.wikipedia.org/wiki/Condition_variable#Waiting_and_signaling">condition variables</a> and <a class="reference external" href="http://en.wikipedia.org/wiki/Barrier_(computer_science)">barriers</a> with APIs
 very similar to their pthread counterparts.</p>
 <p>In the case of condition variables, libuv also has a timeout on a wait, with
-platform specific quirks <a class="footnote-reference" href="#id4" id="id1">[1]</a>.</p>
+platform specific quirks <a class="footnote-reference" href="#id5" id="id3">[1]</a>.</p>
 <p>In addition, libuv provides a convenience function <tt class="docutils literal"><span class="pre">uv_once()</span></tt> (not to be
 confused with <tt class="docutils literal"><span class="pre">uv_run_once()</span></tt>. Multiple threads can attempt to call
 <tt class="docutils literal"><span class="pre">uv_once()</span></tt> with a given guard and a function pointer, <strong>only the first one
 will win, the function will be called once and only once</strong>:</p>
 <div class="highlight-c"><div class="highlight"><pre><span class="cm">/* Initialize guard */</span>
-<span class="k">static</span> <span class="kt">uv_once_t</span> <span class="n">once_only</span> <span class="o">=</span> <span class="n">UV_ONCE_INIT</span><span class="p">;</span>
+<span class="k">static</span> <span class="n">uv_once_t</span> <span class="n">once_only</span> <span class="o">=</span> <span class="n">UV_ONCE_INIT</span><span class="p">;</span>
 
 <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 
@@ -357,8 +357,8 @@ will win, the function will be called once and only once</strong>:</p>
 <p>After all threads are done, <tt class="docutils literal"><span class="pre">i</span> <span class="pre">==</span> <span class="pre">1</span></tt>.</p>
 </div>
 </div>
-<div class="section" id="libuv-work-queue">
-<span id="id2"></span><h2>libuv work queue<a class="headerlink" href="#libuv-work-queue" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="libuv">
+<span id="libuv-work-queue"></span><h2>libuv 工作队列<a class="headerlink" href="#libuv" title="Permalink to this headline">¶</a></h2>
 <p><tt class="docutils literal"><span class="pre">uv_queue_work()</span></tt> is a convenience function that allows an application to run
 a task in a separate thread, and have a callback that is triggered when the
 task is done. A seemingly simple function, what makes <tt class="docutils literal"><span class="pre">uv_queue_work()</span></tt>
@@ -390,7 +390,7 @@ event loop from performing other activities.</p>
 10
 11
 12
-13</pre></div></td><td class="code"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">fib</span><span class="p">(</span><span class="kt">uv_work_t</span> <span class="o">*</span><span class="n">req</span><span class="p">)</span> <span class="p">{</span>
+13</pre></div></td><td class="code"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">fib</span><span class="p">(</span><span class="n">uv_work_t</span> <span class="o">*</span><span class="n">req</span><span class="p">)</span> <span class="p">{</span>
     <span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="p">)</span> <span class="n">req</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">;</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">random</span><span class="p">()</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span>
         <span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
@@ -400,7 +400,7 @@ event loop from performing other activities.</p>
     <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;%dth fibonacci is %lu</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">fib</span><span class="p">);</span>
 <span class="p">}</span>
 
-<span class="kt">void</span> <span class="nf">after_fib</span><span class="p">(</span><span class="kt">uv_work_t</span> <span class="o">*</span><span class="n">req</span><span class="p">,</span> <span class="kt">int</span> <span class="n">status</span><span class="p">)</span> <span class="p">{</span>
+<span class="kt">void</span> <span class="nf">after_fib</span><span class="p">(</span><span class="n">uv_work_t</span> <span class="o">*</span><span class="n">req</span><span class="p">,</span> <span class="kt">int</span> <span class="n">status</span><span class="p">)</span> <span class="p">{</span>
     <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;Done calculating %dth fibonacci</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="o">*</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="p">)</span> <span class="n">req</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">);</span>
 <span class="p">}</span>
 </pre></div>
@@ -429,7 +429,7 @@ you are changing things while both threads may be running.</p>
     <span class="n">loop</span> <span class="o">=</span> <span class="n">uv_default_loop</span><span class="p">();</span>
 
     <span class="kt">int</span> <span class="n">data</span><span class="p">[</span><span class="n">FIB_UNTIL</span><span class="p">];</span>
-    <span class="kt">uv_work_t</span> <span class="n">req</span><span class="p">[</span><span class="n">FIB_UNTIL</span><span class="p">];</span>
+    <span class="n">uv_work_t</span> <span class="n">req</span><span class="p">[</span><span class="n">FIB_UNTIL</span><span class="p">];</span>
     <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
     <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">FIB_UNTIL</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
@@ -448,7 +448,7 @@ will be called, again with the same structure.</p>
 is to use a baton to exchange data.</p>
 </div>
 <div class="section" id="inter-thread-communication">
-<span id="id3"></span><h2>Inter-thread communication<a class="headerlink" href="#inter-thread-communication" title="Permalink to this headline">¶</a></h2>
+<span id="id4"></span><h2>线程间通信(Inter-thread communication)<a class="headerlink" href="#inter-thread-communication" title="Permalink to this headline">¶</a></h2>
 <p>Sometimes you want various threads to actually send each other messages <em>while</em>
 they are running. For example you might be running some long duration task in
 a separate thread (perhaps using <tt class="docutils literal"><span class="pre">uv_queue_work</span></tt>) but want to notify progress
@@ -469,13 +469,13 @@ informing the user of the status of running downloads.</p>
 12
 13
 14
-15</pre></div></td><td class="code"><div class="highlight"><pre><span class="kt">uv_loop_t</span> <span class="o">*</span><span class="n">loop</span><span class="p">;</span>
-<span class="hll"><span class="kt">uv_async_t</span> <span class="n">async</span><span class="p">;</span>
+15</pre></div></td><td class="code"><div class="highlight"><pre><span class="n">uv_loop_t</span> <span class="o">*</span><span class="n">loop</span><span class="p">;</span>
+<span class="hll"><span class="n">uv_async_t</span> <span class="n">async</span><span class="p">;</span>
 </span>
 <span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
     <span class="n">loop</span> <span class="o">=</span> <span class="n">uv_default_loop</span><span class="p">();</span>
 
-    <span class="kt">uv_work_t</span> <span class="n">req</span><span class="p">;</span>
+    <span class="n">uv_work_t</span> <span class="n">req</span><span class="p">;</span>
     <span class="kt">int</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">10240</span><span class="p">;</span>
     <span class="n">req</span><span class="p">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="p">)</span> <span class="o">&amp;</span><span class="n">size</span><span class="p">;</span>
 
@@ -518,7 +518,7 @@ event.</p>
 11
 12
 13
-14</pre></div></td><td class="code"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">fake_download</span><span class="p">(</span><span class="kt">uv_work_t</span> <span class="o">*</span><span class="n">req</span><span class="p">)</span> <span class="p">{</span>
+14</pre></div></td><td class="code"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">fake_download</span><span class="p">(</span><span class="n">uv_work_t</span> <span class="o">*</span><span class="n">req</span><span class="p">)</span> <span class="p">{</span>
     <span class="kt">int</span> <span class="n">size</span> <span class="o">=</span> <span class="o">*</span><span class="p">((</span><span class="kt">int</span><span class="o">*</span><span class="p">)</span> <span class="n">req</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">);</span>
     <span class="kt">int</span> <span class="n">downloaded</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
     <span class="kt">double</span> <span class="n">percentage</span><span class="p">;</span>
@@ -541,7 +541,7 @@ non-blocking and will return immediately.</p>
 <div class="highlight-c"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3
-4</pre></div></td><td class="code"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">print_progress</span><span class="p">(</span><span class="kt">uv_async_t</span> <span class="o">*</span><span class="n">handle</span><span class="p">,</span> <span class="kt">int</span> <span class="n">status</span> <span class="cm">/*UNUSED*/</span><span class="p">)</span> <span class="p">{</span>
+4</pre></div></td><td class="code"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">print_progress</span><span class="p">(</span><span class="n">uv_async_t</span> <span class="o">*</span><span class="n">handle</span><span class="p">,</span> <span class="kt">int</span> <span class="n">status</span> <span class="cm">/*UNUSED*/</span><span class="p">)</span> <span class="p">{</span>
     <span class="kt">double</span> <span class="n">percentage</span> <span class="o">=</span> <span class="o">*</span><span class="p">((</span><span class="kt">double</span><span class="o">*</span><span class="p">)</span> <span class="n">handle</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">);</span>
     <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;Downloaded %.2f%%</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">percentage</span><span class="p">);</span>
 <span class="p">}</span>
@@ -553,9 +553,9 @@ non-blocking and will return immediately.</p>
 <div class="highlight-c"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3
-4</pre></div></td><td class="code"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">after</span><span class="p">(</span><span class="kt">uv_work_t</span> <span class="o">*</span><span class="n">req</span><span class="p">,</span> <span class="kt">int</span> <span class="n">status</span><span class="p">)</span> <span class="p">{</span>
+4</pre></div></td><td class="code"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">after</span><span class="p">(</span><span class="n">uv_work_t</span> <span class="o">*</span><span class="n">req</span><span class="p">,</span> <span class="kt">int</span> <span class="n">status</span><span class="p">)</span> <span class="p">{</span>
     <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;Download complete</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
-<span class="hll">    <span class="n">uv_close</span><span class="p">((</span><span class="kt">uv_handle_t</span><span class="o">*</span><span class="p">)</span> <span class="o">&amp;</span><span class="n">async</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+<span class="hll">    <span class="n">uv_close</span><span class="p">((</span><span class="n">uv_handle_t</span><span class="o">*</span><span class="p">)</span> <span class="o">&amp;</span><span class="n">async</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
 </span><span class="p">}</span>
 </pre></div>
 </td></tr></table></div>
@@ -599,10 +599,10 @@ then interacts with v8 to invoke the JavaScript callback.</p>
 </li>
 </ol>
 <hr class="docutils" />
-<table class="docutils footnote" frame="void" id="id4" rules="none">
+<table class="docutils footnote" frame="void" id="id5" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td><a class="reference external" href="https://github.com/joyent/libuv/blob/master/include/uv.h#L1853">https://github.com/joyent/libuv/blob/master/include/uv.h#L1853</a></td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id3">[1]</a></td><td><a class="reference external" href="https://github.com/joyent/libuv/blob/master/include/uv.h#L1853">https://github.com/joyent/libuv/blob/master/include/uv.h#L1853</a></td></tr>
 </tbody>
 </table>
 </div>
@@ -613,11 +613,11 @@ then interacts with v8 to invoke the JavaScript callback.</p>
       <div class="bottomnav">
       
         <p>
-        «&#160;&#160;<a href="networking.html">Networking</a>
+        «&#160;&#160;<a href="networking.html">网络</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
-        <a href="processes.html">Processes</a>&#160;&#160;»
+        <a href="processes.html">进程</a>&#160;&#160;»
         </p>
 
       </div>
