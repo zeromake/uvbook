@@ -1,19 +1,19 @@
 Libuv 基础
 ==========
 
-libuv enforces an **asynchronous**, **event-driven** style of programming.  Its
-core job is to provide an event loop and callback based notifications of I/O
-and other activities.  libuv offers core utilities like timers, non-blocking
-networking support, asynchronous file system access, child processes and more.
+libuv 采用了 **异步** (asynchronous), **事件驱动** (event-driven)的编程风格,
+其主要任务是为开人员提供了一套事件循环和基于I/O(或其他活动)通知的回调函数,
+libuv 提供了一套核心的工具集, 例如定时器, 非阻塞网络编程的支持, 异步访问文件系统,
+子进程以及其他功能.
 
 事件循环(Event loops)
 ---------------------
 
-In event-driven programming, an application expresses interest in certain events
-and respond to them when they occur. The responsibility of gathering events
-from the operating system or monitoring other sources of events is handled by
-libuv, and the user can register callbacks to be invoked when an event occurs.
-The event-loop usually keeps running *forever*. In pseudocode:
+在事件编程模型中, 应用程序通常会关注某些特定的事件, 并在事件发生后对其作出响应.
+而收集事件或监控其他事件源则是 libuv 的职责, 编程人员只需要对感兴趣的事件注册回调函数,
+在事件发生后 libuv 将会调用相应的回调函数.
+只要程序不退出(被系统管理人员 kill 掉), 事件循环通常会一直运行,
+下面是事件驱动编程模型的伪代码:
 
 .. code-block:: python
 
@@ -22,83 +22,70 @@ The event-loop usually keeps running *forever*. In pseudocode:
         if there is a callback associated with e:
             call the callback
 
-Some examples of events are:
+适用于事件驱动编程模型的例子如下:
 
-* File is ready for writing
-* A socket has data ready to be read
-* A timer has timed out
+* 文件已经准备好可写入数据.
+* 某一 socket 上存在数据可读.
+* 定时器已超时.
 
-This event loop is encapsulated by ``uv_run()`` -- the end-all function when using
-libuv.
+事件循环由 ``uv_run`` 函数封装, 在使用 libuv 编程时, 该函数通常在最后才被调用.
 
-The most common activity of systems programs is to deal with input and output,
-rather than a lot of number-crunching. The problem with using conventional
-input/output functions (``read``, ``fprintf``, etc.) is that they are
-**blocking**. The actual write to a hard disk or reading from a network, takes
-a disproportionately long time compared to the speed of the processor. The
-functions don't return until the task is done, so that your program is doing
-nothing. For programs which require high performance this is a major roadblock
-as other activities and other I/O operations are kept waiting.
+计算机程序最基本的活动是输入输出的处理, 而不是大量的数值计算,
+而使用传统输入输出函数(``read``, ``fprintf`` 等)的问题是它们都是 **阻塞** 的.
+将数据写入磁盘或者从网络读取数据都会消耗大量时间, 而阻塞函数直到任务完成后才返回,
+在此期间你的程序什么也没有做, 浪费了大量的 CPU 时间.
+对于追求高性能的程序而言, 在其他活动或者 I/O 操作在进行尽量让 CPU
+不被阻塞.
 
-One of the standard solutions is to use threads. Each blocking I/O operation is
-started in a separate thread (or in a thread pool). When the blocking function
-gets invoked in the thread, the processor can schedule another thread to run,
-which actually needs the CPU.
+标准的解决方案是使用线程, 每个阻塞的 I/O 操作都在一个单独的线程(或线程池)中启动,
+当阻塞函数被调用时, 处理器可以调度另外一个真正需要 CPU 的线程来执行任务.
 
-The approach followed by libuv uses another style, which is the **asynchronous,
-non-blocking** style. Most modern operating systems provide event notification
-subsystems. For example, a normal ``read`` call on a socket would block until
-the sender actually sent something. Instead, the application can request the
-operating system to watch the socket and put an event notification in the
-queue. The application can inspect the events at its convenience (perhaps doing
-some number crunching before to use the processor to the maximum) and grab the
-data. It is **asynchronous** because the application expressed interest at one
-point, then used the data at another point (in time and space). It is
-**non-blocking** because the application process was free to do other tasks.
-This fits in well with libuv's event-loop approach, since the operating system
-events can be treated as just another libuv event. The non-blocking ensures
-that other events can continue to be handled as fast they come in [#]_.
+Libuv 采用另外一种方式处理阻塞任务, 即 **异步** 和 **非阻塞**
+方式.大多数现代操作系统都提供了事件通知功能, 例如, 调用 ``read``
+读取网络套接字时程序会阻塞, 直到发送者最终发送了数据(``read`` 才返回).
+但是, 应用程序可以要求操作系统监控套接字, 并在套接字上注册事件通知.
+应用程序可以在适当的时候查看它所监视的事件并获取数据(若有). 整个过程是 **异步** 的,
+因为程序在某一时刻关注了它感兴趣的事件, 并在另一个时刻获取(使用)数据,
+这也是 **非阻塞** 的, 因为该进程还可以处理另外的任务. Libuv
+的事件循环方式很好地与该模型匹配, 因为操作系统事件可以视为另外一种 libuv
+事件. 非阻塞方式可以保证在其他事件到来时被尽快处理 [#]_.
 
 .. NOTE::
 
-    How the I/O is run in the background is not of our concern, but due to the
-    way our computer hardware works, with the thread as the basic unit of the
-    processor, libuv and OSes will usually run background/worker threads and/or
-    polling to perform tasks in a non-blocking manner.
+    I/O 是如何在后台运行的不是我们所关心的, 但是由于我们计算机硬件的工作方式,
+    线程是处理器最基本的执行单元, thread as the basic unit of the
+    , libuv 和操作系统通常会运行后台/工作者线程, 或者采用非阻塞方式来轮流执行任务.
 
 
 Hello World
 -----------
 
-With the basics out of the way, lets write our first libuv program. It does
-nothing, except start a loop which will exit immediately.
+具备了上面最基本的知识后, 我们就来编写一个简单 libuv
+的程序吧.该程序并没有做任何具体的事情, 只是简单的启动了一个会退出的事件循环.
 
 .. rubric:: helloworld/main.c
 .. literalinclude:: ../code/helloworld/main.c
     :linenos:
 
-This program quits immediately because it has no events to process. A libuv
-event loop has to be told to watch out for events using the various API
-functions.
+该程序启动后就会直接退出, 因为你没有事件可处理. 我们可以使用 libuv 提供了各种
+API 来告知 libuv 我们感兴趣的事件.
 
 libuv 的默认事件循环(Default loop)
 ++++++++++++++++++++++++++++++++++
 
-A default loop is provided by libuv and can be accessed using
-``uv_default_loop()``. You should use this loop if you only want a single
-loop.
+libuv 提供了一个默认的事件循环, 你可以通过 ``uv_default_loop`` 来获得该事件循环,
+如果你的程序中只有一个事件循环, 你就应该使用 libuv 为我们提供的默认事件循环.
 
 .. note::
 
-    node.js uses the default loop as its main loop. If you are writing bindings
-    you should be aware of this.
+    node.js 使用默认事件循环作为它的主循环,如果你正在编写 node.js 的绑定,
+    你应该意识到这一点.
 
 监视器(Watchers)
 ----------------
 
-Watchers are how users of libuv express interest in particular events. Watchers
-are opaque structs named as ``uv_TYPE_t`` where type signifies what the watcher
-is used for. A full list of watchers supported by libuv is:
+libuv 通过监视器(Watcher)来对特定事件进行监控, 监视器通常是类似 ``uv_TYPE_t`` 结构体的封装,
+``TYPE`` 代表该监视器的用途, libuv 所有的监视器类型如下:
 
 .. rubric:: libuv watchers
 .. literalinclude:: ../libuv/include/uv.h
@@ -106,51 +93,44 @@ is used for. A full list of watchers supported by libuv is:
 
 .. note::
 
-    All watcher structs are subclasses of ``uv_handle_t`` and often referred to
-    as **handles** in libuv and in this text.
+    所有监视器的结构都是 ``uv_handle_t`` 的"子类"， 在 libuv 和本文中都称之为句柄( **handlers** ).
 
-Watchers are setup by a corresponding::
+监视器由相应类型的初始化函数设置, 如下::
 
     uv_TYPE_init(uv_TYPE_t*)
 
-function.
 
 .. note::
 
-    Some watcher initialization functions require the loop as a first argument.
+    某些监视器初始化函数的第一个参数为事件循环的句柄.
 
-A watcher is set to actually listen for events by invoking::
+监视器再通过调用如下类型的函数来设置事件回调函数并监听相应事件::
 
     uv_TYPE_start(uv_TYPE_t*, callback)
 
-and stopped by calling the corresponding::
+而停止监听应调用如下类型的函数::
 
     uv_TYPE_stop(uv_TYPE_t*)
 
-Callbacks are functions which are called by libuv whenever an event the watcher
-is interested in has taken place. Application specific logic will usually be
-implemented in the callback. For example, an IO watcher's callback will receive
-the data read from a file, a timer callback will be triggered on timeout and so
-on.
+当 libuv 所监听事件发生后, 回调函数就会被调用. 应用程序特定的逻辑通常都是在回调函数中实现的,
+例如, 定时器回调函数在发生超时事件后也会被调用,
+另外回调函被调用时传入的相关参数都与特定类型的事件有关, 例如,
+IO 监视器的回调函数在发生了IO事件后将会收到从文件读取的数据.
 
 空转(Idling)
 ++++++++++++
 
-Here is an example of using a watcher. An idle watcher's callback is repeatedly
-called. There are some deeper semantics, discussed in :doc:`utilities`, but
-we'll ignore them for now. Let's just use an idle watcher to look at the
-watcher life cycle and see how ``uv_run()`` will now block because a watcher is
-present. The idle watcher is stopped when the count is reached and ``uv_run()``
-exits since no event watchers are active.
+接下来我们通过例子来讲述监视器的使用. 例子中空转监视器回调函数被不断地重复调用,
+当然其中也有一些深层次的语言，我们将会在 :doc:`utilities` 进一步讨论,
+但现在我们只是跳过具体细节.
+我们只是使用了一个空转监视器回调来看看监视器的生命周期,
+通过例子我们也可以了解到： 由于设置了监视器, 所以调用 ``uv_run()`` 是程序会阻塞,
+空转监视器将会在计数器达到设定的值时停止(监视), ``uv_run()``
+会退出因为此时程序中没有活动的监视器了.
 
 .. rubric:: idle-basic/main.c
 .. literalinclude:: ../code/idle-basic/main.c
     :emphasize-lines: 6,10,14-17
 
-void \*data pattern
 
-note about not necessarily creating type structs on the stack
-
-----
-
-.. [#] Depending on the capacity of the hardware of course.
+.. [#] 当然取决与硬件能力.
