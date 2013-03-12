@@ -31,7 +31,7 @@
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="top" title="An Introduction to libuv" href="index.html" />
     <link rel="next" title="网络" href="networking.html" />
-    <link rel="prev" title="libuv 基础" href="basics.html" />
+    <link rel="prev" title="Libuv 基础" href="basics.html" />
 <script type="text/javascript">
 
   var _gaq = _gaq || [];
@@ -55,7 +55,7 @@
       <div class="topnav">
       
         <p>
-        «&#160;&#160;<a href="basics.html">libuv 基础</a>
+        «&#160;&#160;<a href="basics.html">Libuv 基础</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
@@ -68,40 +68,39 @@
         
   <div class="section" id="id1">
 <h1>文件系统<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
-<p>Simple filesystem read/write is achieved using the <tt class="docutils literal"><span class="pre">uv_fs_*</span></tt> functions and the
-<tt class="docutils literal"><span class="pre">uv_fs_t</span></tt> struct.</p>
+<p>简单的文件读写是通过 <tt class="docutils literal"><span class="pre">uv_fs_*</span></tt> 函数族和与之相关的 <tt class="docutils literal"><span class="pre">uv_fs_t</span></tt>
+结构体完成的.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">The libuv filesystem operations are different from <a class="reference internal" href="networking.html"><em>socket operations</em></a>. Socket operations use the non-blocking operations provided
-by the operating system. Filesystem operations use blocking functions
-internally, but invoke these functions in a thread pool and notify watchers
-registered with the event loop when application interaction is required.</p>
+<p class="last">libuv 提供的文件操作和 <a class="reference internal" href="networking.html"><em>socket operations</em></a> 并不相同.
+套接字操作使用了操作系统本身提供了非阻塞操作, 而文件操作内部使用了阻塞函数,
+但是 libuv 是在线程池中调用这些函数, 并在应用程序需要交互时通知在事件循环中注册的监视器.</p>
 </div>
-<p>All filesystem functions have two forms - <em>synchronous</em> and <em>asynchronous</em>.</p>
-<p>The <em>synchronous</em> forms automatically get called (and <strong>block</strong>) if no callback
-is specified. The return value of functions is the equivalent Unix return value
-(usually 0 on success, -1 on error).</p>
-<p>The <em>asynchronous</em> form is called when a callback is passed and the return
-value is 0.</p>
+<p>所有的文件操作函数都有两种形式 - 同步 <em>synchronous</em> 和  <em>asynchronous</em>.</p>
+<p>同步 <em>synchronous</em> 形式如果没有指定回调函数则会被自动调用( <strong>阻塞的</strong> ),
+函数的返回值和 Unix 系统的函数调用返回值相同(调用成功通常返回 0, 若出现错误则返回
+-1).</p>
+<p>而异步 <em>asynchronous</em> 形式则会在传入回调函数时被调用, 并且返回 0.</p>
 <div class="section" id="id2">
 <h2>读写文件<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <p>文件描述符可以采用如下方式获得:</p>
 <div class="highlight-c"><div class="highlight"><pre><span class="kt">int</span> <span class="n">uv_fs_open</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">path</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">,</span> <span class="kt">int</span> <span class="n">mode</span><span class="p">,</span> <span class="n">uv_fs_cb</span> <span class="n">cb</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><tt class="docutils literal"><span class="pre">flags</span></tt> and <tt class="docutils literal"><span class="pre">mode</span></tt> are standard
-<a class="reference external" href="http://man7.org/linux/man-pages/man2/open.2.html">Unix flags</a>.
-libuv takes care of converting to the appropriate Windows flags.</p>
-<p>File descriptors are closed using</p>
+<p>参数 <tt class="docutils literal"><span class="pre">flags</span></tt> 与 <tt class="docutils literal"><span class="pre">mode</span></tt> 和标准的
+<a class="reference external" href="http://man7.org/linux/man-pages/man2/open.2.html">Unix flags</a> 相同.
+libuv 会小心地处理 Windows 环境下的相关标志位(flags)的转换,
+所以编写跨平台程序时你不用担心不同平台上文件打开的标志位不同。</p>
+<p>关闭文件描述符可以使用:</p>
 <div class="highlight-c"><div class="highlight"><pre><span class="kt">int</span> <span class="n">uv_fs_close</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="n">uv_file</span> <span class="n">file</span><span class="p">,</span> <span class="n">uv_fs_cb</span> <span class="n">cb</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>文件系统操作的回调函数具有如下签名:</p>
+<p>与文件系统相关的操作的回调函数具有如下签名:</p>
 <div class="highlight-c"><div class="highlight"><pre><span class="kt">void</span> <span class="n">callback</span><span class="p">(</span><span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>Let&#8217;s see a simple implementation of <tt class="docutils literal"><span class="pre">cat</span></tt>. We start with registering
-a callback for when the file is opened:</p>
+<p>让我们来看看 <tt class="docutils literal"><span class="pre">cat</span></tt> 命令的一个简单实现吧: 我们首先注册一个在文件打开时的回调函数
+(顾名思义, 该函数将在文件打开时被调用).</p>
 <p class="rubric">uvcat/main.c - opening a file</p>
 <div class="highlight-c"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
@@ -124,12 +123,11 @@ a callback for when the file is opened:</p>
 <span class="p">}</span>
 </pre></div>
 </td></tr></table></div>
-<p>The <tt class="docutils literal"><span class="pre">result</span></tt> field of a <tt class="docutils literal"><span class="pre">uv_fs_t</span></tt> is the file descriptor in case of the
-<tt class="docutils literal"><span class="pre">uv_fs_open</span></tt> callback. If the file is successfully opened, we start reading it.</p>
+<p><tt class="docutils literal"><span class="pre">uv_fs_t</span></tt> 的 <tt class="docutils literal"><span class="pre">result</span></tt> 字段在执行 <tt class="docutils literal"><span class="pre">us_fs_open</span></tt> 时代表一个文件描述符,
+如果文件成功被打开, 我们开始读取文件.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p class="last">The <tt class="docutils literal"><span class="pre">uv_fs_req_cleanup()</span></tt> function must be called to free internal memory
-allocations in libuv.</p>
+<p class="last">必须调用 <tt class="docutils literal"><span class="pre">uv_fs_req_cleanup()</span></tt> 来释放 libuv 内部使用的内存空间.</p>
 </div>
 <p class="rubric">uvcat/main.c - read callback</p>
 <div class="highlight-c"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
@@ -161,22 +159,18 @@ allocations in libuv.</p>
 <span class="p">}</span>
 </pre></div>
 </td></tr></table></div>
-<p>In the case of a read call, you should pass an <em>initialized</em> buffer which will
-be filled with data before the read callback is triggered.</p>
-<p>In the read callback the <tt class="docutils literal"><span class="pre">result</span></tt> field is 0 for EOF, -1 for error and the
-number of bytes read on success.</p>
-<p>Here you see a common pattern when writing asynchronous programs. The
-<tt class="docutils literal"><span class="pre">uv_fs_close()</span></tt> call is performed synchronously. <em>Usually tasks which are
-one-off, or are done as part of the startup or shutdown stage are performed
-synchronously, since we are interested in fast I/O when the program is going
-about its primary task and dealing with multiple I/O sources</em>. For solo tasks
-the performance difference usually is negligible and may lead to simpler code.</p>
-<p>We can generalize the pattern that the actual return value of the original
-system call is stored in <tt class="docutils literal"><span class="pre">uv_fs_t.result</span></tt>.</p>
-<p>Filesystem writing is similarly simple using <tt class="docutils literal"><span class="pre">uv_fs_write()</span></tt>.  <em>Your callback
-will be triggered after the write is complete</em>.  In our case the callback
-simply drives the next read. Thus read and write proceed in lockstep via
-callbacks.</p>
+<p>在调用 read 时, 你应该传递一个初始化的缓冲区, 在 read 回调函数被触发(调用之前),
+该缓冲区将会被填满数据.</p>
+<p>在 read 的回调函数中 <tt class="docutils literal"><span class="pre">result</span></tt> 如果是 0, 则读取文件时遇到了文件尾(EOF),
+-1 则代表出现了错误, 而正整数则是表示成功读取的字节数.</p>
+<p>此处给你展示了编写异步程序的通用模式, <tt class="docutils literal"><span class="pre">uv_fs_close()</span></tt> 是异步调用的.
+<em>通常如果任务是一次性的, 或者只在程序启动和关闭时被执行的话都可以采用同步方式执行,
+因为我们期望提高 I/O 效率, 采用异步编程时程序也可以做一些基本的任务并处理多路 I/O.</em>.
+对于单个任务而言性能差异可以忽略, 但是代码却能大大简化.</p>
+<p>我们可以总结出真正的系统调用返回值一般是存放在 <tt class="docutils literal"><span class="pre">uv_fs_t.result</span></tt>.</p>
+<p>写入文件与上述过程类似, 使用 <tt class="docutils literal"><span class="pre">uv_fs_write</span></tt> 即可.
+<em>write 的回调函数在写入完成时被调用.</em>.  在我们的程序中回调函数只是只是简单地发起了下一次读操作,
+因此, 读写操作会通过回调函数连续进行下去.</p>
 <p class="rubric">uvcat/main.c - write callback</p>
 <div class="highlight-c"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
@@ -199,18 +193,18 @@ callbacks.</p>
 </td></tr></table></div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">The error usually stored in <a class="reference external" href="http://man7.org/linux/man-pages/man3/errno.3.html">errno</a> can be accessed from
-<tt class="docutils literal"><span class="pre">uv_fs_t.errorno</span></tt>, but converted to a standard <tt class="docutils literal"><span class="pre">UV_*</span></tt> error code.  There is
-currently no way to directly extract a string error message from the
-<tt class="docutils literal"><span class="pre">errorno</span></tt> field.</p>
+<p class="last">错误值通常保存在 <a class="reference external" href="http://man7.org/linux/man-pages/man3/errno.3.html">errno</a> 并可以通过
+<tt class="docutils literal"><span class="pre">uv_fs_t.errorno</span></tt> 获取, 但是被转换成了标准的 <tt class="docutils literal"><span class="pre">UV_*</span></tt> 错误码.
+目前还没有方法直接从 <tt class="docutils literal"><span class="pre">errorno</span></tt> 解析得到错误消息的字符串表示.</p>
 </div>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p class="last">Due to the way filesystems and disk drives are configured for performance,
-a write that &#8216;succeeds&#8217; may not be committed to disk yet. See
-<tt class="docutils literal"><span class="pre">uv_fs_fsync</span></tt> for stronger guarantees.</p>
+<p class="last">由于文件系统和磁盘通常为了提高性能吞吐率而配置了缓冲区,
+libuv 中一次 &#8216;成功&#8217; 的写操作可能不会被立刻提交到磁盘上, 你可以通过 <tt class="docutils literal"><span class="pre">uv_fs_fsync</span></tt>
+来保证一致性.</p>
 </div>
-<p>We set the dominos rolling in <tt class="docutils literal"><span class="pre">main()</span></tt>:</p>
+<p>我们再来看看 <tt class="docutils literal"><span class="pre">main</span></tt> 函数中设置的多米诺骨牌吧(原作者意指在 main
+中设置回调函数后会触发整个程序开始执行):</p>
 <p class="rubric">uvcat/main.c</p>
 <div class="highlight-c"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
@@ -226,10 +220,9 @@ a write that &#8216;succeeds&#8217; may not be committed to disk yet. See
 </div>
 <div class="section" id="filesystem-operations">
 <h2>文件系统相关操作(Filesystem operations)<a class="headerlink" href="#filesystem-operations" title="Permalink to this headline">¶</a></h2>
-<p>All the standard filesystem operations like <tt class="docutils literal"><span class="pre">unlink</span></tt>, <tt class="docutils literal"><span class="pre">rmdir</span></tt>, <tt class="docutils literal"><span class="pre">stat</span></tt> are
-supported asynchronously and have intuitive argument order. They follow the
-same patterns as the read/write/open calls, returning the result in the
-<tt class="docutils literal"><span class="pre">uv_fs_t.result</span></tt> field. The full list:</p>
+<p>所有的标准文件系统操作, 例如 <tt class="docutils literal"><span class="pre">unlink</span></tt>, <tt class="docutils literal"><span class="pre">rmdir</span></tt>, <tt class="docutils literal"><span class="pre">stat</span></tt>
+都支持异步操作, 并且各个函数的参数非常直观. 他们和 read/write/open 的调用模式一致,
+返回值都存放在 <tt class="docutils literal"><span class="pre">uv_fs_t.result</span></tt> 域. 完整的列表如下:</p>
 <p class="rubric">Filesystem operations</p>
 <div class="highlight-c"><div class="highlight"><pre><span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="n">uv_fs_close</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="n">uv_file</span> <span class="n">file</span><span class="p">,</span>
     <span class="n">uv_fs_cb</span> <span class="n">cb</span><span class="p">);</span>
@@ -292,39 +285,36 @@ same patterns as the read/write/open calls, returning the result in the
     <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">new_path</span><span class="p">,</span> <span class="n">uv_fs_cb</span> <span class="n">cb</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>Callbacks should free the <tt class="docutils literal"><span class="pre">uv_fs_t</span></tt> argument using <tt class="docutils literal"><span class="pre">uv_fs_req_cleanup()</span></tt>.</p>
+<p>回调函数中应该调用 <tt class="docutils literal"><span class="pre">uv_fs_req_cleanup()</span></tt> 函数来释放 <tt class="docutils literal"><span class="pre">uv_fs_t</span></tt>
+参数占用的内存.</p>
 </div>
 <div class="section" id="buffers-and-streams">
 <span id="id3"></span><h2>缓冲区与流(Buffers and Streams)<a class="headerlink" href="#buffers-and-streams" title="Permalink to this headline">¶</a></h2>
-<p>The basic I/O tool in libuv is the stream (<tt class="docutils literal"><span class="pre">uv_stream_t</span></tt>). TCP sockets, UDP
-sockets, and pipes for file I/O and IPC are all treated as stream subclasses.</p>
-<p>Streams are initialized using custom functions for each subclass, then operated
-upon using</p>
+<p>libuv 中基本的 I/O 工具是流(<tt class="docutils literal"><span class="pre">uv_stream_t</span></tt>). TCP 套接字, UDP 套接字, 文件, 管道,
+和进程间通信都可以作为 <tt class="docutils literal"><span class="pre">流</span></tt> 的子类.</p>
+<p><tt class="docutils literal"><span class="pre">流</span></tt> (Streams) 通过每个子类特定的函数来初始化, 然后可以通过如下函数进行操作:</p>
 <div class="highlight-c"><div class="highlight"><pre><span class="kt">int</span> <span class="n">uv_read_start</span><span class="p">(</span><span class="n">uv_stream_t</span><span class="o">*</span><span class="p">,</span> <span class="n">uv_alloc_cb</span> <span class="n">alloc_cb</span><span class="p">,</span> <span class="n">uv_read_cb</span> <span class="n">read_cb</span><span class="p">);</span>
 <span class="kt">int</span> <span class="n">uv_read_stop</span><span class="p">(</span><span class="n">uv_stream_t</span><span class="o">*</span><span class="p">);</span>
 <span class="kt">int</span> <span class="n">uv_write</span><span class="p">(</span><span class="n">uv_write_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="n">uv_stream_t</span><span class="o">*</span> <span class="n">handle</span><span class="p">,</span>
             <span class="n">uv_buf_t</span> <span class="n">bufs</span><span class="p">[],</span> <span class="kt">int</span> <span class="n">bufcnt</span><span class="p">,</span> <span class="n">uv_write_cb</span> <span class="n">cb</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>The stream based functions are simpler to use than the filesystem ones and
-libuv will automatically keep reading from a stream when <tt class="docutils literal"><span class="pre">uv_read_start()</span></tt> is
-called once, until <tt class="docutils literal"><span class="pre">uv_read_stop()</span></tt> is called.</p>
-<p>The discrete unit of data is the buffer &#8211; <tt class="docutils literal"><span class="pre">uv_buf_t</span></tt>. This is simply
-a collection of a pointer to bytes (<tt class="docutils literal"><span class="pre">uv_buf_t.base</span></tt>) and the length
-(<tt class="docutils literal"><span class="pre">uv_buf_t.len</span></tt>). The <tt class="docutils literal"><span class="pre">uv_buf_t</span></tt> is lightweight and passed around by value.
-What does require management is the actual bytes, which have to be allocated
-and freed by the application.</p>
-<p>To demonstrate streams we will need to use <tt class="docutils literal"><span class="pre">uv_pipe_t</span></tt>. This allows streaming
-local files <a class="footnote-reference" href="#id6" id="id4">[2]</a>. Here is a simple tee utility using libuv.  Doing all operations
-asynchronously shows the power of evented I/O. The two writes won&#8217;t block each
-other, but we&#8217;ve to be careful to copy over the buffer data to ensure we don&#8217;t
-free a buffer until it has been written.</p>
-<p>The program is to be executed as:</p>
+<p>基于流的函数比上面介绍的文件系统相关的函数更容易使用, libuv 在调用 <tt class="docutils literal"><span class="pre">uv_read_start</span></tt>
+后会自动从流中读取数据, 直到调用了 <tt class="docutils literal"><span class="pre">uv_read_stop</span></tt>.</p>
+<p>用于保存数据的单元被抽象成了 buffer 结构 &#8211; <tt class="docutils literal"><span class="pre">uv_buf_t</span></tt>.
+它其实只保存了指向真实数据的指针(<tt class="docutils literal"><span class="pre">uv_buf_t.base</span></tt>) 以及真实数据的长度
+(<tt class="docutils literal"><span class="pre">uv_buf_t.len</span></tt>). <tt class="docutils literal"><span class="pre">uv_buf_t</span></tt> 本身是轻量级的, 通常作为值被传递给函数,
+真正需要进行内存管理的是 buffer 结构中的指针所指向的真实数据, 通常由应用程序申请分配并释放.</p>
+<p>为了示范流的用法, 我们借助了(管道) <tt class="docutils literal"><span class="pre">uv_pipe_t</span></tt> ,
+这使得我们把本地文件变成了流[#]_.  下面是利用 libuv 实现的一个简单的 <tt class="docutils literal"><span class="pre">tee</span></tt> .
+将所有的操作变成了异步方式后, 事件 I/O 的强大能力便展现出来.
+两个写操作并不会阻塞对方, 但是我们必须小心地拷贝数据至缓冲区,
+并确保在写入数据之前缓冲区不被释放.</p>
+<p>该程序按照如下方式执行:</p>
 <div class="highlight-c"><div class="highlight"><pre><span class="p">.</span><span class="o">/</span><span class="n">uvtee</span> <span class="o">&lt;</span><span class="n">output_file</span><span class="o">&gt;</span>
 </pre></div>
 </div>
-<p>We start of opening pipes on the files we require. libuv pipes to a file are
-opened as bidirectional by default.</p>
+<p>我们在指定的文件上打开了一个管道, libuv 的文件管道默认是双向打开的.</p>
 <p class="rubric">uvtee/main.c - read on pipes</p>
 <div class="highlight-c"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
@@ -365,12 +355,12 @@ opened as bidirectional by default.</p>
 <span class="p">}</span>
 </pre></div>
 </td></tr></table></div>
-<p>The third argument of <tt class="docutils literal"><span class="pre">uv_pipe_init()</span></tt> should be set to 1 for IPC using named
-pipes. This is covered in <a class="reference internal" href="processes.html"><em>进程</em></a>. The <tt class="docutils literal"><span class="pre">uv_pipe_open()</span></tt> call
-associates the file descriptor with the file.</p>
-<p>We start monitoring <tt class="docutils literal"><span class="pre">stdin</span></tt>. The <tt class="docutils literal"><span class="pre">alloc_buffer</span></tt> callback is invoked as new
-buffers are required to hold incoming data. <tt class="docutils literal"><span class="pre">read_stdin</span></tt> will be called with
-these buffers.</p>
+<p>若是 IPC 或命名管道, <tt class="docutils literal"><span class="pre">uv_pipe_init()</span></tt> 的第三个参数应该设置为 1, 我们会在
+<a class="reference internal" href="processes.html"><em>进程</em></a> 一节对此作出详细解释. 调用 <tt class="docutils literal"><span class="pre">uv_pipe_open()</span></tt>
+将文件描述符和文件关联在了一起.</p>
+<p>我们开始监控标准输入 <tt class="docutils literal"><span class="pre">stdin</span></tt>. 回调函数 <tt class="docutils literal"><span class="pre">alloc_buffer</span></tt>
+为程序开辟了一个新的缓冲区来容纳新到来的数据. <tt class="docutils literal"><span class="pre">read_stdin</span></tt> 也会被调用,
+并且 <tt class="docutils literal"><span class="pre">uv_buf_t</span></tt> 作为调用参数.</p>
 <p class="rubric">uvtee/main.c - reading buffers</p>
 <div class="highlight-c"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
@@ -415,15 +405,14 @@ these buffers.</p>
 <span class="p">}</span>
 </pre></div>
 </td></tr></table></div>
-<p>The standard <tt class="docutils literal"><span class="pre">malloc</span></tt> is sufficient here, but you can use any memory allocation
-scheme. For example, node.js uses its own slab allocator which associates
-buffers with V8 objects.</p>
-<p>The read callback <tt class="docutils literal"><span class="pre">nread</span></tt> parameter is -1 on any error. This error might be
-EOF, in which case we close all the streams, using the generic close function
-<tt class="docutils literal"><span class="pre">uv_close()</span></tt> which deals with the handle based on its internal type.
-Otherwise <tt class="docutils literal"><span class="pre">nread</span></tt> is a non-negative number and we can attempt to write that
-many bytes to the output streams. Finally remember that buffer allocation and
-deallocation is application responsibility, so we free the data.</p>
+<p>此处使用标准的 <tt class="docutils literal"><span class="pre">malloc</span></tt> 已经可以足够, 但是你也可以指定其他的内存分配策略.
+例如, node.js 使用自己特定的 slab 分配器.</p>
+<p>在任何情况下出错, read 回调函数 <tt class="docutils literal"><span class="pre">nread</span></tt> 参数都为 -1. 出错原因可能是
+EOF(遇到文件尾), 在此种情况下我们使用 &#8216;&#8217;uv_close()&#8217;&#8217; 函数关闭所有的流,
+<tt class="docutils literal"><span class="pre">uv_close()</span></tt> 会根据所传递进来句柄的内部类型来自动处理. 如果没有出现错误,
+<tt class="docutils literal"><span class="pre">nread</span></tt> 是一个非负数, 意味着我们可以向输出流中写入 <tt class="docutils literal"><span class="pre">nread</span></tt> 字节的数据.
+最后记住一点, 缓冲区 buffer 的分配和释放是由应用程序负责的,
+所以记得释放不再使用的内存空间.</p>
 <p class="rubric">uvtee/main.c - Write to pipe</p>
 <div class="highlight-c"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
@@ -476,10 +465,10 @@ deallocation is application responsibility, so we free the data.</p>
 <span class="p">}</span>
 </pre></div>
 </td></tr></table></div>
-<p><tt class="docutils literal"><span class="pre">write_data()</span></tt> makes a copy of the buffer obtained from read. Again, this
-buffer does not get passed through to the callback trigged on write completion.
-To get around this we wrap a write request and a buffer in <tt class="docutils literal"><span class="pre">write_req_t</span></tt> and
-unwrap it in the callbacks.</p>
+<p><tt class="docutils literal"><span class="pre">write_data()</span></tt> 将读取的数据拷贝一份至缓冲区 <tt class="docutils literal"><span class="pre">req-&gt;buf.base</span></tt>, 同样地,
+当 write 完成后回调函数被调用时, 该缓冲区也并不会被传递到回调函数中, 所以,
+为了绕过这一缺点, 我们将写请求和缓冲区封装在 <tt class="docutils literal"><span class="pre">write_req_t</span></tt> 结构体中,
+然后在回调函数中解封该结构体来获取相关参数.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
 <p>If your program is meant to be used with other programs it may knowingly or
@@ -493,17 +482,16 @@ receiving a SIGPIPE</a>. It is a good idea to insert:</p>
 </div>
 <div class="section" id="file-change-events">
 <h2>文件变更事件(File change events)<a class="headerlink" href="#file-change-events" title="Permalink to this headline">¶</a></h2>
-<p>All modern operating systems provide APIs to put watches on individual files or
-directories and be informed when the files are modified. libuv wraps common
-file change notification libraries <a class="footnote-reference" href="#fsnotify" id="id5">[1]</a>. This is one of the more
-inconsistent parts of libuv. File change notification systems are themselves
-extremely varied across platforms so getting everything working everywhere is
-difficult. To demonstrate, I&#8217;m going to build a simple utility which runs
-a command whenever any of the watched files change:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="p">.</span><span class="o">/</span><span class="n">onchange</span> <span class="o">&lt;</span><span class="n">command</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">file1</span><span class="o">&gt;</span> <span class="p">[</span><span class="n">file2</span><span class="p">]</span> <span class="p">...</span>
-</pre></div>
-</div>
-<p>The file change notification is started using <tt class="docutils literal"><span class="pre">uv_fs_event_init()</span></tt>:</p>
+<p>现代操作系统都提供了 API 用来在单独的文件或文件夹上设置监视器,
+当文件被修改时应用程序会得到通知, libuv 也封装了常用的文件变更通知程序库 <a class="footnote-reference" href="#fsnotify" id="id4">[1]</a>.
+这是 libuv 中最不一致的部分了,
+文件变更通知系统本身在不同的系统中实现起来差别非常大,
+因此让所有的事情在每个平台上都完美地工作将变得异常困难,
+为了给出一个示例，我写了一个简单的工具, 该函数按照如下命令行运行，
+并监视指定的文件.</p>
+<blockquote>
+<div>./onchange &lt;command&gt; &lt;file1&gt; [file2] ...</div></blockquote>
+<p>文件变更通知通过 <tt class="docutils literal"><span class="pre">uv_fs_event_init()</span></tt> 启动:</p>
 <p class="rubric">onchange/main.c - The setup</p>
 <div class="highlight-c"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
@@ -514,30 +502,37 @@ a command whenever any of the watched files change:</p>
 </span>    <span class="p">}</span>
 </pre></div>
 </td></tr></table></div>
-<p>The third argument is the actual file or directory to monitor. The last
-argument, <tt class="docutils literal"><span class="pre">flags</span></tt>, can be:</p>
+<p>第三个参数是实际监控的文件或者文件夹, 最后一个参数 <tt class="docutils literal"><span class="pre">flags</span></tt> 可取值如下:</p>
 <div class="highlight-c"><div class="highlight"><pre> <span class="n">UV_FS_EVENT_WATCH_ENTRY</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
   <span class="n">UV_FS_EVENT_STAT</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
   <span class="n">UV_FS_EVENT_RECURSIVE</span> <span class="o">=</span> <span class="mi">3</span>
 </pre></div>
 </div>
-<p><tt class="docutils literal"><span class="pre">UV_FS_EVENT_WATCH_ENTRY</span></tt> and <tt class="docutils literal"><span class="pre">UV_FS_EVENT_STAT</span></tt> don&#8217;t do anything (yet).
-<tt class="docutils literal"><span class="pre">UV_FS_EVENT_RECURSIVE</span></tt> will start watching subdirectories as well on
-supported platforms.</p>
-<p>The callback will receive the following arguments:</p>
+<p>若设置 <tt class="docutils literal"><span class="pre">UV_FS_EVENT_WATCH_ENTRY</span></tt> 和 <tt class="docutils literal"><span class="pre">UV_FS_EVENT_STAT</span></tt>
+不做任何事情(目前).
+设置了 <tt class="docutils literal"><span class="pre">UV_FS_EVENT_RECURSIVE</span></tt> 将会监视子文件夹(需 libuv 支持).</p>
+<p>回调函数将接受以下参数:</p>
 <blockquote>
-<div><ol class="arabic simple">
-<li><tt class="docutils literal"><span class="pre">uv_fs_event_t</span> <span class="pre">*handle</span></tt> - The watcher. The <tt class="docutils literal"><span class="pre">filename</span></tt> field of the watcher
-is the file on which the watch was set.</li>
-<li><tt class="docutils literal"><span class="pre">const</span> <span class="pre">char</span> <span class="pre">*filename</span></tt> - If a directory is being monitored, this is the
-file which was changed. Only non-<tt class="docutils literal"><span class="pre">null</span></tt> on Linux and Windows. May be <tt class="docutils literal"><span class="pre">null</span></tt>
-even on those platforms.</li>
-<li><tt class="docutils literal"><span class="pre">int</span> <span class="pre">flags</span></tt> - one of <tt class="docutils literal"><span class="pre">UV_RENAME</span></tt> or <tt class="docutils literal"><span class="pre">UV_CHANGE</span></tt>.</li>
-<li><tt class="docutils literal"><span class="pre">int</span> <span class="pre">status</span></tt> - Currently 0.</li>
+<div><ol class="arabic">
+<li><dl class="first docutils">
+<dt><tt class="docutils literal"><span class="pre">uv_fs_event_t</span> <span class="pre">*handle</span></tt> - 监视器. <tt class="docutils literal"><span class="pre">filename</span></tt></dt>
+<dd><p class="first last">字段是该监视器需要监视的文件.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><tt class="docutils literal"><span class="pre">const</span> <span class="pre">char</span> <span class="pre">*filename</span></tt> - 如果监视目录, 则该参数指明该目录中发生了变更的文件,</dt>
+<dd><p class="first last">在 Linux 和 Windows 平台上可以是非 <tt class="docutils literal"><span class="pre">null</span></tt>.</p>
+</dd>
+</dl>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">int</span> <span class="pre">flags</span></tt> - <tt class="docutils literal"><span class="pre">UV_RENAME</span></tt> 或 <tt class="docutils literal"><span class="pre">UV_CHANGE</span></tt>.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">int</span> <span class="pre">status</span></tt> - 目前为 0.</p>
+</li>
 </ol>
 </div></blockquote>
-<p>In our example we simply print the arguments and run the command using
-<tt class="docutils literal"><span class="pre">system()</span></tt>.</p>
+<p>我们的例子只是简单地打印出参数, 并通过 <tt class="docutils literal"><span class="pre">system</span></tt> 函数运行指定命令.</p>
 <p class="rubric">onchange/main.c - file change notification callback</p>
 <div class="highlight-c"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
@@ -564,14 +559,14 @@ even on those platforms.</li>
 <table class="docutils footnote" frame="void" id="fsnotify" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id5">[1]</a></td><td>inotify on Linux, FSEvents on Darwin, kqueue on BSDs,
+<tr><td class="label"><a class="fn-backref" href="#id4">[1]</a></td><td>inotify on Linux, FSEvents on Darwin, kqueue on BSDs,
 ReadDirectoryChangesW on Windows, event ports on Solaris, unsupported on Cygwin</td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id6" rules="none">
+<table class="docutils footnote" frame="void" id="id5" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id4">[2]</a></td><td>see <a class="reference internal" href="processes.html#pipes"><em>管道(Pipes)</em></a></td></tr>
+<tr><td class="label">[2]</td><td>参考 <a class="reference internal" href="processes.html#pipes"><em>管道(Pipes)</em></a></td></tr>
 </tbody>
 </table>
 </div>
@@ -582,7 +577,7 @@ ReadDirectoryChangesW on Windows, event ports on Solaris, unsupported on Cygwin<
       <div class="bottomnav">
       
         <p>
-        «&#160;&#160;<a href="basics.html">libuv 基础</a>
+        «&#160;&#160;<a href="basics.html">Libuv 基础</a>
         &#160;&#160;::&#160;&#160;
         <a class="uplink" href="index.html">Contents</a>
         &#160;&#160;::&#160;&#160;
