@@ -1,34 +1,32 @@
 网络
 ====
 
-Networking in libuv is not much different from directly using the BSD socket
-interface, some things are easier, all are non-blocking, but the concepts stay
-the same. In addition libuv offers utility functions to abstract the annoying,
-repetitive and low-level tasks like setting up sockets using the BSD socket
-structures, DNS lookup, and tweaking various socket parameters.
+libuv 的网络接口与 BSD 套接字接口存在很大的不同, 某些事情在 libuv 下变得更简单了,
+并且所有接口都是都是非阻塞的, 但是原则上还是一致的.
+另外 libuv 也提供了一些工具类的函数抽象了一些让人生厌的,
+重复而底层的任务,比如使用 BSD 套接字结构来建立套接字, DNS 查询,
+或者其他各种参数的设置.
 
-The ``uv_tcp_t`` and ``uv_udp_t`` structures are used for network I/O.
+libuv 中在网络 I/O 中使用了 ``uv_tcp_t`` 和 ``uv_udp_t`` 两个结构体.
 
 TCP
 ---
 
-TCP is a connection oriented, stream protocol and is therefore based on the
-libuv streams infrastructure.
+TCP 是一种面向连接的流式协议, 因此是基于 libuv 的流式基础架构上的.
 
 服务器(Server)
 ++++++++++++++
 
-Server sockets proceed by:
+服务器端的 sockets 处理流程如下:
 
-1. ``uv_tcp_init`` the TCP watcher.
-2. ``uv_tcp_bind`` it.
-3. Call ``uv_listen`` on the watcher to have a callback invoked whenever a new
-   connection is established by a client.
-4. Use ``uv_accept`` to accept the connection.
-5. Use :ref:`stream operations <buffers-and-streams>` to communicate with the
-   client.
+1. ``uv_tcp_init`` 初始化 TCP 监视器.
+2. ``uv_tcp_bind`` 绑定.
+3. 在指定的监视器上调用 ``uv_listen`` 来设置回调函数, 当有新的客户端连接到来时,
+   libuv 就会调用设置的回调函数.
+4. ``uv_accept`` 接受连接.
+5. 使用 :ref:`stream operations <buffers-and-streams>` 与客户端进行通信.
 
-Here is a simple echo server
+以下是一个简单的 echo 服务器的例子:
 
 .. rubric:: tcp-echo-server/main.c - The listen socket
 .. literalinclude:: ../code/tcp-echo-server/main.c
@@ -36,22 +34,21 @@ Here is a simple echo server
     :lines: 50-
     :emphasize-lines: 4-5,7-9
 
-You can see the utility function ``uv_ip4_addr`` being used to convert from
-a human readable IP address, port pair to the sockaddr_in structure required by
-the BSD socket APIs. The reverse can be obtained using ``uv_ip4_name``.
+你可以看到辅助函数 ``uv_ip4_addr`` 用来将人为可读的字符串类型的 IP
+地址和端口号转换成 BSD 套接字 API 所需要的 ``struct sockaddr_in`` 类型的结构.
+逆变换可以使用 ``uv_ip4_name`` 来完成.
 
 .. NOTE::
 
-    In case it wasn't obvious there are ``uv_ip6_*`` analogues for the ip4
-    functions.
+    对于 IPv6 来说应该使用 ``uv_ip6_*`` 形式的函数.
 
-Most of the setup functions are normal functions since its all CPU-bound.
-``uv_listen`` is where we return to libuv's callback style. The second
-arguments is the backlog queue -- the maximum length of queued connections.
+大部分的设置(setup)函数都是普通函数, 因为他们都是 ``计算密集型(CPU-bound)``,
+直到调用了 ``uv_listen`` 我们才回到 libuv 中回调函数风格.
+``uv_listen`` 的第二个参数 backlog 队列长度 -- 即连接队列最大长度.
 
-When a connection is initiated by clients, the callback is required to set up
-a watcher for the client socket and associate the watcher using ``uv_accept``.
-In this case we also establish interest in reading from this stream.
+当客户端发起了新的连接时, 回调函数需要为客户端套接字设置一个监视器,
+并调用 ``uv_accept`` 函数将客户端套接字与新的监视器在关联一起.
+在例子中我们将从流中读取数据.
 
 .. rubric:: tcp-echo-server/main.c - Accepting the client
 .. literalinclude:: ../code/tcp-echo-server/main.c
@@ -59,17 +56,16 @@ In this case we also establish interest in reading from this stream.
     :lines: 34-48
     :emphasize-lines: 9-10
 
-The remaining set of functions is very similar to the streams example and can
-be found in the code. Just remember to call ``uv_close`` when the socket isn't
-required. This can be done even in the ``uv_listen`` callback if you are not
-interested in accepting the connection.
+剩余部分的函数与上一节流式例子中的代码相似, 你可以在例子程序中找到具体代码,
+如果套接字不再使用记得调用 ``uv_close`` 关闭该套接字.
+如果你不再接受连接, 你可以在 ``uv_listen`` 的回调函数中关闭套接字.
 
 客户端(Client)
 ++++++++++++++
 
-Where you do bind/listen/accept, on the client side its simply a matter of
-calling ``uv_tcp_connect``. The same ``uv_connect_cb`` style callback of
-``uv_listen`` is used by ``uv_tcp_connect``. Try::
+在服务器端你需要调用 bind/listen/accept, 而在客户端你只需要调用 ``uv_tcp_connect``.
+``uv_tcp_connect`` 使用了与 ``uv_listen`` 风格相似的回调函数 ``uv_connect_cb``
+如下::
 
     uv_tcp_t socket;
     uv_tcp_init(loop, &socket);
@@ -80,23 +76,20 @@ calling ``uv_tcp_connect``. The same ``uv_connect_cb`` style callback of
 
     uv_tcp_connect(&connect, &socket, dest, on_connect);
 
-where ``on_connect`` will be called after the connection is established.
+建立连接后会调用 ``on_connect``.
 
 UDP
 ---
 
-The `User Datagram Protocol`_ offers connectionless, unreliable network
-communication. Hence libuv doesn't offer a stream. Instead libuv provides
-non-blocking UDP support via the `uv_udp_t` (for receiving) and `uv_udp_send_t`
-(for sending) structures and related functions.  That said, the actual API for
-reading/writing is very similar to normal stream reads. To look at how UDP can
-be used, the example shows the first stage of obtaining an IP address from
-a `DHCP`_ server -- DHCP Discover.
+`User Datagram Protocol`_ 提供了无连接, 不可靠网络通信协议, 因此 libuv
+并不提供流式 UDP 服务, 而是通过 ``uv_udp_t`` 结构体(用于接收)和
+`uv_udp_send_t` 结构体(用于发送)以及相关的函数给开发人员提供了非阻塞的 UDP
+服务. 所以, 真正读写 UDP 的函数与普通的流式读写非常相似.为了示范如何使用 UDP,
+下面提供了一个简单的例子用来从 `DHCP`_ 获取 IP 地址. -- DHCP 发现.
 
 .. note::
 
-    You will have to run `udp-dhcp` as **root** since it uses well known port
-    numbers below 1024.
+    你应该以 **root** 用户运行 ``udp-dhcp``, 因为该程序使用了端口号低于 1024 的端口.
 
 .. rubric:: udp-dhcp/main.c - Setup and send UDP packets
 .. literalinclude:: ../code/udp-dhcp/main.c
@@ -106,25 +99,21 @@ a `DHCP`_ server -- DHCP Discover.
 
 .. note::
 
-    The IP address ``0.0.0.0`` is used to bind to all interfaces. The IP
-    address ``255.255.255.255`` is a broadcast address meaning that packets
-    will be sent to all interfaces on the subnet.  port ``0`` means that the OS
-    randomly assigns a port.
+    ``0.0.0.0`` 地址可以绑定本机所有网口. ``255.255.255.255`` 是广播地址,
+    意味着网络包可以发送给子网中所有网口, 端口 ``0`` 说明操作系统可以任意指定端口进行绑定.
 
-First we setup the receiving socket to bind on all interfaces on port 68 (DHCP
-client) and start a read watcher on it. Then we setup a similar send socket and
-use ``uv_udp_send`` to send a *broadcast message* on port 67 (DHCP server).
+首先我们在 68 号端口上设置了绑定本机所有网口的接收套接字(DHCP 客户端),
+并且设置了读监视器. 然后我们利用相同的方法设置了一个用于发送消息的套接字.
+并使用 ``uv_udp_send`` 在 67 号端口上(DHCP 服务器)发送 *广播消息*.
 
-It is **necessary** to set the broadcast flag, otherwise you will get an
-``EACCES`` error [#]_. The exact message being sent is irrelevant to this book
-and you can study the code if you are interested. As usual the read and write
-callbacks will receive a status code of -1 if something went wrong.
+设置广播标志也是 **必要** 的, 不然你会得到 ``EACCES`` 错误 [#]_.
+发送的具体消息与本书无关, 如果你对此感兴趣, 可以参考源码. 若出错,
+则读写回调函数会收到 -1 状态码.
 
-Since UDP sockets are not connected to a particular peer, the read callback
-receives an extra parameter about the sender of the packet. The ``flags``
-parameter may be ``UV_UDP_PARTIAL`` if the buffer provided by your allocator
-was not large enough to hold the data. *In this case the OS will discard the
-data that could not fit* (That's UDP for you!).
+由于 UDP 套接字并不和特定的对等方保持连接,
+所以 read 回调函数中将会收到用于标识发送者的额外信息. 如果缓冲区是由你自己的分配的,
+并且不够容纳接收的数据, 则``flags`` 标志位可能是 ``UV_UDP_PARTIAL``.
+*在这种情况下, 操作系统会丢弃不能容纳的数据.* (这也是 UDP 为你提供的特性).
 
 .. rubric:: udp-dhcp/main.c - Reading packets
 .. literalinclude:: ../code/udp-dhcp/main.c
@@ -138,38 +127,34 @@ UDP 选项(UDP Options)
 生存时间TTL(Time-to-live)
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The TTL of packets sent on the socket can be changed using ``uv_udp_set_ttl``.
+可以通过 ``uv_udp_set_ttl`` 来设置网络数据包的生存时间(TTL).
 
 仅使用 IPv6 协议
 ~~~~~~~~~~~~~~~~
 
-IPv6 sockets can be used for both IPv4 and IPv6 communication. If you want to
-restrict the socket to IPv6 only, pass the ``UV_UDP_IPV6ONLY`` flag to
-``uv_udp_bind6`` [#]_.
+IPv6 套接字可以同时在 IPv4 和 IPv6 协议下进行通信. 如果你只想使用 IPv6
+套接字, 在调用 ``uv_udp_bind6`` [#]_ 时请传递 ``UV_UDP_IPV6ONLY`` 参数.
 
 多播(Multicast)
 ~~~~~~~~~~~~~~~
 
-A socket can (un)subscribe to a multicast group using:
+套接字可以使用如下函数订阅(取消订阅)一个多播组:
 
 .. literalinclude:: ../libuv/include/uv.h
     :lines: 796-798
 
-where ``membership`` is ``UV_JOIN_GROUP`` or ``UV_LEAVE_GROUP``.
+``membership`` 取值可以是 ``UV_JOIN_GROUP`` 或 ``UV_LEAVE_GROUP``.
 
-Local loopback of multicast packets is enabled by default [#]_, use
-``uv_udp_set_multicast_loop`` to switch it off.
+多播包的本地回路是默认开启的 [#]_, 可以使用 ``uv_udp_set_multicast_loop`` 来开启/关闭该特性.
 
-The packet time-to-live for multicast packets can be changed using
-``uv_udp_set_multicast_ttl``.
+多播包的生存时间可以使用 ``uv_udp_set_multicast_ttl`` 来设置.
 
 DNS 查询(Querying DNS)
 ----------------------
 
-libuv provides asynchronous DNS resolution. For this it provides its own
-``getaddrinfo`` replacement [#]_. In the callback you can
-perform normal socket operations on the retrieved addresses. Let's connect to
-Freenode to see an example of DNS resolution.
+libuv 提供了异步解析 DNS 的功能, 用于替代 ``getaddrinfo`` [#]_.
+在回调函数中, 你可以在获得的 IP 地址上执行普通的套接字操作.
+让我们通过一个简单的 DNS 解析的例子来看看怎么连接 ``Freenode`` 吧:
 
 .. rubric:: dns/main.c
 .. literalinclude:: ../code/dns/main.c
@@ -177,14 +162,12 @@ Freenode to see an example of DNS resolution.
     :lines: 61-
     :emphasize-lines: 12
 
-If ``uv_getaddrinfo`` returns non-zero, something went wrong in the setup and
-your callback won't be invoked at all. All arguments can be freed immediately
-after ``uv_getaddrinfo`` returns. The `hostname`, `servname` and `hints`
-structures are documented in `the getaddrinfo man page <getaddrinfo>`_.
+如果 ``uv_getaddrinfo`` 返回非零, 表示在建立连接时出错, 你设置的回调函数不会被调用,
+所有的参数将会在 ``uv_getaddrinfo`` 返回后被立即释放. 有关 `hostname`, `servname` 和  `hints`
+结构体的文档可以在 getaddrinfo_ 帮助页面中找到.
 
-In the resolver callback, you can pick any IP from the linked list of ``struct
-addrinfo(s)``. This also demonstrates ``uv_tcp_connect``. It is necessary to
-call ``uv_freeaddrinfo`` in the callback.
+在解析回调函数中, 你可以在 ``struct addrinfo(s)`` 结构的链表中任取一个 IP.
+这个例子也演示了如何使用 ``uv_tcp_connect``. 你在回调函数中有必要调用 ``uv_freeaddrinfo``.
 
 .. rubric:: dns/main.c
 .. literalinclude:: ../code/dns/main.c
@@ -195,19 +178,17 @@ call ``uv_freeaddrinfo`` in the callback.
 网络接口(Network interfaces)
 ----------------------------
 
-Information about the system's network interfaces can be obtained through libuv
-using ``uv_interface_addresses``. This simple program just prints out all the
-interface details so you get an idea of the fields that are available. This is
-useful to allow your service to bind to IP addresses when it starts.
+系统网络接口信息可以通过调用 ``uv_interface_addresses`` 来获得,
+下面的示例程序将打印出机器上所有网络接口的细节信息,
+因此你可以获知网口的哪些域的信息是可以得到的, 这在你的程序启动时绑定 IP 很方便.
 
 .. rubric:: interfaces/main.c
 .. literalinclude:: ../code/interfaces/main.c
     :linenos:
     :emphasize-lines: 9,17
 
-``is_internal`` is true for loopback interfaces. Note that if a physical
-interface has multiple IPv4/IPv6 addresses, the name will be reported multiple
-times, with each address being reported once.
+``is_internal`` 对于回环接口来说为真. 请注意如果物理网口使用了多个
+IPv4/IPv6 地址, 那么它的名称将会被多次报告, 因为每个地址都会报告一次.
 
 .. _c-ares: http://c-ares.haxx.se
 .. _getaddrinfo: http://www.kernel.org/doc/man-pages/online/pages/man3/getaddrinfo.3.html
@@ -218,8 +199,7 @@ times, with each address being reported once.
 ----
 
 .. [#] http://beej.us/guide/bgnet/output/html/multipage/advanced.html#broadcast
-.. [#] on Windows only supported on Windows Vista and later.
+.. [#] 在 Windows 平台上仅支持 Windows Vista 以上的版本.
 .. [#] http://www.tldp.org/HOWTO/Multicast-HOWTO-6.html#ss6.1
-.. [#] libuv use the system ``getaddrinfo`` in the libuv threadpool. libuv
-    v0.8.0 and earlier also included c-ares_ as an alternative, but this has been
-    removed in v0.9.0.
+.. [#] libuv 使用线程池调用系统的 ``getaddrinfo`` 函数. libuv
+    v0.8.0 及以前的版本引入 c-ares_ 作为异步 DNS 解析器, 但是在 v0.9.0中已经移除 c-ares_ 相关依赖了.
