@@ -187,7 +187,7 @@ libuv 提供了异步解析 DNS 的功能, 用于替代 ``getaddrinfo`` [#]_.
     :linenos:
     :emphasize-lines: 9,17
 
-``is_internal`` 对于回环接口来说为真. 请注意如果物理网口使用了多个
+``is_internal`` 对于回环接口来说为 true. 请注意如果物理网口使用了多个
 IPv4/IPv6 地址, 那么它的名称将会被多次报告, 因为每个地址都会报告一次.
 
 .. _c-ares: http://c-ares.haxx.se
