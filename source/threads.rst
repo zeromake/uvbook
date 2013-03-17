@@ -1,31 +1,28 @@
 线程
 ====
 
-Wait a minute? Why are we on threads? Aren't event loops supposed to be **the
-way** to do *web-scale programming*? Well no. Threads are still the medium in
-which the processor does its job, and threads are mighty useful sometimes, even
-though you might have to wade through synchronization primitives.
+等等, 我们为什么会提到线程? 事件循环不应该本身就可以应对高并发网络编程么?
+不一定, 线程仍然可以在 CPU 处理任务时作为程序代码的中坚力量来执行子任务,
+即使在编程多线程程序中你必须编写大量同步原语, 但它们在很多时候还是可以派上大用场的.
 
+线程通常用于内部模拟系统调用的异步特性<?>(原文:
 Threads are used internally to fake the asynchronous nature of all the system
-calls. libuv also uses threads to allow you, the application, to perform a task
-asynchronously that is actually blocking, by spawning a thread and collecting
-the result when it is done.
+calls). libuv 同样可以利用线程让你异步完成一项本可能阻塞的任务, 通常是创建子线程,
+在子线程完成任务后获取其结果.
 
-Today there are two predominant thread libraries. The Windows threads
-implementation and `pthreads`_. libuv's thread API is analogous to
-the pthread API and often has similar semantics.
+目前存在两个主流的线程库, Windows 线程库实现和 `pthreads`_. libuv 的线程库 API 与
+pthread API 相似, 因此两者具有相同的语义.
 
-A notable aspect of libuv's thread facilities is that it is a self contained
-section within libuv. Whereas other features intimately depend on the event
+值得注意的是, libuv 中的线程库是自包含的. 而其他特性都直接依赖事件循环或者回调.
 loop and callback principles, threads are complete agnostic, they block as
 required, signal errors directly via return values and, as shown in the
 :ref:`first example <thread-create-example>`, don't even require a running
 event loop.
 
-libuv's thread API is also very limited since the semantics and syntax of
-threads are different on all platforms, with different levels of completeness.
+libuv 的线程 API 也非常有限, 因为不同平台上线程库的语义和语法也不同,
+API 功能的完善程度也不尽相同.
 
-This chapter makes the following assumption: **There is only one event loop,
+本节This chapter makes the following assumption: **There is only one event loop,
 running in one thread (the main thread)**. No other thread interacts
 with the event loop (except using ``uv_async_send``). :doc:`multiple` covers
 running event loops in different threads and managing them.
@@ -33,8 +30,8 @@ running event loops in different threads and managing them.
 线程核心操作(Core thread operations)
 ------------------------------------
 
-There isn't much here, you just start a thread using ``uv_thread_create()`` and
-wait for it to close using ``uv_thread_join()``.
+下面的例子程序并没有太多代码, 只是通过 ``uv_thread_create`` 创建了线程, 然后调用
+``uv_thread_join`` 等待线程退出.
 
 .. _thread-create-example:
 
@@ -46,7 +43,7 @@ wait for it to close using ``uv_thread_join()``.
 
 .. tip::
 
-    ``uv_thread_t`` is just an alias for ``pthread_t`` on Unix, but this is an
+    在 Unix 平台上 ``uv_thread_t`` 只是 ``pthread_t`` 的别名,但是在实现细节上也避免 but this is an
     implementation detail, avoid depending on it to always be true.
 
 The second parameter is the function which will serve as the entry point for

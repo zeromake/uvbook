@@ -20,7 +20,7 @@
    你发现 libuv 的事件循环方式适合你的应用场景, 因此你决定使用 libuv.
 
 2) Node.js 某一模块的作者, 决定使用 C/C++ 封装系统平台某些同步或者异步 API,
-   并将其暴露给 Javasript, 你可以在 node.js 上下文中只使用 libuv,
+   并将其暴露给 Javascript, 你可以在 node.js 上下文中只使用 libuv,
    但你也需要参考其他资源, 因为本书并没有包括 v8/node.js 相关的内容.
 
 本书假设你对 C 语言有了一定的了解。
@@ -28,9 +28,9 @@
 背景
 ----
 
-node.js_ 最初发起于 2009 年, 是一个可以让 Javasript 代码脱离浏览器的执行环境,
+node.js_ 最初发起于 2009 年, 是一个可以让 Javascript 代码脱离浏览器的执行环境,
 libuv 使用了 Google 的  V8_ 执行引擎 和 Marc Lehmann 的 libev_. Node.js
-将事件驱动的 I/O 模型与适合该模型的编程语言(Javasript)融合在了一起,
+将事件驱动的 I/O 模型与适合该模型的编程语言(Javascript)融合在了一起,
 随着 node.js 的日益流行, node.js 的开发者们也意识到应该让 node.js
 在 Windows 平台下也能工作, 但是 libev 只能在 Unix 环境下运行.
 Windows 平台上与 kqueue(FreeBSD) 或者 (e)poll(Linux) 等内核事件通知相应的机制
