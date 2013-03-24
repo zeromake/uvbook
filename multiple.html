@@ -68,59 +68,47 @@
         
   <div class="section" id="multiple-event-loops">
 <h1>多路事件循环(Multiple event loops)<a class="headerlink" href="#multiple-event-loops" title="Permalink to this headline">¶</a></h1>
-<p>It is possible to use multiple event loops in the same thread. But this usually
-makes no sense since the <cite>uv_run()</cite> call of one loop will block and stop the
-other loop from running at all. With a careful combination of <cite>uv_run_once()</cite>
-you could do some really fun things though.</p>
+<p>你也可以在同一个线程中使用多路事件循环, 但意义并不大, 因为调用其中某一个事件循环的
+<tt class="docutils literal"><span class="pre">uv_run</span></tt> 会使得程序阻塞, 其他事件循环不能同时运行.
+不过也可以小心地通过多次调用 <cite>uv_run_once()</cite> 来完成一些有趣的工作.</p>
 <div class="section" id="modality">
 <h2>多路事件循环的形式(Modality)<a class="headerlink" href="#modality" title="Permalink to this headline">¶</a></h2>
-<p>You can use multiple loops to create a &#8216;modal&#8217; step in your program, where the
-second event loop &#8216;pauses&#8217; the first event loop until some action occurs (a
-user presses Return or you get a new event or something). An</p>
+<p>你可以在你的程序中按照相对标准方式使用多路事件循环, 即第二个事件循环先暂停第一个事件循环,
+直到发生了动作(用户按下了 Return(Enter) 键, 或者发生了新的事件等).</p>
 </div>
 <div class="section" id="one-loop-per-thread">
 <h2>各线程拥有自己的事件循环(One loop per thread)<a class="headerlink" href="#one-loop-per-thread" title="Permalink to this headline">¶</a></h2>
-<p>This is the &#8216;standard model&#8217;, no different from spawning multiple processes
-like we did in the <a class="reference internal" href="processes.html"><em>进程</em></a> chapter.</p>
+<p><tt class="docutils literal"><span class="pre">One</span> <span class="pre">loop</span> <span class="pre">per</span> <span class="pre">thread</span></tt> 才是多路事件循环的&#8217;标准模型&#8217;, 它和我们在
+<a class="reference internal" href="processes.html"><em>进程</em></a> 一章中介绍的产生多个进程方式并无太大区别.</p>
 <div class="section" id="sing-two-loops-for-synchronization">
 <h3>使用两个事件循环来同步(sing two loops for synchronization)<a class="headerlink" href="#sing-two-loops-for-synchronization" title="Permalink to this headline">¶</a></h3>
-<p>There is a very specific use-case where two event loops can be used as
-a synchronization mechanism in place of conditional variables. I used it in
-<a class="reference external" href="https://github.com/nikhilm/node-taglib">node-taglib</a>. libuv did not have
-condition variable support then, and I&#8217;ve kept it that way for now to allow
-it to work with earlier node versions. The specific use case is:</p>
+<p>也有一些比较特殊的应用场景需要两个事件循环来进行同步(而不是使用条件变量),
+在 <a class="reference external" href="https://github.com/nikhilm/node-taglib">node-taglib</a> 库中我就使用了这种同步机制.
+具体的应用场景如下:</p>
 <ol class="arabic simple">
-<li>The <em>main thread</em> calls a blocking function in a <em>worker thread</em> using
-<cite>uv_queue_work()</cite>.</li>
-<li>The <em>worker thread</em> has to call a custom function. The catch is that the
-custom function <em>has to run on the main thread</em>.</li>
-<li>The <em>worker thread</em> has to wait until this function returns.</li>
+<li>主线程 <em>main thread</em> 通过 <cite>uv_queue_work</cite> 在工作线程中调用一个阻塞函数.</li>
+<li>工作线程 <em>worker thread</em> 调用一个自定义函数, 并且自定义函数必须在主线程中运行.</li>
+<li>工作线程一直等待, 直到函数返回.</li>
 </ol>
-<p>The condition variable approach is:</p>
+<p>如果使用条件变量来实现:</p>
 <ol class="arabic simple">
-<li>The worker thread doesn&#8217;t directly call the custom function. It instead
-creates a <cite>uv_async_t</cite> handler. The callback for this handler calls the
-custom function.</li>
-<li>Initializes a condition variable.</li>
-<li>It uses <cite>uv_async_send()</cite> to get the main thread (where the event loop runs)
-to invoke the function on its behalf.</li>
-<li>Waits on the condition variable.</li>
-<li>The callback calls the custom function, then signals the condition variable
-which lets the worker thread continue.</li>
+<li>工作线程并不直接调用自定义函数, 而是创建一个 <tt class="docutils literal"><span class="pre">uv_async_t</span></tt> 句柄,
+然后由该句柄的回调函数调用自定义函数.</li>
+<li>初始化条件变量.</li>
+<li>使用 <cite>uv_async_send()</cite> 获得主线程(运行事件循环的线程)并由主线程调用该函数.</li>
+<li>等待条件变量的通知.</li>
+<li>回调函数调用自定义函数, 并向条件变量发送通知, 使得工作线程得以继续下去.</li>
 </ol>
-<p>The event loop implementation instead:</p>
+<p>而事件循环的实现方式为:</p>
 <ol class="arabic simple">
-<li>Creates a new event loop in the worker thread.</li>
-<li>Associates a <cite>uv_async_t</cite> with this new loop.</li>
-<li>Passes this handler to the <cite>main thread</cite> through the original <cite>uv_async_t</cite>
-handler&#8217;s <cite>data</cite> field.</li>
-<li><cite>uv_run()</cite> the new event loop, which now blocks because the async handler
-has incremented it&#8217;s <a class="reference internal" href="utilities.html#reference-count"><em>refcount</em></a>.</li>
-<li>The callback in the main thread calls the custom function, then uses
-<cite>uv_async_send()</cite> to signal the async handler on the new loop.</li>
-<li>The callback for this async handler simply closes the handler itself, the
-new loop&#8217;s refcount drops to zero, <cite>uv_run()</cite> returns and the worker thread
-can continue.</li>
+<li>在工作线程中创建一个新的事件循环.</li>
+<li>将 <cite>uv_async_t</cite> 与事件循环相关联.</li>
+<li>将该句柄通过 <cite>uv_async_t</cite> 结构 <cite>data</cite> 字段传递给主线程.</li>
+<li><cite>uv_run()</cite> 运行事件循环, 此时程序会阻塞, 因为异步句柄自增了它的
+<a class="reference internal" href="utilities.html#reference-count"><em>refcount</em></a>.</li>
+<li>主线程的回调函数再调用自定义函数,然后调用 <cite>uv_async_send</cite>
+向事件循环的异步句柄发送消息.</li>
+<li>异步句柄的回调函数关闭自己, 然后事件循环的引用计数减为 0, <cite>uv_run</cite> 返回, 工作线程得以继续下去.</li>
 </ol>
 </div>
 </div>
