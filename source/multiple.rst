@@ -1,61 +1,49 @@
 多路事件循环(Multiple event loops)
 ==================================
 
-It is possible to use multiple event loops in the same thread. But this usually
-makes no sense since the `uv_run()` call of one loop will block and stop the
-other loop from running at all. With a careful combination of `uv_run_once()`
-you could do some really fun things though.
+你也可以在同一个线程中使用多路事件循环, 但意义并不大, 因为调用其中某一个事件循环的
+``uv_run`` 会使得程序阻塞, 其他事件循环不能同时运行.
+不过也可以小心地通过多次调用 `uv_run_once()` 来完成一些有趣的工作.
 
 多路事件循环的形式(Modality)
 ----------------------------
 
-You can use multiple loops to create a 'modal' step in your program, where the
-second event loop 'pauses' the first event loop until some action occurs (a
-user presses Return or you get a new event or something). An
+你可以在你的程序中按照相对标准方式使用多路事件循环, 即第二个事件循环先暂停第一个事件循环,
+直到发生了动作(用户按下了 Return(Enter) 键, 或者发生了新的事件等).
 
 各线程拥有自己的事件循环(One loop per thread)
 ---------------------------------------------
 
-This is the 'standard model', no different from spawning multiple processes
-like we did in the :doc:`processes` chapter.
+``One loop per thread`` 才是多路事件循环的'标准模型', 它和我们在
+:doc:`processes` 一章中介绍的产生多个进程方式并无太大区别.
 
 使用两个事件循环来同步(sing two loops for synchronization)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-There is a very specific use-case where two event loops can be used as
-a synchronization mechanism in place of conditional variables. I used it in
-`node-taglib <https://github.com/nikhilm/node-taglib>`_. libuv did not have
-condition variable support then, and I've kept it that way for now to allow
-it to work with earlier node versions. The specific use case is:
+也有一些比较特殊的应用场景需要两个事件循环来进行同步(而不是使用条件变量),
+在 `node-taglib <https://github.com/nikhilm/node-taglib>`_ 库中我就使用了这种同步机制.
+具体的应用场景如下:
 
-1. The *main thread* calls a blocking function in a *worker thread* using
-   `uv_queue_work()`.
-2. The *worker thread* has to call a custom function. The catch is that the
-   custom function *has to run on the main thread*.
-3. The *worker thread* has to wait until this function returns.
+1. 主线程 *main thread* 通过 `uv_queue_work` 在工作线程中调用一个阻塞函数.
+2. 工作线程 *worker thread* 调用一个自定义函数, 并且自定义函数必须在主线程中运行.
+3. 工作线程一直等待, 直到函数返回.
 
-The condition variable approach is:
+如果使用条件变量来实现:
 
-1. The worker thread doesn't directly call the custom function. It instead
-   creates a `uv_async_t` handler. The callback for this handler calls the
-   custom function.
-2. Initializes a condition variable.
-3. It uses `uv_async_send()` to get the main thread (where the event loop runs)
-   to invoke the function on its behalf.
-4. Waits on the condition variable.
-5. The callback calls the custom function, then signals the condition variable
-   which lets the worker thread continue.
+1. 工作线程并不直接调用自定义函数, 而是创建一个 ``uv_async_t`` 句柄,
+   然后由该句柄的回调函数调用自定义函数.
+2. 初始化条件变量.
+3. 使用 `uv_async_send()` 获得主线程(运行事件循环的线程)并由主线程调用该函数.
+4. 等待条件变量的通知.
+5. 回调函数调用自定义函数, 并向条件变量发送通知, 使得工作线程得以继续下去.
 
-The event loop implementation instead:
+而事件循环的实现方式为:
 
-1. Creates a new event loop in the worker thread.
-2. Associates a `uv_async_t` with this new loop.
-3. Passes this handler to the `main thread` through the original `uv_async_t`
-   handler's `data` field.
-4. `uv_run()` the new event loop, which now blocks because the async handler
-   has incremented it's :ref:`refcount <reference-count>`.
-5. The callback in the main thread calls the custom function, then uses
-   `uv_async_send()` to signal the async handler on the new loop.
-6. The callback for this async handler simply closes the handler itself, the
-   new loop's refcount drops to zero, `uv_run()` returns and the worker thread
-   can continue.
+1. 在工作线程中创建一个新的事件循环.
+2. 将 `uv_async_t` 与事件循环相关联.
+3. 将该句柄通过 `uv_async_t` 结构 `data` 字段传递给主线程.
+4. `uv_run()` 运行事件循环, 此时程序会阻塞, 因为异步句柄自增了它的
+   :ref:`refcount <reference-count>`.
+5. 主线程的回调函数再调用自定义函数,然后调用 `uv_async_send`
+   向事件循环的异步句柄发送消息.
+6. 异步句柄的回调函数关闭自己, 然后事件循环的引用计数减为 0, `uv_run` 返回, 工作线程得以继续下去.
