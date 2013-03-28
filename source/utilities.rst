@@ -1,20 +1,20 @@
 工具集
 ======
 
-This chapter catalogues tools and techniques which are useful for common tasks.
-The `libev man page`_ already covers some patterns which can be adopted to
-libuv through simple API changes. It also covers parts of the libuv API that
-don't require entire chapters dedicated to them.
+本节归类了一些在编程中可能用到的工具和编程技术.
+libev 的帮助页面 `page`_ 也介绍了一些有用的代码模式,
+只需要简单地修改 API 的调用方式, libev 中的某些模式也可以应用到 libuv中.
 
 定时器(Timers)
 --------------
 
-Timers invoke the callback after a certain time has elapsed since the timer was
-started. libuv timers can also be set to invoke at regular intervals instead of
-just once.
+定时器在启动之后经过事先设置好的某一时间间隔就会调用回调函数.
+libuv 的定时器也可以被设置为按照某一时间间隔重复调用回调函数, 而不是仅调用一次.
 
-Simple use is to init a watcher and start it with a ``timeout``, and optional ``repeat``.
-Timers can be stopped at any time.
+Libuv 定时器的使用非常简单, 如下代码所示, 初始化一个定时器, 然后启动它,
+在你启动定时器的同时可以设置超时时间 ``timeout`` 和可选的 ``repeat`` 参数.
+
+定时器可以在任何时候停止.
 
 .. code-block:: c
 
@@ -23,38 +23,36 @@ Timers can be stopped at any time.
     uv_timer_init(loop, &timer_req);
     uv_timer_start(&timer_req, callback, 5000, 2000);
 
-will start a repeating timer, which first starts 5 seconds (the ``timeout``) after the execution
-of ``uv_timer_start``, then repeats every 2 seconds (the ``repeat``). Use:
+将启动一个定期重复触发的定时器, 该定时器将会在执行了 ``uv_timer_start``
+5 秒(``timeout``) 后执行回调函数, 然后每隔 2 秒(``repeat``)执行一次.调用
 
 .. code-block:: c
 
     uv_timer_stop(&timer_req);
 
-to stop the timer. This can be used safely from within the callback as well.
+来停掉定时器. 该函数也可以在回调函数中调用.
 
-The repeat interval can be modified at any time with::
+定时器的重复时间间隔可以在任何时候通过函数设置::
 
     uv_timer_set_repeat(uv_timer_t *timer, int64_t repeat);
 
-which will take effect **when possible**. If this function is called from
-a timer callback, it means:
+如果在回调函数中调用了该函数, 则意味着:
 
-* If the timer was non-repeating, the timer has already been stopped. Use
-  ``uv_timer_start`` again.
-* If the timer is repeating, the next timeout has already been scheduled, so
-  the old repeat interval will be used once more before the timer switches to
-  the new interval.
+* 如果定时器是一次性的, 定时器已经停止, 则需要调用 ``uv_timer_start``.
+* 如果定时器不是一次性的(not repeatedly), 并且下一次超时设置还未生效,
+  那么旧的超时间隔还会被使用一次, 此后新的超时间隔才会生效.
 
-The utility function::
+辅助函数::
 
     int uv_timer_again(uv_timer_t *)
 
-applies **only to repeating timers** and is equivalent to stopping the timer
-and then starting it with both initial ``timeout`` and ``repeat`` set to the
-old ``repeat`` value. If the timer hasn't been started it fails (error code
-``UV_EINVAL``) and returns -1.
+只对 **repeating 定时器(repeating timers)** 有效,
+该函数和先停掉定时器然后再将 ``timeout`` 和 ``repeat``
+参数设置为原始值并重启该定时器的效果一样.
+如果定时器事先没有启动则该函数会出错(错误码 ``UV_EINVAL``)
+并返回 -1.
 
-An actual timer example is in the :ref:`reference count section
+下面是一个定时器的实际例子 :ref:`reference count section
 <reference-count>`.
 
 .. _reference-count:
@@ -423,4 +421,4 @@ can try `ncurses`_.
        Käfer's excellent slides on writing node.js bindings --
        http://kkaefer.github.com/node-cpp-modules/#baton
 
-.. _libev man page: http://pod.tst.eu/http://cvs.schmorp.de/libev/ev.pod#COMMON_OR_USEFUL_IDIOMS_OR_BOTH
+.. _page: http://pod.tst.eu/http://cvs.schmorp.de/libev/ev.pod#COMMON_OR_USEFUL_IDIOMS_OR_BOTH
