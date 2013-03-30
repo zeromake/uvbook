@@ -60,16 +60,15 @@ Libuv 定时器的使用非常简单, 如下代码所示, 初始化一个定时�
 事件循环引用计数(Event loop reference count)
 --------------------------------------------
 
-The event loop only runs as long as there are active watchers. This system
-works by having every watcher increase the reference count of the event loop
-when it is started and decreasing the reference count when stopped. It is also
-possible to manually change the reference count of handles using::
+只有存在活动的监视器(active watchers), 事件循环就会一直运行.
+libuv 在事件循环启动时会让每个监视器增加它的引用计数器, 并在其退出时减少引用计数器.
+也可以通过下面的函数手动修改事件循环的引用计数::
 
     void uv_ref(uv_handle_t*);
     void uv_unref(uv_handle_t*);
 
-These functions can be used to allow a loop to exit even when a watcher is
-active or to use custom objects to keep the loop alive.
+上述两个函数也可以是的事件循环退出执行, 即使监视器此时还是活动的(active),
+也可以使用自定义对象让事件循环活着(alive).
 
 The former can be used with interval timers. You might have a garbage collector
 which runs every X seconds, or your network service might send a heartbeat to
@@ -349,27 +348,23 @@ function we are looking for in the application's plugins.
 TTY
 ---
 
-Text terminals have supported basic formatting for a long time, with a `pretty
-standardised`_ command set. This formatting is often used by programs to
-improve the readability of terminal output. For example ``grep --colour``.
-libuv provides the ``uv_tty_t`` abstraction (a stream) and related functions to
-implement the ANSI escape codes across all platforms. By this I mean that libuv
-converts ANSI codes to the Windows equivalent, and provides functions to get
-terminal information.
+文本终端一直以来都都过 `pretty standardised`_ 来支持基本的格式化.
+文本终端的格式化可以改善终端输出的可读性, 例如,  ``grep --colour``.
+libuv 提供了 ``uv_tty_t`` 结构(流)和相关的函数来实现跨平台的 ANSI 字符转义,
+即 libuv 可以将 ANSI 码转换为与 Windows 环境下向匹配的编码, 另外 libuv
+也提供了获取终端信息的函数.
 
 .. _pretty standardised: http://en.wikipedia.org/wiki/ANSI_escape_sequences
 
-The first thing to do is to initialize a ``uv_tty_t`` with the file descriptor
-it reads/writes from. This is achieved with::
+首先需要初始化 ``uv_tty_t`` 结构, 传入的第三个参数为需要读/写的文件描述符::
 
     int uv_tty_init(uv_loop_t*, uv_tty_t*, uv_file fd, int readable)
 
-If ``readable`` is false, ``uv_write`` calls to this stream will be
+如果 ``readable`` 为 false, 后续 ``uv_write`` 调用将会被 **阻塞**.
 **blocking**.
 
-It is then best to use ``uv_tty_set_mode`` to set the mode to *normal* (0)
-which enables most TTY formatting, flow-control and other settings. *raw* mode
-(1) is also supported.
+最好使用 ``uv_tty_set_mode`` 函数来设置终端模式为 *normal* (0), 该模式下允许
+TTY 的格式化, 控制流和其他设置. libuv 也支持 *raw* 模式.
 
 Remember to call ``uv_tty_reset_mode`` when your program exits to restore the
 state of the terminal. Just good manners. Another set of good manners is to be
