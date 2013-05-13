@@ -1,15 +1,12 @@
 进程
 ====
 
-libuv offers considerable child process management, abstracting the platform
-differences and allowing communication with the child process using streams or
-named pipes.
+libuv 也提供了进程管理的功能. libuv 进程管理抽象了不同平台的差异,
+并通过流和管道使得进程间成为可能通信.
 
-A common idiom in Unix is for every process to do one thing and do it well. In
-such a case, a process often uses multiple child processes to achieve tasks
-(similar to using pipes in shells). A multi-process model with messages
-may also be easier to reason about compared to one with threads and shared
-memory.
+Unix 的设计哲学是做某件事情就把它好(do one thing and do it well), 因此,
+一个进程通常使用多个子进程来完成不同的任务, (类似于 shell 中的管道).
+基于消息的多进程模型相对于共享内存式的多线程模型也更易于理解.
 
 A common refrain against event-based programs is that they cannot take
 advantage of multiple cores in modern computers. In a multi-threaded program
