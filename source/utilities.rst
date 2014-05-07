@@ -70,17 +70,9 @@ libuv 在事件循环启动时会让每个监视器增加它的引用计数器, 
 上述两个函数也可以是的事件循环退出执行, 即使监视器此时还是活动的(active),
 也可以使用自定义对象让事件循环活着(alive).
 
-The former can be used with interval timers. You might have a garbage collector
-which runs every X seconds, or your network service might send a heartbeat to
-others periodically, but you don't want to have to stop them along all clean
-exit paths or error scenarios. Or you want the program to exit when all your
-other watchers are done. In that case just unref the timer immediately after
-creation so that if it is the only watcher running then ``uv_run`` will still
-exit.
+前者可用于定时器。你可能需要每隔X秒进行GC，或者你的网络服务需要周期地发送心跳，但是你不想在GC完成或错误发生时停止它们，或者你希望你的程序在所有其他的监视器都结束了才退出。在这种情况下，在创建定时器之后直接调用unref,如果它是当前唯一运行的监视器，``un_run``仍然将会退出。
 
-The later is used in node.js where some libuv methods are being bubbled up to
-the JS API. A ``uv_handle_t`` (the superclass of all watchers) is created per
-JS object and can be ref/unrefed.
+后者用于在node.js中一些libuv的方法上升到JS API中。``uv_handle_t``(所有的watcher的父类)被创建于每一个JS对象中，并且可以被增加或者减少计数（ref/unrefed）。
 
 .. rubric:: ref-timer/main.c
 .. literalinclude:: ../code/ref-timer/main.c
@@ -88,24 +80,13 @@ JS object and can be ref/unrefed.
     :lines: 5-8, 17-
     :emphasize-lines: 9
 
-We initialize the garbage collector timer, then immediately ``unref`` it.
-Observe how after 9 seconds, when the fake job is done, the program
-automatically exits, even though the garbage collector is still running.
+
+我们初始化GC定时器时，立即调用了``unref``。注意到9秒后，当测试任务完成时，程序自动退出了，即便GC仍然在运行。
 
 空闲监视器模式(Idle watcher pattern)
 ------------------------------------
 
-The callbacks of idle watchers are only invoked when the event loop has no
-other pending events. In such a situation they are invoked once every iteration
-of the loop. The idle callback can be used to perform some very low priority
-activity. For example, you could dispatch a summary of the daily application
-performance to the developers for analysis during periods of idleness, or use
-the application's CPU time to perform SETI calculations :) An idle watcher is
-also useful in a GUI application. Say you are using an event loop for a file
-download. If the TCP socket is still being established and no other events are
-present your event loop will pause (**block**), which means your progress bar
-will freeze and the user will think the application crashed. In such a case
-queue up and idle watcher to keep the UI operational.
+空闲监视器的回调函数只会在事件循环队列中没有其他事件的情况下才会被调用。在这种情况下他们在每次循环迭代的都是都会被调用一次。空闲回调函数被用于执行一些非常低优先级的任务。比如，你可以为开发者分派每日程序性能的分析摘要在空转的周期，或者可以用户进行SETI计算：）（SETI是一项利用全球联网的计算机共同搜寻地外文明的科学实验计划）。空闲监视器对于有用户界面的程序也十分有用。如果你在使用事件循环在下载一个文件，如果TCP套接字正在建立连接并且没有其他的事件被送达，事件循环就会被停止（**block**），这就意味着你的进度条会卡住不动，用户就会认为程序已经挂掉了。这种情况，排队等待和空闲监视器会响应你的UI操作。
 
 .. rubric:: idle-compute/main.c
 .. literalinclude:: ../code/idle-compute/main.c
@@ -113,11 +94,7 @@ queue up and idle watcher to keep the UI operational.
     :lines: 5-9, 32-
     :emphasize-lines: 38
 
-Here we initialize the idle watcher and queue it up along with the actual
-events we are interested in. ``crunch_away`` will now be called repeatedly
-until the user types something and presses Return. Then it will be interrupted
-for a brief amount as the loop deals with the input data, after which it will
-keep calling the idle callback again.
+这里，我们初始化了空闲监视器并且把入队了一个真实的感兴趣的事件。``crunch_away``将会被重复的调用直到用户随意输入一些内容并按下回车。随后他会被短暂的中断，循环队列回去处理输入数据，之后又会重新调用空闲回调函数。
 
 .. rubric:: idle-compute/main.c
 .. literalinclude:: ../code/idle-compute/main.c
@@ -129,11 +106,7 @@ keep calling the idle callback again.
 向工作者线程传递数据(Passing data to worker thread)
 ---------------------------------------------------
 
-When using ``uv_queue_work`` you'll usually need to pass complex data through
-to the worker thread. The solution is to use a ``struct`` and set
-``uv_work_t.data`` to point to it. A slight variation is to have the
-``uv_work_t`` itself as the first member of this struct (called a baton [#]_).
-This allows cleaning up the work request and all the data in one free call.
+当使用 ``uv_queue_work`` 你通常需要传递一个复杂的数据结构向工作线程。解决方案是使用``struct``并令``uv_work_t.data``指向它。一个轻微的变化是``uv_work_t``自己会被最为结构体的第一个成员变量（被称为指挥棒[#]_）。它允许通过调用清理函数，清除有所的工作请求和数据。
 
 .. code-block:: c
     :linenos:
@@ -159,9 +132,8 @@ This allows cleaning up the work request and all the data in one free call.
 
     uv_queue_work(loop, &baton->req, ftp_session, ftp_cleanup);
 
-Here we create the baton and queue the task.
-
-Now the task function can extract the data it needs:
+这里我们创建了指挥棒和队列任务
+此时任务函数就可以提取出它需要的数据了：
 
 .. code-block:: c
     :linenos:
@@ -181,7 +153,7 @@ Now the task function can extract the data it needs:
         free(baton);
     }
 
-We then free the baton which also frees the watcher.
+随后我们释放了指挥棒同时也释放了监视器。
 
 轮询方式下的外部 I/O(External I/O with polling)
 -----------------------------------------------
