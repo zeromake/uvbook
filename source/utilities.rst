@@ -80,6 +80,7 @@ libuv 在事件循环启动时会让每个监视器增加它的引用计数器, 
     :lines: 5-8, 17-
     :emphasize-lines: 9
 
+
 我们初始化GC定时器时，立即调用了``unref``。注意到9秒后，当测试任务完成时，程序自动退出了，即便GC仍然在运行。
 
 空闲监视器模式(Idle watcher pattern)
@@ -105,11 +106,7 @@ libuv 在事件循环启动时会让每个监视器增加它的引用计数器, 
 向工作者线程传递数据(Passing data to worker thread)
 ---------------------------------------------------
 
-When using ``uv_queue_work`` you'll usually need to pass complex data through
-to the worker thread. The solution is to use a ``struct`` and set
-``uv_work_t.data`` to point to it. A slight variation is to have the
-``uv_work_t`` itself as the first member of this struct (called a baton [#]_).
-This allows cleaning up the work request and all the data in one free call.
+当使用 ``uv_queue_work`` 你通常需要传递一个复杂的数据结构向工作线程。解决方案是使用``struct``并令``uv_work_t.data``指向它。一个轻微的变化是``uv_work_t``自己会被最为结构体的第一个成员变量（被称为指挥棒[#]_）。它允许通过调用清理函数，清除有所的工作请求和数据。
 
 .. code-block:: c
     :linenos:
@@ -135,9 +132,8 @@ This allows cleaning up the work request and all the data in one free call.
 
     uv_queue_work(loop, &baton->req, ftp_session, ftp_cleanup);
 
-Here we create the baton and queue the task.
-
-Now the task function can extract the data it needs:
+这里我们创建了指挥棒和队列任务
+此时任务函数就可以提取出它需要的数据了：
 
 .. code-block:: c
     :linenos:
@@ -157,7 +153,7 @@ Now the task function can extract the data it needs:
         free(baton);
     }
 
-We then free the baton which also frees the watcher.
+随后我们释放了指挥棒同时也释放了监视器。
 
 轮询方式下的外部 I/O(External I/O with polling)
 -----------------------------------------------
