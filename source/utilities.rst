@@ -85,17 +85,7 @@ libuv 在事件循环启动时会让每个监视器增加它的引用计数器, 
 空闲监视器模式(Idle watcher pattern)
 ------------------------------------
 
-The callbacks of idle watchers are only invoked when the event loop has no
-other pending events. In such a situation they are invoked once every iteration
-of the loop. The idle callback can be used to perform some very low priority
-activity. For example, you could dispatch a summary of the daily application
-performance to the developers for analysis during periods of idleness, or use
-the application's CPU time to perform SETI calculations :) An idle watcher is
-also useful in a GUI application. Say you are using an event loop for a file
-download. If the TCP socket is still being established and no other events are
-present your event loop will pause (**block**), which means your progress bar
-will freeze and the user will think the application crashed. In such a case
-queue up and idle watcher to keep the UI operational.
+空闲监视器的回调函数只会在事件循环队列中没有其他事件的情况下才会被调用。在这种情况下他们在每次循环迭代的都是都会被调用一次。空闲回调函数被用于执行一些非常低优先级的任务。比如，你可以为开发者分派每日程序性能的分析摘要在空转的周期，或者可以用户进行SETI计算：）（SETI是一项利用全球联网的计算机共同搜寻地外文明的科学实验计划）。空闲监视器对于有用户界面的程序也十分有用。如果你在使用事件循环在下载一个文件，如果TCP套接字正在建立连接并且没有其他的事件被送达，事件循环就会被停止（**block**），这就意味着你的进度条会卡住不动，用户就会认为程序已经挂掉了。这种情况，排队等待和空闲监视器会响应你的UI操作。
 
 .. rubric:: idle-compute/main.c
 .. literalinclude:: ../code/idle-compute/main.c
@@ -103,11 +93,7 @@ queue up and idle watcher to keep the UI operational.
     :lines: 5-9, 32-
     :emphasize-lines: 38
 
-Here we initialize the idle watcher and queue it up along with the actual
-events we are interested in. ``crunch_away`` will now be called repeatedly
-until the user types something and presses Return. Then it will be interrupted
-for a brief amount as the loop deals with the input data, after which it will
-keep calling the idle callback again.
+这里，我们初始化了空闲监视器并且把入队了一个真实的感兴趣的事件。``crunch_away``将会被重复的调用直到用户随意输入一些内容并按下回车。随后他会被短暂的中断，循环队列回去处理输入数据，之后又会重新调用空闲回调函数。
 
 .. rubric:: idle-compute/main.c
 .. literalinclude:: ../code/idle-compute/main.c
