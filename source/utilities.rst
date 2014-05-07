@@ -70,17 +70,9 @@ libuv 在事件循环启动时会让每个监视器增加它的引用计数器, 
 上述两个函数也可以是的事件循环退出执行, 即使监视器此时还是活动的(active),
 也可以使用自定义对象让事件循环活着(alive).
 
-The former can be used with interval timers. You might have a garbage collector
-which runs every X seconds, or your network service might send a heartbeat to
-others periodically, but you don't want to have to stop them along all clean
-exit paths or error scenarios. Or you want the program to exit when all your
-other watchers are done. In that case just unref the timer immediately after
-creation so that if it is the only watcher running then ``uv_run`` will still
-exit.
+前者可用于定时器。你可能需要每隔X秒进行GC，或者你的网络服务需要周期地发送心跳，但是你不想在GC完成或错误发生时停止它们，或者你希望你的程序在所有其他的监视器都结束了才退出。在这种情况下，在创建定时器之后直接调用unref,如果它是当前唯一运行的监视器，``un_run``仍然将会退出。
 
-The later is used in node.js where some libuv methods are being bubbled up to
-the JS API. A ``uv_handle_t`` (the superclass of all watchers) is created per
-JS object and can be ref/unrefed.
+后者用于在node.js中一些libuv的方法上升到JS API中。``uv_handle_t``(所有的watcher的父类)被创建于每一个JS对象中，并且可以被增加或者减少计数（ref/unrefed）。
 
 .. rubric:: ref-timer/main.c
 .. literalinclude:: ../code/ref-timer/main.c
@@ -88,9 +80,7 @@ JS object and can be ref/unrefed.
     :lines: 5-8, 17-
     :emphasize-lines: 9
 
-We initialize the garbage collector timer, then immediately ``unref`` it.
-Observe how after 9 seconds, when the fake job is done, the program
-automatically exits, even though the garbage collector is still running.
+我们初始化GC定时器时，立即调用了``unref``。注意到9秒后，当测试任务完成时，程序自动退出了，即便GC仍然在运行。
 
 空闲监视器模式(Idle watcher pattern)
 ------------------------------------
