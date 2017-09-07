@@ -1,35 +1,29 @@
 
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Libuv 基础 &mdash; An Introduction to libuv</title>
-    
+    <title>Libuv 基础 &#8212; An Introduction to libuv</title>
     <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/print.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
+        URL_ROOT:    './',
         VERSION:     '1.0.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/javascript" src="_static/theme_extras.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
-    <link rel="top" title="An Introduction to libuv" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="文件系统" href="filesystem.html" />
     <link rel="prev" title="序言" href="introduction.html" />
 <script type="text/javascript">
@@ -48,11 +42,11 @@
 
   </head>
   <body>
-      <div class="header"><h1 class="heading"><a href="index.html">
+      <div class="header" role="banner"><h1 class="heading"><a href="index.html">
           <span>An Introduction to libuv</span></a></h1>
         <h2 class="heading"><span>Libuv 基础</span></h2>
       </div>
-      <div class="topnav">
+      <div class="topnav" role="navigation" aria-label="top navigation">
       
         <p>
         «&#160;&#160;<a href="introduction.html">序言</a>
@@ -79,7 +73,7 @@ libuv 提供了一套核心的工具集, 例如定时器, 非阻塞网络编程�
 在事件发生后 libuv 将会调用相应的回调函数.
 只要程序不退出(被系统管理人员 kill 掉), 事件循环通常会一直运行,
 下面是事件驱动编程模型的伪代码:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">while</span> <span class="n">there</span> <span class="n">are</span> <span class="n">still</span> <span class="n">events</span> <span class="n">to</span> <span class="n">process</span><span class="p">:</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">while</span> <span class="n">there</span> <span class="n">are</span> <span class="n">still</span> <span class="n">events</span> <span class="n">to</span> <span class="n">process</span><span class="p">:</span>
     <span class="n">e</span> <span class="o">=</span> <span class="n">get</span> <span class="n">the</span> <span class="nb">next</span> <span class="n">event</span>
     <span class="k">if</span> <span class="n">there</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">callback</span> <span class="n">associated</span> <span class="k">with</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">call</span> <span class="n">the</span> <span class="n">callback</span>
@@ -91,9 +85,9 @@ libuv 提供了一套核心的工具集, 例如定时器, 非阻塞网络编程�
 <li>某一 socket 上存在数据可读.</li>
 <li>定时器已超时.</li>
 </ul>
-<p>事件循环由 <tt class="docutils literal"><span class="pre">uv_run</span></tt> 函数封装, 在使用 libuv 编程时, 该函数通常在最后才被调用.</p>
+<p>事件循环由 <code class="docutils literal"><span class="pre">uv_run</span></code> 函数封装, 在使用 libuv 编程时, 该函数通常在最后才被调用.</p>
 <p>计算机程序最基本的活动是输入输出的处理, 而不是大量的数值计算,
-而使用传统输入输出函数(<tt class="docutils literal"><span class="pre">read</span></tt>, <tt class="docutils literal"><span class="pre">fprintf</span></tt> 等)的问题是它们都是 <strong>阻塞</strong> 的.
+而使用传统输入输出函数(<code class="docutils literal"><span class="pre">read</span></code>, <code class="docutils literal"><span class="pre">fprintf</span></code> 等)的问题是它们都是 <strong>阻塞</strong> 的.
 将数据写入磁盘或者从网络读取数据都会消耗大量时间, 而阻塞函数直到任务完成后才返回,
 在此期间你的程序什么也没有做, 浪费了大量的 CPU 时间.
 对于追求高性能的程序而言, 在其他活动或者 I/O 操作在进行尽量让 CPU
@@ -101,8 +95,8 @@ libuv 提供了一套核心的工具集, 例如定时器, 非阻塞网络编程�
 <p>标准的解决方案是使用线程, 每个阻塞的 I/O 操作都在一个单独的线程(或线程池)中启动,
 当阻塞函数被调用时, 处理器可以调度另外一个真正需要 CPU 的线程来执行任务.</p>
 <p>Libuv 采用另外一种方式处理阻塞任务, 即 <strong>异步</strong> 和 <strong>非阻塞</strong>
-方式.大多数现代操作系统都提供了事件通知功能, 例如, 调用 <tt class="docutils literal"><span class="pre">read</span></tt>
-读取网络套接字时程序会阻塞, 直到发送者最终发送了数据(<tt class="docutils literal"><span class="pre">read</span></tt> 才返回).
+方式.大多数现代操作系统都提供了事件通知功能, 例如, 调用 <code class="docutils literal"><span class="pre">read</span></code>
+读取网络套接字时程序会阻塞, 直到发送者最终发送了数据(<code class="docutils literal"><span class="pre">read</span></code> 才返回).
 但是, 应用程序可以要求操作系统监控套接字, 并在套接字上注册事件通知.
 应用程序可以在适当的时候查看它所监视的事件并获取数据(若有). 整个过程是 <strong>异步</strong> 的,
 因为程序在某一时刻关注了它感兴趣的事件, 并在另一个时刻获取(使用)数据,
@@ -131,8 +125,8 @@ libuv 提供了一套核心的工具集, 例如定时器, 非阻塞网络编程�
  8
  9
 10
-11</pre></div></td><td class="code"><div class="highlight"><pre><span class="cp">#include &lt;stdio.h&gt;</span>
-<span class="cp">#include &lt;uv.h&gt;</span>
+11</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;uv.h&gt;</span><span class="cp"></span>
 
 <span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
     <span class="n">uv_loop_t</span> <span class="o">*</span><span class="n">loop</span> <span class="o">=</span> <span class="n">uv_loop_new</span><span class="p">();</span>
@@ -148,7 +142,7 @@ libuv 提供了一套核心的工具集, 例如定时器, 非阻塞网络编程�
 API 来告知 libuv 我们感兴趣的事件.</p>
 <div class="section" id="libuv-default-loop">
 <h3>libuv 的默认事件循环(Default loop)<a class="headerlink" href="#libuv-default-loop" title="Permalink to this headline">¶</a></h3>
-<p>libuv 提供了一个默认的事件循环, 你可以通过 <tt class="docutils literal"><span class="pre">uv_default_loop</span></tt> 来获得该事件循环,
+<p>libuv 提供了一个默认的事件循环, 你可以通过 <code class="docutils literal"><span class="pre">uv_default_loop</span></code> 来获得该事件循环,
 如果你的程序中只有一个事件循环, 你就应该使用 libuv 为我们提供的默认事件循环.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -159,10 +153,10 @@ API 来告知 libuv 我们感兴趣的事件.</p>
 </div>
 <div class="section" id="watchers">
 <h2>监视器(Watchers)<a class="headerlink" href="#watchers" title="Permalink to this headline">¶</a></h2>
-<p>libuv 通过监视器(Watcher)来对特定事件进行监控, 监视器通常是类似 <tt class="docutils literal"><span class="pre">uv_TYPE_t</span></tt> 结构体的封装,
-<tt class="docutils literal"><span class="pre">TYPE</span></tt> 代表该监视器的用途, libuv 所有的监视器类型如下:</p>
+<p>libuv 通过监视器(Watcher)来对特定事件进行监控, 监视器通常是类似 <code class="docutils literal"><span class="pre">uv_TYPE_t</span></code> 结构体的封装,
+<code class="docutils literal"><span class="pre">TYPE</span></code> 代表该监视器的用途, libuv 所有的监视器类型如下:</p>
 <p class="rubric">libuv watchers</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_loop_s</span> <span class="n">uv_loop_t</span><span class="p">;</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_loop_s</span> <span class="n">uv_loop_t</span><span class="p">;</span>
 <span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_err_s</span> <span class="n">uv_err_t</span><span class="p">;</span>
 <span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_handle_s</span> <span class="n">uv_handle_t</span><span class="p">;</span>
 <span class="k">typedef</span> <span class="k">struct</span> <span class="n">uv_stream_s</span> <span class="n">uv_stream_t</span><span class="p">;</span>
@@ -184,10 +178,10 @@ API 来告知 libuv 我们感兴趣的事件.</p>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">所有监视器的结构都是 <tt class="docutils literal"><span class="pre">uv_handle_t</span></tt> 的&#8221;子类&#8221;， 在 libuv 和本文中都称之为句柄( <strong>handlers</strong> ).</p>
+<p class="last">所有监视器的结构都是 <code class="docutils literal"><span class="pre">uv_handle_t</span></code> 的”子类”， 在 libuv 和本文中都称之为句柄( <strong>handlers</strong> ).</p>
 </div>
 <p>监视器由相应类型的初始化函数设置, 如下:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="n">uv_TYPE_init</span><span class="p">(</span><span class="n">uv_TYPE_t</span><span class="o">*</span><span class="p">)</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">uv_TYPE_init</span><span class="p">(</span><span class="n">uv_TYPE_t</span><span class="o">*</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -195,11 +189,11 @@ API 来告知 libuv 我们感兴趣的事件.</p>
 <p class="last">某些监视器初始化函数的第一个参数为事件循环的句柄.</p>
 </div>
 <p>监视器再通过调用如下类型的函数来设置事件回调函数并监听相应事件:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="n">uv_TYPE_start</span><span class="p">(</span><span class="n">uv_TYPE_t</span><span class="o">*</span><span class="p">,</span> <span class="n">callback</span><span class="p">)</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">uv_TYPE_start</span><span class="p">(</span><span class="n">uv_TYPE_t</span><span class="o">*</span><span class="p">,</span> <span class="n">callback</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>而停止监听应调用如下类型的函数:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="n">uv_TYPE_stop</span><span class="p">(</span><span class="n">uv_TYPE_t</span><span class="o">*</span><span class="p">)</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">uv_TYPE_stop</span><span class="p">(</span><span class="n">uv_TYPE_t</span><span class="o">*</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>当 libuv 所监听事件发生后, 回调函数就会被调用. 应用程序特定的逻辑通常都是在回调函数中实现的,
@@ -209,15 +203,15 @@ IO 监视器的回调函数在发生了IO事件后将会收到从文件读取的
 <div class="section" id="idling">
 <h3>空转(Idling)<a class="headerlink" href="#idling" title="Permalink to this headline">¶</a></h3>
 <p>接下来我们通过例子来讲述监视器的使用. 例子中空转监视器回调函数被不断地重复调用,
-当然其中也有一些深层次的语言，我们将会在 <a class="reference internal" href="utilities.html"><em>工具集</em></a> 进一步讨论,
+当然其中也有一些深层次的语言，我们将会在 <a class="reference internal" href="utilities.html"><span class="doc">工具集</span></a> 进一步讨论,
 但现在我们只是跳过具体细节.
 我们只是使用了一个空转监视器回调来看看监视器的生命周期,
-通过例子我们也可以了解到： 由于设置了监视器, 所以调用 <tt class="docutils literal"><span class="pre">uv_run()</span></tt> 是程序会阻塞,
-空转监视器将会在计数器达到设定的值时停止(监视), <tt class="docutils literal"><span class="pre">uv_run()</span></tt>
+通过例子我们也可以了解到： 由于设置了监视器, 所以调用 <code class="docutils literal"><span class="pre">uv_run()</span></code> 是程序会阻塞,
+空转监视器将会在计数器达到设定的值时停止(监视), <code class="docutils literal"><span class="pre">uv_run()</span></code>
 会退出因为此时程序中没有活动的监视器了.</p>
 <p class="rubric">idle-basic/main.c</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include &lt;stdio.h&gt;</span>
-<span class="cp">#include &lt;uv.h&gt;</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;uv.h&gt;</span><span class="cp"></span>
 
 <span class="kt">int64_t</span> <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 
@@ -253,7 +247,7 @@ IO 监视器的回调函数在发生了IO事件后将会收到从文件读取的
 
 
       </div>
-      <div class="bottomnav">
+      <div class="bottomnav" role="navigation" aria-label="bottom navigation">
       
         <p>
         «&#160;&#160;<a href="introduction.html">序言</a>
@@ -265,9 +259,9 @@ IO 监视器的回调函数在发生了IO事件后将会收到从文件读取的
 
       </div>
 
-    <div class="footer">
-        &copy; Copyright 2012, Nikhil Marathe.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2012, Nikhil Marathe.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
     </div>
   </body>
 </html>

@@ -1,35 +1,29 @@
 
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>文件系统 &mdash; An Introduction to libuv</title>
-    
+    <title>文件系统 &#8212; An Introduction to libuv</title>
     <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/print.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
+        URL_ROOT:    './',
         VERSION:     '1.0.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/javascript" src="_static/theme_extras.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
-    <link rel="top" title="An Introduction to libuv" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="网络" href="networking.html" />
     <link rel="prev" title="Libuv 基础" href="basics.html" />
 <script type="text/javascript">
@@ -48,11 +42,11 @@
 
   </head>
   <body>
-      <div class="header"><h1 class="heading"><a href="index.html">
+      <div class="header" role="banner"><h1 class="heading"><a href="index.html">
           <span>An Introduction to libuv</span></a></h1>
         <h2 class="heading"><span>文件系统</span></h2>
       </div>
-      <div class="topnav">
+      <div class="topnav" role="navigation" aria-label="top navigation">
       
         <p>
         «&#160;&#160;<a href="basics.html">Libuv 基础</a>
@@ -68,11 +62,11 @@
         
   <div class="section" id="id1">
 <h1>文件系统<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
-<p>简单的文件读写是通过 <tt class="docutils literal"><span class="pre">uv_fs_*</span></tt> 函数族和与之相关的 <tt class="docutils literal"><span class="pre">uv_fs_t</span></tt>
+<p>简单的文件读写是通过 <code class="docutils literal"><span class="pre">uv_fs_*</span></code> 函数族和与之相关的 <code class="docutils literal"><span class="pre">uv_fs_t</span></code>
 结构体完成的.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">libuv 提供的文件操作和 <a class="reference internal" href="networking.html"><em>socket operations</em></a> 并不相同.
+<p class="last">libuv 提供的文件操作和 <a class="reference internal" href="networking.html"><span class="doc">socket operations</span></a> 并不相同.
 套接字操作使用了操作系统本身提供了非阻塞操作, 而文件操作内部使用了阻塞函数,
 但是 libuv 是在线程池中调用这些函数, 并在应用程序需要交互时通知在事件循环中注册的监视器.</p>
 </div>
@@ -84,22 +78,22 @@
 <div class="section" id="id2">
 <h2>读写文件<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <p>文件描述符可以采用如下方式获得:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="kt">int</span> <span class="n">uv_fs_open</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">path</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">,</span> <span class="kt">int</span> <span class="n">mode</span><span class="p">,</span> <span class="n">uv_fs_cb</span> <span class="n">cb</span><span class="p">)</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="n">uv_fs_open</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">path</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">,</span> <span class="kt">int</span> <span class="n">mode</span><span class="p">,</span> <span class="n">uv_fs_cb</span> <span class="n">cb</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>参数 <tt class="docutils literal"><span class="pre">flags</span></tt> 与 <tt class="docutils literal"><span class="pre">mode</span></tt> 和标准的
+<p>参数 <code class="docutils literal"><span class="pre">flags</span></code> 与 <code class="docutils literal"><span class="pre">mode</span></code> 和标准的
 <a class="reference external" href="http://man7.org/linux/man-pages/man2/open.2.html">Unix flags</a> 相同.
 libuv 会小心地处理 Windows 环境下的相关标志位(flags)的转换,
 所以编写跨平台程序时你不用担心不同平台上文件打开的标志位不同。</p>
 <p>关闭文件描述符可以使用:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="kt">int</span> <span class="n">uv_fs_close</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="n">uv_file</span> <span class="n">file</span><span class="p">,</span> <span class="n">uv_fs_cb</span> <span class="n">cb</span><span class="p">)</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="n">uv_fs_close</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="n">uv_file</span> <span class="n">file</span><span class="p">,</span> <span class="n">uv_fs_cb</span> <span class="n">cb</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>与文件系统相关的操作的回调函数具有如下签名:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="kt">void</span> <span class="n">callback</span><span class="p">(</span><span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">);</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">callback</span><span class="p">(</span><span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>让我们来看看 <tt class="docutils literal"><span class="pre">cat</span></tt> 命令的一个简单实现吧: 我们首先注册一个在文件打开时的回调函数
+<p>让我们来看看 <code class="docutils literal"><span class="pre">cat</span></code> 命令的一个简单实现吧: 我们首先注册一个在文件打开时的回调函数
 (顾名思义, 该函数将在文件打开时被调用).</p>
 <p class="rubric">uvcat/main.c - opening a file</p>
 <div class="highlight-c"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
@@ -111,7 +105,7 @@ libuv 会小心地处理 Windows 环境下的相关标志位(flags)的转换,
  7
  8
  9
-10</pre></div></td><td class="code"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">on_open</span><span class="p">(</span><span class="n">uv_fs_t</span> <span class="o">*</span><span class="n">req</span><span class="p">)</span> <span class="p">{</span>
+10</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">on_open</span><span class="p">(</span><span class="n">uv_fs_t</span> <span class="o">*</span><span class="n">req</span><span class="p">)</span> <span class="p">{</span>
 <span class="hll">    <span class="k">if</span> <span class="p">(</span><span class="n">req</span><span class="o">-&gt;</span><span class="n">result</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
 </span>        <span class="n">uv_fs_read</span><span class="p">(</span><span class="n">uv_default_loop</span><span class="p">(),</span> <span class="o">&amp;</span><span class="n">read_req</span><span class="p">,</span> <span class="n">req</span><span class="o">-&gt;</span><span class="n">result</span><span class="p">,</span>
                    <span class="n">buffer</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buffer</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">on_read</span><span class="p">);</span>
@@ -123,11 +117,11 @@ libuv 会小心地处理 Windows 环境下的相关标志位(flags)的转换,
 <span class="p">}</span>
 </pre></div>
 </td></tr></table></div>
-<p><tt class="docutils literal"><span class="pre">uv_fs_t</span></tt> 的 <tt class="docutils literal"><span class="pre">result</span></tt> 字段在执行 <tt class="docutils literal"><span class="pre">us_fs_open</span></tt> 时代表一个文件描述符,
+<p><code class="docutils literal"><span class="pre">uv_fs_t</span></code> 的 <code class="docutils literal"><span class="pre">result</span></code> 字段在执行 <code class="docutils literal"><span class="pre">us_fs_open</span></code> 时代表一个文件描述符,
 如果文件成功被打开, 我们开始读取文件.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p class="last">必须调用 <tt class="docutils literal"><span class="pre">uv_fs_req_cleanup()</span></tt> 来释放 libuv 内部使用的内存空间.</p>
+<p class="last">必须调用 <code class="docutils literal"><span class="pre">uv_fs_req_cleanup()</span></code> 来释放 libuv 内部使用的内存空间.</p>
 </div>
 <p class="rubric">uvcat/main.c - read callback</p>
 <div class="highlight-c"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
@@ -143,7 +137,7 @@ libuv 会小心地处理 Windows 环境下的相关标志位(flags)的转换,
 11
 12
 13
-14</pre></div></td><td class="code"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">on_read</span><span class="p">(</span><span class="n">uv_fs_t</span> <span class="o">*</span><span class="n">req</span><span class="p">)</span> <span class="p">{</span>
+14</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">on_read</span><span class="p">(</span><span class="n">uv_fs_t</span> <span class="o">*</span><span class="n">req</span><span class="p">)</span> <span class="p">{</span>
     <span class="n">uv_fs_req_cleanup</span><span class="p">(</span><span class="n">req</span><span class="p">);</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">req</span><span class="o">-&gt;</span><span class="n">result</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;Read error: %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">uv_strerror</span><span class="p">(</span><span class="n">uv_last_error</span><span class="p">(</span><span class="n">uv_default_loop</span><span class="p">())));</span>
@@ -161,14 +155,14 @@ libuv 会小心地处理 Windows 环境下的相关标志位(flags)的转换,
 </td></tr></table></div>
 <p>在调用 read 时, 你应该传递一个初始化的缓冲区, 在 read 回调函数被触发(调用之前),
 该缓冲区将会被填满数据.</p>
-<p>在 read 的回调函数中 <tt class="docutils literal"><span class="pre">result</span></tt> 如果是 0, 则读取文件时遇到了文件尾(EOF),
+<p>在 read 的回调函数中 <code class="docutils literal"><span class="pre">result</span></code> 如果是 0, 则读取文件时遇到了文件尾(EOF),
 -1 则代表出现了错误, 而正整数则是表示成功读取的字节数.</p>
-<p>此处给你展示了编写异步程序的通用模式, <tt class="docutils literal"><span class="pre">uv_fs_close()</span></tt> 是异步调用的.
+<p>此处给你展示了编写异步程序的通用模式, <code class="docutils literal"><span class="pre">uv_fs_close()</span></code> 是异步调用的.
 <em>通常如果任务是一次性的, 或者只在程序启动和关闭时被执行的话都可以采用同步方式执行,
 因为我们期望提高 I/O 效率, 采用异步编程时程序也可以做一些基本的任务并处理多路 I/O.</em>.
 对于单个任务而言性能差异可以忽略, 但是代码却能大大简化.</p>
-<p>我们可以总结出真正的系统调用返回值一般是存放在 <tt class="docutils literal"><span class="pre">uv_fs_t.result</span></tt>.</p>
-<p>写入文件与上述过程类似, 使用 <tt class="docutils literal"><span class="pre">uv_fs_write</span></tt> 即可.
+<p>我们可以总结出真正的系统调用返回值一般是存放在 <code class="docutils literal"><span class="pre">uv_fs_t.result</span></code>.</p>
+<p>写入文件与上述过程类似, 使用 <code class="docutils literal"><span class="pre">uv_fs_write</span></code> 即可.
 <em>write 的回调函数在写入完成时被调用.</em>.  在我们的程序中回调函数只是只是简单地发起了下一次读操作,
 因此, 读写操作会通过回调函数连续进行下去.</p>
 <p class="rubric">uvcat/main.c - write callback</p>
@@ -180,7 +174,7 @@ libuv 会小心地处理 Windows 环境下的相关标志位(flags)的转换,
 6
 7
 8
-9</pre></div></td><td class="code"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">on_write</span><span class="p">(</span><span class="n">uv_fs_t</span> <span class="o">*</span><span class="n">req</span><span class="p">)</span> <span class="p">{</span>
+9</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">on_write</span><span class="p">(</span><span class="n">uv_fs_t</span> <span class="o">*</span><span class="n">req</span><span class="p">)</span> <span class="p">{</span>
     <span class="n">uv_fs_req_cleanup</span><span class="p">(</span><span class="n">req</span><span class="p">);</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">req</span><span class="o">-&gt;</span><span class="n">result</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;Write error: %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">uv_strerror</span><span class="p">(</span><span class="n">uv_last_error</span><span class="p">(</span><span class="n">uv_default_loop</span><span class="p">())));</span>
@@ -194,23 +188,23 @@ libuv 会小心地处理 Windows 环境下的相关标志位(flags)的转换,
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">错误值通常保存在 <a class="reference external" href="http://man7.org/linux/man-pages/man3/errno.3.html">errno</a> 并可以通过
-<tt class="docutils literal"><span class="pre">uv_fs_t.errorno</span></tt> 获取, 但是被转换成了标准的 <tt class="docutils literal"><span class="pre">UV_*</span></tt> 错误码.
-目前还没有方法直接从 <tt class="docutils literal"><span class="pre">errorno</span></tt> 解析得到错误消息的字符串表示.</p>
+<code class="docutils literal"><span class="pre">uv_fs_t.errorno</span></code> 获取, 但是被转换成了标准的 <code class="docutils literal"><span class="pre">UV_*</span></code> 错误码.
+目前还没有方法直接从 <code class="docutils literal"><span class="pre">errorno</span></code> 解析得到错误消息的字符串表示.</p>
 </div>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
 <p class="last">由于文件系统和磁盘通常为了提高性能吞吐率而配置了缓冲区,
-libuv 中一次 &#8216;成功&#8217; 的写操作可能不会被立刻提交到磁盘上, 你可以通过 <tt class="docutils literal"><span class="pre">uv_fs_fsync</span></tt>
+libuv 中一次 ‘成功’ 的写操作可能不会被立刻提交到磁盘上, 你可以通过 <code class="docutils literal"><span class="pre">uv_fs_fsync</span></code>
 来保证一致性.</p>
 </div>
-<p>我们再来看看 <tt class="docutils literal"><span class="pre">main</span></tt> 函数中设置的多米诺骨牌吧(原作者意指在 main
+<p>我们再来看看 <code class="docutils literal"><span class="pre">main</span></code> 函数中设置的多米诺骨牌吧(原作者意指在 main
 中设置回调函数后会触发整个程序开始执行):</p>
 <p class="rubric">uvcat/main.c</p>
 <div class="highlight-c"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3
 4
-5</pre></div></td><td class="code"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
+5</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
 <span class="hll">    <span class="n">uv_fs_open</span><span class="p">(</span><span class="n">uv_default_loop</span><span class="p">(),</span> <span class="o">&amp;</span><span class="n">open_req</span><span class="p">,</span> <span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">O_RDONLY</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">on_open</span><span class="p">);</span>
 </span>    <span class="n">uv_run</span><span class="p">(</span><span class="n">uv_default_loop</span><span class="p">(),</span> <span class="n">UV_RUN_DEFAULT</span><span class="p">);</span>
     <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
@@ -220,98 +214,98 @@ libuv 中一次 &#8216;成功&#8217; 的写操作可能不会被立刻提交到�
 </div>
 <div class="section" id="filesystem-operations">
 <h2>文件系统相关操作(Filesystem operations)<a class="headerlink" href="#filesystem-operations" title="Permalink to this headline">¶</a></h2>
-<p>所有的标准文件系统操作, 例如 <tt class="docutils literal"><span class="pre">unlink</span></tt>, <tt class="docutils literal"><span class="pre">rmdir</span></tt>, <tt class="docutils literal"><span class="pre">stat</span></tt>
+<p>所有的标准文件系统操作, 例如 <code class="docutils literal"><span class="pre">unlink</span></code>, <code class="docutils literal"><span class="pre">rmdir</span></code>, <code class="docutils literal"><span class="pre">stat</span></code>
 都支持异步操作, 并且各个函数的参数非常直观. 他们和 read/write/open 的调用模式一致,
-返回值都存放在 <tt class="docutils literal"><span class="pre">uv_fs_t.result</span></tt> 域. 完整的列表如下:</p>
+返回值都存放在 <code class="docutils literal"><span class="pre">uv_fs_t.result</span></code> 域. 完整的列表如下:</p>
 <p class="rubric">Filesystem operations</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="n">uv_fs_close</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="n">uv_file</span> <span class="n">file</span><span class="p">,</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="nf">uv_fs_close</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="n">uv_file</span> <span class="n">file</span><span class="p">,</span>
     <span class="n">uv_fs_cb</span> <span class="n">cb</span><span class="p">);</span>
 
-<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="n">uv_fs_open</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">path</span><span class="p">,</span>
+<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="nf">uv_fs_open</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">path</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">flags</span><span class="p">,</span> <span class="kt">int</span> <span class="n">mode</span><span class="p">,</span> <span class="n">uv_fs_cb</span> <span class="n">cb</span><span class="p">);</span>
 
-<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="n">uv_fs_read</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="n">uv_file</span> <span class="n">file</span><span class="p">,</span>
+<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="nf">uv_fs_read</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="n">uv_file</span> <span class="n">file</span><span class="p">,</span>
     <span class="kt">void</span><span class="o">*</span> <span class="n">buf</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">length</span><span class="p">,</span> <span class="kt">int64_t</span> <span class="n">offset</span><span class="p">,</span> <span class="n">uv_fs_cb</span> <span class="n">cb</span><span class="p">);</span>
 
-<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="n">uv_fs_unlink</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">path</span><span class="p">,</span>
+<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="nf">uv_fs_unlink</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">path</span><span class="p">,</span>
     <span class="n">uv_fs_cb</span> <span class="n">cb</span><span class="p">);</span>
 
-<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="n">uv_fs_write</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="n">uv_file</span> <span class="n">file</span><span class="p">,</span>
+<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="nf">uv_fs_write</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="n">uv_file</span> <span class="n">file</span><span class="p">,</span>
     <span class="kt">void</span><span class="o">*</span> <span class="n">buf</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">length</span><span class="p">,</span> <span class="kt">int64_t</span> <span class="n">offset</span><span class="p">,</span> <span class="n">uv_fs_cb</span> <span class="n">cb</span><span class="p">);</span>
 
-<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="n">uv_fs_mkdir</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">path</span><span class="p">,</span>
+<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="nf">uv_fs_mkdir</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">path</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">mode</span><span class="p">,</span> <span class="n">uv_fs_cb</span> <span class="n">cb</span><span class="p">);</span>
 
-<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="n">uv_fs_rmdir</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">path</span><span class="p">,</span>
+<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="nf">uv_fs_rmdir</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">path</span><span class="p">,</span>
     <span class="n">uv_fs_cb</span> <span class="n">cb</span><span class="p">);</span>
 
-<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="n">uv_fs_readdir</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span>
+<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="nf">uv_fs_readdir</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span>
     <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">path</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">,</span> <span class="n">uv_fs_cb</span> <span class="n">cb</span><span class="p">);</span>
 
-<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="n">uv_fs_stat</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">path</span><span class="p">,</span>
+<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="nf">uv_fs_stat</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">path</span><span class="p">,</span>
     <span class="n">uv_fs_cb</span> <span class="n">cb</span><span class="p">);</span>
 
-<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="n">uv_fs_fstat</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="n">uv_file</span> <span class="n">file</span><span class="p">,</span>
+<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="nf">uv_fs_fstat</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="n">uv_file</span> <span class="n">file</span><span class="p">,</span>
     <span class="n">uv_fs_cb</span> <span class="n">cb</span><span class="p">);</span>
 
-<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="n">uv_fs_rename</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">path</span><span class="p">,</span>
+<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="nf">uv_fs_rename</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">path</span><span class="p">,</span>
     <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">new_path</span><span class="p">,</span> <span class="n">uv_fs_cb</span> <span class="n">cb</span><span class="p">);</span>
 
-<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="n">uv_fs_fsync</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="n">uv_file</span> <span class="n">file</span><span class="p">,</span>
+<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="nf">uv_fs_fsync</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="n">uv_file</span> <span class="n">file</span><span class="p">,</span>
     <span class="n">uv_fs_cb</span> <span class="n">cb</span><span class="p">);</span>
 
-<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="n">uv_fs_fdatasync</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="n">uv_file</span> <span class="n">file</span><span class="p">,</span>
+<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="nf">uv_fs_fdatasync</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="n">uv_file</span> <span class="n">file</span><span class="p">,</span>
     <span class="n">uv_fs_cb</span> <span class="n">cb</span><span class="p">);</span>
 
-<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="n">uv_fs_ftruncate</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="n">uv_file</span> <span class="n">file</span><span class="p">,</span>
+<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="nf">uv_fs_ftruncate</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="n">uv_file</span> <span class="n">file</span><span class="p">,</span>
     <span class="kt">int64_t</span> <span class="n">offset</span><span class="p">,</span> <span class="n">uv_fs_cb</span> <span class="n">cb</span><span class="p">);</span>
 
-<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="n">uv_fs_sendfile</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="n">uv_file</span> <span class="n">out_fd</span><span class="p">,</span>
+<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="nf">uv_fs_sendfile</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="n">uv_file</span> <span class="n">out_fd</span><span class="p">,</span>
     <span class="n">uv_file</span> <span class="n">in_fd</span><span class="p">,</span> <span class="kt">int64_t</span> <span class="n">in_offset</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">length</span><span class="p">,</span> <span class="n">uv_fs_cb</span> <span class="n">cb</span><span class="p">);</span>
 
-<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="n">uv_fs_chmod</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">path</span><span class="p">,</span>
+<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="nf">uv_fs_chmod</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">path</span><span class="p">,</span>
     <span class="kt">int</span> <span class="n">mode</span><span class="p">,</span> <span class="n">uv_fs_cb</span> <span class="n">cb</span><span class="p">);</span>
 
-<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="n">uv_fs_utime</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">path</span><span class="p">,</span>
+<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="nf">uv_fs_utime</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">path</span><span class="p">,</span>
     <span class="kt">double</span> <span class="n">atime</span><span class="p">,</span> <span class="kt">double</span> <span class="n">mtime</span><span class="p">,</span> <span class="n">uv_fs_cb</span> <span class="n">cb</span><span class="p">);</span>
 
-<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="n">uv_fs_futime</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="n">uv_file</span> <span class="n">file</span><span class="p">,</span>
+<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="nf">uv_fs_futime</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="n">uv_file</span> <span class="n">file</span><span class="p">,</span>
     <span class="kt">double</span> <span class="n">atime</span><span class="p">,</span> <span class="kt">double</span> <span class="n">mtime</span><span class="p">,</span> <span class="n">uv_fs_cb</span> <span class="n">cb</span><span class="p">);</span>
 
-<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="n">uv_fs_lstat</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">path</span><span class="p">,</span>
+<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="nf">uv_fs_lstat</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">path</span><span class="p">,</span>
     <span class="n">uv_fs_cb</span> <span class="n">cb</span><span class="p">);</span>
 
-<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="n">uv_fs_link</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">path</span><span class="p">,</span>
+<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="nf">uv_fs_link</span><span class="p">(</span><span class="n">uv_loop_t</span><span class="o">*</span> <span class="n">loop</span><span class="p">,</span> <span class="n">uv_fs_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">path</span><span class="p">,</span>
     <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">new_path</span><span class="p">,</span> <span class="n">uv_fs_cb</span> <span class="n">cb</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>回调函数中应该调用 <tt class="docutils literal"><span class="pre">uv_fs_req_cleanup()</span></tt> 函数来释放 <tt class="docutils literal"><span class="pre">uv_fs_t</span></tt>
+<p>回调函数中应该调用 <code class="docutils literal"><span class="pre">uv_fs_req_cleanup()</span></code> 函数来释放 <code class="docutils literal"><span class="pre">uv_fs_t</span></code>
 参数占用的内存.</p>
 </div>
 <div class="section" id="buffers-and-streams">
 <span id="id3"></span><h2>缓冲区与流(Buffers and Streams)<a class="headerlink" href="#buffers-and-streams" title="Permalink to this headline">¶</a></h2>
-<p>libuv 中基本的 I/O 工具是流(<tt class="docutils literal"><span class="pre">uv_stream_t</span></tt>). TCP 套接字, UDP 套接字, 文件, 管道,
-和进程间通信都可以作为 <tt class="docutils literal"><span class="pre">流</span></tt> 的子类.</p>
-<p><tt class="docutils literal"><span class="pre">流</span></tt> (Streams) 通过每个子类特定的函数来初始化, 然后可以通过如下函数进行操作:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="kt">int</span> <span class="n">uv_read_start</span><span class="p">(</span><span class="n">uv_stream_t</span><span class="o">*</span><span class="p">,</span> <span class="n">uv_alloc_cb</span> <span class="n">alloc_cb</span><span class="p">,</span> <span class="n">uv_read_cb</span> <span class="n">read_cb</span><span class="p">);</span>
-<span class="kt">int</span> <span class="n">uv_read_stop</span><span class="p">(</span><span class="n">uv_stream_t</span><span class="o">*</span><span class="p">);</span>
-<span class="kt">int</span> <span class="n">uv_write</span><span class="p">(</span><span class="n">uv_write_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="n">uv_stream_t</span><span class="o">*</span> <span class="n">handle</span><span class="p">,</span>
+<p>libuv 中基本的 I/O 工具是流(<code class="docutils literal"><span class="pre">uv_stream_t</span></code>). TCP 套接字, UDP 套接字, 文件, 管道,
+和进程间通信都可以作为 <code class="docutils literal"><span class="pre">流</span></code> 的子类.</p>
+<p><code class="docutils literal"><span class="pre">流</span></code> (Streams) 通过每个子类特定的函数来初始化, 然后可以通过如下函数进行操作:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">uv_read_start</span><span class="p">(</span><span class="n">uv_stream_t</span><span class="o">*</span><span class="p">,</span> <span class="n">uv_alloc_cb</span> <span class="n">alloc_cb</span><span class="p">,</span> <span class="n">uv_read_cb</span> <span class="n">read_cb</span><span class="p">);</span>
+<span class="kt">int</span> <span class="nf">uv_read_stop</span><span class="p">(</span><span class="n">uv_stream_t</span><span class="o">*</span><span class="p">);</span>
+<span class="kt">int</span> <span class="nf">uv_write</span><span class="p">(</span><span class="n">uv_write_t</span><span class="o">*</span> <span class="n">req</span><span class="p">,</span> <span class="n">uv_stream_t</span><span class="o">*</span> <span class="n">handle</span><span class="p">,</span>
             <span class="n">uv_buf_t</span> <span class="n">bufs</span><span class="p">[],</span> <span class="kt">int</span> <span class="n">bufcnt</span><span class="p">,</span> <span class="n">uv_write_cb</span> <span class="n">cb</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>基于流的函数比上面介绍的文件系统相关的函数更容易使用, libuv 在调用 <tt class="docutils literal"><span class="pre">uv_read_start</span></tt>
-后会自动从流中读取数据, 直到调用了 <tt class="docutils literal"><span class="pre">uv_read_stop</span></tt>.</p>
-<p>用于保存数据的单元被抽象成了 buffer 结构 &#8211; <tt class="docutils literal"><span class="pre">uv_buf_t</span></tt>.
-它其实只保存了指向真实数据的指针(<tt class="docutils literal"><span class="pre">uv_buf_t.base</span></tt>) 以及真实数据的长度
-(<tt class="docutils literal"><span class="pre">uv_buf_t.len</span></tt>). <tt class="docutils literal"><span class="pre">uv_buf_t</span></tt> 本身是轻量级的, 通常作为值被传递给函数,
+<p>基于流的函数比上面介绍的文件系统相关的函数更容易使用, libuv 在调用 <code class="docutils literal"><span class="pre">uv_read_start</span></code>
+后会自动从流中读取数据, 直到调用了 <code class="docutils literal"><span class="pre">uv_read_stop</span></code>.</p>
+<p>用于保存数据的单元被抽象成了 buffer 结构 – <code class="docutils literal"><span class="pre">uv_buf_t</span></code>.
+它其实只保存了指向真实数据的指针(<code class="docutils literal"><span class="pre">uv_buf_t.base</span></code>) 以及真实数据的长度
+(<code class="docutils literal"><span class="pre">uv_buf_t.len</span></code>). <code class="docutils literal"><span class="pre">uv_buf_t</span></code> 本身是轻量级的, 通常作为值被传递给函数,
 真正需要进行内存管理的是 buffer 结构中的指针所指向的真实数据, 通常由应用程序申请分配并释放.</p>
-<p>为了示范流的用法, 我们借助了(管道) <tt class="docutils literal"><span class="pre">uv_pipe_t</span></tt> ,
-这使得我们把本地文件变成了流[#]_.  下面是利用 libuv 实现的一个简单的 <tt class="docutils literal"><span class="pre">tee</span></tt> .
+<p>为了示范流的用法, 我们借助了(管道) <code class="docutils literal"><span class="pre">uv_pipe_t</span></code> ,
+这使得我们把本地文件变成了流[#]_.  下面是利用 libuv 实现的一个简单的 <code class="docutils literal"><span class="pre">tee</span></code> .
 将所有的操作变成了异步方式后, 事件 I/O 的强大能力便展现出来.
 两个写操作并不会阻塞对方, 但是我们必须小心地拷贝数据至缓冲区,
 并确保在写入数据之前缓冲区不被释放.</p>
 <p>该程序按照如下方式执行:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="p">.</span><span class="o">/</span><span class="n">uvtee</span> <span class="o">&lt;</span><span class="n">output_file</span><span class="o">&gt;</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="p">.</span><span class="o">/</span><span class="n">uvtee</span> <span class="o">&lt;</span><span class="n">output_file</span><span class="o">&gt;</span>
 </pre></div>
 </div>
 <p>我们在指定的文件上打开了一个管道, libuv 的文件管道默认是双向打开的.</p>
@@ -334,7 +328,7 @@ libuv 中一次 &#8216;成功&#8217; 的写操作可能不会被立刻提交到�
 16
 17
 18
-19</pre></div></td><td class="code"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
+19</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
     <span class="n">loop</span> <span class="o">=</span> <span class="n">uv_default_loop</span><span class="p">();</span>
 
 <span class="hll">    <span class="n">uv_pipe_init</span><span class="p">(</span><span class="n">loop</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">stdin_pipe</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
@@ -355,12 +349,12 @@ libuv 中一次 &#8216;成功&#8217; 的写操作可能不会被立刻提交到�
 <span class="p">}</span>
 </pre></div>
 </td></tr></table></div>
-<p>若是 IPC 或命名管道, <tt class="docutils literal"><span class="pre">uv_pipe_init()</span></tt> 的第三个参数应该设置为 1, 我们会在
-<a class="reference internal" href="processes.html"><em>进程</em></a> 一节对此作出详细解释. 调用 <tt class="docutils literal"><span class="pre">uv_pipe_open()</span></tt>
+<p>若是 IPC 或命名管道, <code class="docutils literal"><span class="pre">uv_pipe_init()</span></code> 的第三个参数应该设置为 1, 我们会在
+<a class="reference internal" href="processes.html"><span class="doc">进程</span></a> 一节对此作出详细解释. 调用 <code class="docutils literal"><span class="pre">uv_pipe_open()</span></code>
 将文件描述符和文件关联在了一起.</p>
-<p>我们开始监控标准输入 <tt class="docutils literal"><span class="pre">stdin</span></tt>. 回调函数 <tt class="docutils literal"><span class="pre">alloc_buffer</span></tt>
-为程序开辟了一个新的缓冲区来容纳新到来的数据. <tt class="docutils literal"><span class="pre">read_stdin</span></tt> 也会被调用,
-并且 <tt class="docutils literal"><span class="pre">uv_buf_t</span></tt> 作为调用参数.</p>
+<p>我们开始监控标准输入 <code class="docutils literal"><span class="pre">stdin</span></code>. 回调函数 <code class="docutils literal"><span class="pre">alloc_buffer</span></code>
+为程序开辟了一个新的缓冲区来容纳新到来的数据. <code class="docutils literal"><span class="pre">read_stdin</span></code> 也会被调用,
+并且 <code class="docutils literal"><span class="pre">uv_buf_t</span></code> 作为调用参数.</p>
 <p class="rubric">uvtee/main.c - reading buffers</p>
 <div class="highlight-c"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
@@ -382,7 +376,7 @@ libuv 中一次 &#8216;成功&#8217; 的写操作可能不会被立刻提交到�
 18
 19
 20
-21</pre></div></td><td class="code"><div class="highlight"><pre><span class="n">uv_buf_t</span> <span class="nf">alloc_buffer</span><span class="p">(</span><span class="n">uv_handle_t</span> <span class="o">*</span><span class="n">handle</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">suggested_size</span><span class="p">)</span> <span class="p">{</span>
+21</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">uv_buf_t</span> <span class="nf">alloc_buffer</span><span class="p">(</span><span class="n">uv_handle_t</span> <span class="o">*</span><span class="n">handle</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">suggested_size</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">return</span> <span class="n">uv_buf_init</span><span class="p">((</span><span class="kt">char</span><span class="o">*</span><span class="p">)</span> <span class="n">malloc</span><span class="p">(</span><span class="n">suggested_size</span><span class="p">),</span> <span class="n">suggested_size</span><span class="p">);</span>
 <span class="p">}</span>
 
@@ -405,12 +399,12 @@ libuv 中一次 &#8216;成功&#8217; 的写操作可能不会被立刻提交到�
 <span class="p">}</span>
 </pre></div>
 </td></tr></table></div>
-<p>此处使用标准的 <tt class="docutils literal"><span class="pre">malloc</span></tt> 已经可以足够, 但是你也可以指定其他的内存分配策略.
+<p>此处使用标准的 <code class="docutils literal"><span class="pre">malloc</span></code> 已经可以足够, 但是你也可以指定其他的内存分配策略.
 例如, node.js 使用自己特定的 slab 分配器.</p>
-<p>在任何情况下出错, read 回调函数 <tt class="docutils literal"><span class="pre">nread</span></tt> 参数都为 -1. 出错原因可能是
-EOF(遇到文件尾), 在此种情况下我们使用 &#8216;&#8217;uv_close()&#8217;&#8217; 函数关闭所有的流,
-<tt class="docutils literal"><span class="pre">uv_close()</span></tt> 会根据所传递进来句柄的内部类型来自动处理. 如果没有出现错误,
-<tt class="docutils literal"><span class="pre">nread</span></tt> 是一个非负数, 意味着我们可以向输出流中写入 <tt class="docutils literal"><span class="pre">nread</span></tt> 字节的数据.
+<p>在任何情况下出错, read 回调函数 <code class="docutils literal"><span class="pre">nread</span></code> 参数都为 -1. 出错原因可能是
+EOF(遇到文件尾), 在此种情况下我们使用 ‘’uv_close()’’ 函数关闭所有的流,
+<code class="docutils literal"><span class="pre">uv_close()</span></code> 会根据所传递进来句柄的内部类型来自动处理. 如果没有出现错误,
+<code class="docutils literal"><span class="pre">nread</span></code> 是一个非负数, 意味着我们可以向输出流中写入 <code class="docutils literal"><span class="pre">nread</span></code> 字节的数据.
 最后记住一点, 缓冲区 buffer 的分配和释放是由应用程序负责的,
 所以记得释放不再使用的内存空间.</p>
 <p class="rubric">uvtee/main.c - Write to pipe</p>
@@ -438,7 +432,7 @@ EOF(遇到文件尾), 在此种情况下我们使用 &#8216;&#8217;uv_close()&#8
 22
 23
 24
-25</pre></div></td><td class="code"><div class="highlight"><pre><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+25</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
     <span class="n">uv_write_t</span> <span class="n">req</span><span class="p">;</span>
     <span class="n">uv_buf_t</span> <span class="n">buf</span><span class="p">;</span>
 <span class="p">}</span> <span class="n">write_req_t</span><span class="p">;</span>
@@ -465,16 +459,16 @@ EOF(遇到文件尾), 在此种情况下我们使用 &#8216;&#8217;uv_close()&#8
 <span class="p">}</span>
 </pre></div>
 </td></tr></table></div>
-<p><tt class="docutils literal"><span class="pre">write_data()</span></tt> 将读取的数据拷贝一份至缓冲区 <tt class="docutils literal"><span class="pre">req-&gt;buf.base</span></tt>, 同样地,
+<p><code class="docutils literal"><span class="pre">write_data()</span></code> 将读取的数据拷贝一份至缓冲区 <code class="docutils literal"><span class="pre">req-&gt;buf.base</span></code>, 同样地,
 当 write 完成后回调函数被调用时, 该缓冲区也并不会被传递到回调函数中, 所以,
-为了绕过这一缺点, 我们将写请求和缓冲区封装在 <tt class="docutils literal"><span class="pre">write_req_t</span></tt> 结构体中,
+为了绕过这一缺点, 我们将写请求和缓冲区封装在 <code class="docutils literal"><span class="pre">write_req_t</span></code> 结构体中,
 然后在回调函数中解封该结构体来获取相关参数.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
 <p>If your program is meant to be used with other programs it may knowingly or
 unknowingly be writing to a pipe. This makes it susceptible to <a class="reference external" href="http://pod.tst.eu/http://cvs.schmorp.de/libev/ev.pod#The_special_problem_of_SIGPIPE">aborting on
 receiving a SIGPIPE</a>. It is a good idea to insert:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="n">signal</span><span class="p">(</span><span class="n">SIGPIPE</span><span class="p">,</span> <span class="n">SIG_IGN</span><span class="p">)</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">signal</span><span class="p">(</span><span class="n">SIGPIPE</span><span class="p">,</span> <span class="n">SIG_IGN</span><span class="p">)</span>
 </pre></div>
 </div>
 <p class="last">in the initialization stages of your application.</p>
@@ -490,49 +484,45 @@ receiving a SIGPIPE</a>. It is a good idea to insert:</p>
 为了给出一个示例，我写了一个简单的工具, 该函数按照如下命令行运行，
 并监视指定的文件.</p>
 <blockquote>
-<div>./onchange &lt;command&gt; &lt;file1&gt; [file2] ...</div></blockquote>
-<p>文件变更通知通过 <tt class="docutils literal"><span class="pre">uv_fs_event_init()</span></tt> 启动:</p>
+<div>./onchange &lt;command&gt; &lt;file1&gt; [file2] …</div></blockquote>
+<p>文件变更通知通过 <code class="docutils literal"><span class="pre">uv_fs_event_init()</span></code> 启动:</p>
 <p class="rubric">onchange/main.c - The setup</p>
 <div class="highlight-c"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3
-4</pre></div></td><td class="code"><div class="highlight"><pre>    <span class="k">while</span> <span class="p">(</span><span class="n">argc</span><span class="o">--</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+4</pre></div></td><td class="code"><div class="highlight"><pre><span></span>    <span class="k">while</span> <span class="p">(</span><span class="n">argc</span><span class="o">--</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;Adding watch on %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">argv</span><span class="p">[</span><span class="n">argc</span><span class="p">]);</span>
 <span class="hll">        <span class="n">uv_fs_event_init</span><span class="p">(</span><span class="n">loop</span><span class="p">,</span> <span class="p">(</span><span class="n">uv_fs_event_t</span><span class="o">*</span><span class="p">)</span> <span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">uv_fs_event_t</span><span class="p">)),</span> <span class="n">argv</span><span class="p">[</span><span class="n">argc</span><span class="p">],</span> <span class="n">run_command</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
 </span>    <span class="p">}</span>
 </pre></div>
 </td></tr></table></div>
-<p>第三个参数是实际监控的文件或者文件夹, 最后一个参数 <tt class="docutils literal"><span class="pre">flags</span></tt> 可取值如下:</p>
-<div class="highlight-c"><div class="highlight"><pre> <span class="n">UV_FS_EVENT_WATCH_ENTRY</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<p>第三个参数是实际监控的文件或者文件夹, 最后一个参数 <code class="docutils literal"><span class="pre">flags</span></code> 可取值如下:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span> <span class="n">UV_FS_EVENT_WATCH_ENTRY</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
   <span class="n">UV_FS_EVENT_STAT</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
   <span class="n">UV_FS_EVENT_RECURSIVE</span> <span class="o">=</span> <span class="mi">3</span>
 </pre></div>
 </div>
-<p>若设置 <tt class="docutils literal"><span class="pre">UV_FS_EVENT_WATCH_ENTRY</span></tt> 和 <tt class="docutils literal"><span class="pre">UV_FS_EVENT_STAT</span></tt>
+<p>若设置 <code class="docutils literal"><span class="pre">UV_FS_EVENT_WATCH_ENTRY</span></code> 和 <code class="docutils literal"><span class="pre">UV_FS_EVENT_STAT</span></code>
 不做任何事情(目前).
-设置了 <tt class="docutils literal"><span class="pre">UV_FS_EVENT_RECURSIVE</span></tt> 将会监视子文件夹(需 libuv 支持).</p>
+设置了 <code class="docutils literal"><span class="pre">UV_FS_EVENT_RECURSIVE</span></code> 将会监视子文件夹(需 libuv 支持).</p>
 <p>回调函数将接受以下参数:</p>
 <blockquote>
-<div><ol class="arabic">
+<div><ol class="arabic simple">
 <li><dl class="first docutils">
-<dt><tt class="docutils literal"><span class="pre">uv_fs_event_t</span> <span class="pre">*handle</span></tt> - 监视器. <tt class="docutils literal"><span class="pre">filename</span></tt></dt>
-<dd><p class="first last">字段是该监视器需要监视的文件.</p>
-</dd>
+<dt><code class="docutils literal"><span class="pre">uv_fs_event_t</span> <span class="pre">*handle</span></code> - 监视器. <code class="docutils literal"><span class="pre">filename</span></code></dt>
+<dd>字段是该监视器需要监视的文件.</dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><tt class="docutils literal"><span class="pre">const</span> <span class="pre">char</span> <span class="pre">*filename</span></tt> - 如果监视目录, 则该参数指明该目录中发生了变更的文件,</dt>
-<dd><p class="first last">在 Linux 和 Windows 平台上可以是非 <tt class="docutils literal"><span class="pre">null</span></tt>.</p>
-</dd>
+<dt><code class="docutils literal"><span class="pre">const</span> <span class="pre">char</span> <span class="pre">*filename</span></code> - 如果监视目录, 则该参数指明该目录中发生了变更的文件,</dt>
+<dd>在 Linux 和 Windows 平台上可以是非 <code class="docutils literal"><span class="pre">null</span></code>.</dd>
 </dl>
 </li>
-<li><p class="first"><tt class="docutils literal"><span class="pre">int</span> <span class="pre">flags</span></tt> - <tt class="docutils literal"><span class="pre">UV_RENAME</span></tt> 或 <tt class="docutils literal"><span class="pre">UV_CHANGE</span></tt>.</p>
-</li>
-<li><p class="first"><tt class="docutils literal"><span class="pre">int</span> <span class="pre">status</span></tt> - 目前为 0.</p>
-</li>
+<li><code class="docutils literal"><span class="pre">int</span> <span class="pre">flags</span></code> - <code class="docutils literal"><span class="pre">UV_RENAME</span></code> 或 <code class="docutils literal"><span class="pre">UV_CHANGE</span></code>.</li>
+<li><code class="docutils literal"><span class="pre">int</span> <span class="pre">status</span></code> - 目前为 0.</li>
 </ol>
 </div></blockquote>
-<p>我们的例子只是简单地打印出参数, 并通过 <tt class="docutils literal"><span class="pre">system</span></tt> 函数运行指定命令.</p>
+<p>我们的例子只是简单地打印出参数, 并通过 <code class="docutils literal"><span class="pre">system</span></code> 函数运行指定命令.</p>
 <p class="rubric">onchange/main.c - file change notification callback</p>
 <div class="highlight-c"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
@@ -543,14 +533,14 @@ receiving a SIGPIPE</a>. It is a good idea to insert:</p>
  7
  8
  9
-10</pre></div></td><td class="code"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">run_command</span><span class="p">(</span><span class="n">uv_fs_event_t</span> <span class="o">*</span><span class="n">handle</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">filename</span><span class="p">,</span> <span class="kt">int</span> <span class="n">events</span><span class="p">,</span> <span class="kt">int</span> <span class="n">status</span><span class="p">)</span> <span class="p">{</span>
+10</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">run_command</span><span class="p">(</span><span class="n">uv_fs_event_t</span> <span class="o">*</span><span class="n">handle</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">filename</span><span class="p">,</span> <span class="kt">int</span> <span class="n">events</span><span class="p">,</span> <span class="kt">int</span> <span class="n">status</span><span class="p">)</span> <span class="p">{</span>
     <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;Change detected in %s: &quot;</span><span class="p">,</span> <span class="n">handle</span><span class="o">-&gt;</span><span class="n">filename</span><span class="p">);</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">events</span> <span class="o">==</span> <span class="n">UV_RENAME</span><span class="p">)</span>
         <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;renamed&quot;</span><span class="p">);</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">events</span> <span class="o">==</span> <span class="n">UV_CHANGE</span><span class="p">)</span>
         <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;changed&quot;</span><span class="p">);</span>
 
-    <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot; %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">filename</span> <span class="o">?</span> <span class="n">filename</span> <span class="o">:</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
+    <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot; %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">filename</span> <span class="o">?</span> <span class="nl">filename</span> <span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
     <span class="n">system</span><span class="p">(</span><span class="n">command</span><span class="p">);</span>
 <span class="p">}</span>
 </pre></div>
@@ -566,7 +556,7 @@ ReadDirectoryChangesW on Windows, event ports on Solaris, unsupported on Cygwin<
 <table class="docutils footnote" frame="void" id="id5" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label">[2]</td><td>参考 <a class="reference internal" href="processes.html#pipes"><em>管道(Pipes)</em></a></td></tr>
+<tr><td class="label">[2]</td><td>参考 <a class="reference internal" href="processes.html#pipes"><span class="std std-ref">管道(Pipes)</span></a></td></tr>
 </tbody>
 </table>
 </div>
@@ -574,7 +564,7 @@ ReadDirectoryChangesW on Windows, event ports on Solaris, unsupported on Cygwin<
 
 
       </div>
-      <div class="bottomnav">
+      <div class="bottomnav" role="navigation" aria-label="bottom navigation">
       
         <p>
         «&#160;&#160;<a href="basics.html">Libuv 基础</a>
@@ -586,9 +576,9 @@ ReadDirectoryChangesW on Windows, event ports on Solaris, unsupported on Cygwin<
 
       </div>
 
-    <div class="footer">
-        &copy; Copyright 2012, Nikhil Marathe.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2012, Nikhil Marathe.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
     </div>
   </body>
 </html>

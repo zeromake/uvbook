@@ -1,35 +1,29 @@
 
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>网络 &mdash; An Introduction to libuv</title>
-    
+    <title>网络 &#8212; An Introduction to libuv</title>
     <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/print.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
+        URL_ROOT:    './',
         VERSION:     '1.0.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/javascript" src="_static/theme_extras.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
-    <link rel="top" title="An Introduction to libuv" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="线程" href="threads.html" />
     <link rel="prev" title="文件系统" href="filesystem.html" />
 <script type="text/javascript">
@@ -48,11 +42,11 @@
 
   </head>
   <body>
-      <div class="header"><h1 class="heading"><a href="index.html">
+      <div class="header" role="banner"><h1 class="heading"><a href="index.html">
           <span>An Introduction to libuv</span></a></h1>
         <h2 class="heading"><span>网络</span></h2>
       </div>
-      <div class="topnav">
+      <div class="topnav" role="navigation" aria-label="top navigation">
       
         <p>
         «&#160;&#160;<a href="filesystem.html">文件系统</a>
@@ -73,7 +67,7 @@
 另外 libuv 也提供了一些工具类的函数抽象了一些让人生厌的,
 重复而底层的任务,比如使用 BSD 套接字结构来建立套接字, DNS 查询,
 或者其他各种参数的设置.</p>
-<p>libuv 中在网络 I/O 中使用了 <tt class="docutils literal"><span class="pre">uv_tcp_t</span></tt> 和 <tt class="docutils literal"><span class="pre">uv_udp_t</span></tt> 两个结构体.</p>
+<p>libuv 中在网络 I/O 中使用了 <code class="docutils literal"><span class="pre">uv_tcp_t</span></code> 和 <code class="docutils literal"><span class="pre">uv_udp_t</span></code> 两个结构体.</p>
 <div class="section" id="tcp">
 <h2>TCP<a class="headerlink" href="#tcp" title="Permalink to this headline">¶</a></h2>
 <p>TCP 是一种面向连接的流式协议, 因此是基于 libuv 的流式基础架构上的.</p>
@@ -81,12 +75,12 @@
 <h3>服务器(Server)<a class="headerlink" href="#server" title="Permalink to this headline">¶</a></h3>
 <p>服务器端的 sockets 处理流程如下:</p>
 <ol class="arabic simple">
-<li><tt class="docutils literal"><span class="pre">uv_tcp_init</span></tt> 初始化 TCP 监视器.</li>
-<li><tt class="docutils literal"><span class="pre">uv_tcp_bind</span></tt> 绑定.</li>
-<li>在指定的监视器上调用 <tt class="docutils literal"><span class="pre">uv_listen</span></tt> 来设置回调函数, 当有新的客户端连接到来时,
+<li><code class="docutils literal"><span class="pre">uv_tcp_init</span></code> 初始化 TCP 监视器.</li>
+<li><code class="docutils literal"><span class="pre">uv_tcp_bind</span></code> 绑定.</li>
+<li>在指定的监视器上调用 <code class="docutils literal"><span class="pre">uv_listen</span></code> 来设置回调函数, 当有新的客户端连接到来时,
 libuv 就会调用设置的回调函数.</li>
-<li><tt class="docutils literal"><span class="pre">uv_accept</span></tt> 接受连接.</li>
-<li>使用 <a class="reference internal" href="filesystem.html#buffers-and-streams"><em>stream operations</em></a> 与客户端进行通信.</li>
+<li><code class="docutils literal"><span class="pre">uv_accept</span></code> 接受连接.</li>
+<li>使用 <a class="reference internal" href="filesystem.html#buffers-and-streams"><span class="std std-ref">stream operations</span></a> 与客户端进行通信.</li>
 </ol>
 <p>以下是一个简单的 echo 服务器的例子:</p>
 <p class="rubric">tcp-echo-server/main.c - The listen socket</p>
@@ -104,7 +98,7 @@ libuv 就会调用设置的回调函数.</li>
 12
 13
 14
-15</pre></div></td><td class="code"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+15</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
     <span class="n">loop</span> <span class="o">=</span> <span class="n">uv_default_loop</span><span class="p">();</span>
 
 <span class="hll">    <span class="n">uv_tcp_t</span> <span class="n">server</span><span class="p">;</span>
@@ -121,18 +115,18 @@ libuv 就会调用设置的回调函数.</li>
 <span class="p">}</span>
 </pre></div>
 </td></tr></table></div>
-<p>你可以看到辅助函数 <tt class="docutils literal"><span class="pre">uv_ip4_addr</span></tt> 用来将人为可读的字符串类型的 IP
-地址和端口号转换成 BSD 套接字 API 所需要的 <tt class="docutils literal"><span class="pre">struct</span> <span class="pre">sockaddr_in</span></tt> 类型的结构.
-逆变换可以使用 <tt class="docutils literal"><span class="pre">uv_ip4_name</span></tt> 来完成.</p>
+<p>你可以看到辅助函数 <code class="docutils literal"><span class="pre">uv_ip4_addr</span></code> 用来将人为可读的字符串类型的 IP
+地址和端口号转换成 BSD 套接字 API 所需要的 <code class="docutils literal"><span class="pre">struct</span> <span class="pre">sockaddr_in</span></code> 类型的结构.
+逆变换可以使用 <code class="docutils literal"><span class="pre">uv_ip4_name</span></code> 来完成.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">对于 IPv6 来说应该使用 <tt class="docutils literal"><span class="pre">uv_ip6_*</span></tt> 形式的函数.</p>
+<p class="last">对于 IPv6 来说应该使用 <code class="docutils literal"><span class="pre">uv_ip6_*</span></code> 形式的函数.</p>
 </div>
-<p>大部分的设置(setup)函数都是普通函数, 因为他们都是 <tt class="docutils literal"><span class="pre">计算密集型(CPU-bound)</span></tt>,
-直到调用了 <tt class="docutils literal"><span class="pre">uv_listen</span></tt> 我们才回到 libuv 中回调函数风格.
-<tt class="docutils literal"><span class="pre">uv_listen</span></tt> 的第二个参数 backlog 队列长度 &#8211; 即连接队列最大长度.</p>
+<p>大部分的设置(setup)函数都是普通函数, 因为他们都是 <code class="docutils literal"><span class="pre">计算密集型(CPU-bound)</span></code>,
+直到调用了 <code class="docutils literal"><span class="pre">uv_listen</span></code> 我们才回到 libuv 中回调函数风格.
+<code class="docutils literal"><span class="pre">uv_listen</span></code> 的第二个参数 backlog 队列长度 – 即连接队列最大长度.</p>
 <p>当客户端发起了新的连接时, 回调函数需要为客户端套接字设置一个监视器,
-并调用 <tt class="docutils literal"><span class="pre">uv_accept</span></tt> 函数将客户端套接字与新的监视器在关联一起.
+并调用 <code class="docutils literal"><span class="pre">uv_accept</span></code> 函数将客户端套接字与新的监视器在关联一起.
 在例子中我们将从流中读取数据.</p>
 <p class="rubric">tcp-echo-server/main.c - Accepting the client</p>
 <div class="highlight-c"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
@@ -149,7 +143,7 @@ libuv 就会调用设置的回调函数.</li>
 12
 13
 14
-15</pre></div></td><td class="code"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">on_new_connection</span><span class="p">(</span><span class="n">uv_stream_t</span> <span class="o">*</span><span class="n">server</span><span class="p">,</span> <span class="kt">int</span> <span class="n">status</span><span class="p">)</span> <span class="p">{</span>
+15</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">on_new_connection</span><span class="p">(</span><span class="n">uv_stream_t</span> <span class="o">*</span><span class="n">server</span><span class="p">,</span> <span class="kt">int</span> <span class="n">status</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">status</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
         <span class="c1">// error!</span>
         <span class="k">return</span><span class="p">;</span>
@@ -167,15 +161,15 @@ libuv 就会调用设置的回调函数.</li>
 </pre></div>
 </td></tr></table></div>
 <p>剩余部分的函数与上一节流式例子中的代码相似, 你可以在例子程序中找到具体代码,
-如果套接字不再使用记得调用 <tt class="docutils literal"><span class="pre">uv_close</span></tt> 关闭该套接字.
-如果你不再接受连接, 你可以在 <tt class="docutils literal"><span class="pre">uv_listen</span></tt> 的回调函数中关闭套接字.</p>
+如果套接字不再使用记得调用 <code class="docutils literal"><span class="pre">uv_close</span></code> 关闭该套接字.
+如果你不再接受连接, 你可以在 <code class="docutils literal"><span class="pre">uv_listen</span></code> 的回调函数中关闭套接字.</p>
 </div>
 <div class="section" id="client">
 <h3>客户端(Client)<a class="headerlink" href="#client" title="Permalink to this headline">¶</a></h3>
-<p>在服务器端你需要调用 bind/listen/accept, 而在客户端你只需要调用 <tt class="docutils literal"><span class="pre">uv_tcp_connect</span></tt>.
-<tt class="docutils literal"><span class="pre">uv_tcp_connect</span></tt> 使用了与 <tt class="docutils literal"><span class="pre">uv_listen</span></tt> 风格相似的回调函数 <tt class="docutils literal"><span class="pre">uv_connect_cb</span></tt>
+<p>在服务器端你需要调用 bind/listen/accept, 而在客户端你只需要调用 <code class="docutils literal"><span class="pre">uv_tcp_connect</span></code>.
+<code class="docutils literal"><span class="pre">uv_tcp_connect</span></code> 使用了与 <code class="docutils literal"><span class="pre">uv_listen</span></code> 风格相似的回调函数 <code class="docutils literal"><span class="pre">uv_connect_cb</span></code>
 如下:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="n">uv_tcp_t</span> <span class="n">socket</span><span class="p">;</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">uv_tcp_t</span> <span class="n">socket</span><span class="p">;</span>
 <span class="n">uv_tcp_init</span><span class="p">(</span><span class="n">loop</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">socket</span><span class="p">);</span>
 
 <span class="n">uv_connect_t</span> <span class="n">connect</span><span class="p">;</span>
@@ -185,19 +179,19 @@ libuv 就会调用设置的回调函数.</li>
 <span class="n">uv_tcp_connect</span><span class="p">(</span><span class="o">&amp;</span><span class="n">connect</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">socket</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">on_connect</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>建立连接后会调用 <tt class="docutils literal"><span class="pre">on_connect</span></tt>.</p>
+<p>建立连接后会调用 <code class="docutils literal"><span class="pre">on_connect</span></code>.</p>
 </div>
 </div>
 <div class="section" id="udp">
 <h2>UDP<a class="headerlink" href="#udp" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="http://en.wikipedia.org/wiki/User_Datagram_Protocol">User Datagram Protocol</a> 提供了无连接, 不可靠网络通信协议, 因此 libuv
-并不提供流式 UDP 服务, 而是通过 <tt class="docutils literal"><span class="pre">uv_udp_t</span></tt> 结构体(用于接收)和
+并不提供流式 UDP 服务, 而是通过 <code class="docutils literal"><span class="pre">uv_udp_t</span></code> 结构体(用于接收)和
 <cite>uv_udp_send_t</cite> 结构体(用于发送)以及相关的函数给开发人员提供了非阻塞的 UDP
 服务. 所以, 真正读写 UDP 的函数与普通的流式读写非常相似.为了示范如何使用 UDP,
-下面提供了一个简单的例子用来从 <a class="reference external" href="http://tools.ietf.org/html/rfc2131">DHCP</a> 获取 IP 地址. &#8211; DHCP 发现.</p>
+下面提供了一个简单的例子用来从 <a class="reference external" href="http://tools.ietf.org/html/rfc2131">DHCP</a> 获取 IP 地址. – DHCP 发现.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">你应该以 <strong>root</strong> 用户运行 <tt class="docutils literal"><span class="pre">udp-dhcp</span></tt>, 因为该程序使用了端口号低于 1024 的端口.</p>
+<p class="last">你应该以 <strong>root</strong> 用户运行 <code class="docutils literal"><span class="pre">udp-dhcp</span></code>, 因为该程序使用了端口号低于 1024 的端口.</p>
 </div>
 <p class="rubric">udp-dhcp/main.c - Setup and send UDP packets</p>
 <div class="highlight-c"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
@@ -223,7 +217,7 @@ libuv 就会调用设置的回调函数.</li>
 21
 22
 23
-24</pre></div></td><td class="code"><div class="highlight"><pre><span class="n">uv_loop_t</span> <span class="o">*</span><span class="n">loop</span><span class="p">;</span>
+24</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">uv_loop_t</span> <span class="o">*</span><span class="n">loop</span><span class="p">;</span>
 <span class="n">uv_udp_t</span> <span class="n">send_socket</span><span class="p">;</span>
 <span class="n">uv_udp_t</span> <span class="n">recv_socket</span><span class="p">;</span>
 
@@ -251,18 +245,18 @@ libuv 就会调用设置的回调函数.</li>
 </td></tr></table></div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last"><tt class="docutils literal"><span class="pre">0.0.0.0</span></tt> 地址可以绑定本机所有网口. <tt class="docutils literal"><span class="pre">255.255.255.255</span></tt> 是广播地址,
-意味着网络包可以发送给子网中所有网口, 端口 <tt class="docutils literal"><span class="pre">0</span></tt> 说明操作系统可以任意指定端口进行绑定.</p>
+<p class="last"><code class="docutils literal"><span class="pre">0.0.0.0</span></code> 地址可以绑定本机所有网口. <code class="docutils literal"><span class="pre">255.255.255.255</span></code> 是广播地址,
+意味着网络包可以发送给子网中所有网口, 端口 <code class="docutils literal"><span class="pre">0</span></code> 说明操作系统可以任意指定端口进行绑定.</p>
 </div>
 <p>首先我们在 68 号端口上设置了绑定本机所有网口的接收套接字(DHCP 客户端),
 并且设置了读监视器. 然后我们利用相同的方法设置了一个用于发送消息的套接字.
-并使用 <tt class="docutils literal"><span class="pre">uv_udp_send</span></tt> 在 67 号端口上(DHCP 服务器)发送 <em>广播消息</em>.</p>
-<p>设置广播标志也是 <strong>必要</strong> 的, 不然你会得到 <tt class="docutils literal"><span class="pre">EACCES</span></tt> 错误 <a class="footnote-reference" href="#id6" id="id2">[1]</a>.
+并使用 <code class="docutils literal"><span class="pre">uv_udp_send</span></code> 在 67 号端口上(DHCP 服务器)发送 <em>广播消息</em>.</p>
+<p>设置广播标志也是 <strong>必要</strong> 的, 不然你会得到 <code class="docutils literal"><span class="pre">EACCES</span></code> 错误 <a class="footnote-reference" href="#id6" id="id2">[1]</a>.
 发送的具体消息与本书无关, 如果你对此感兴趣, 可以参考源码. 若出错,
 则读写回调函数会收到 -1 状态码.</p>
 <p>由于 UDP 套接字并不和特定的对等方保持连接,
 所以 read 回调函数中将会收到用于标识发送者的额外信息. 如果缓冲区是由你自己的分配的,
-并且不够容纳接收的数据, 则``flags`` 标志位可能是 <tt class="docutils literal"><span class="pre">UV_UDP_PARTIAL</span></tt>.
+并且不够容纳接收的数据, 则``flags`` 标志位可能是 <code class="docutils literal"><span class="pre">UV_UDP_PARTIAL</span></code>.
 <em>在这种情况下, 操作系统会丢弃不能容纳的数据.</em> (这也是 UDP 为你提供的特性).</p>
 <p class="rubric">udp-dhcp/main.c - Reading packets</p>
 <div class="highlight-c"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
@@ -281,7 +275,7 @@ libuv 就会调用设置的回调函数.</li>
 14
 15
 16
-17</pre></div></td><td class="code"><div class="highlight"><pre><span class="hll"><span class="kt">void</span> <span class="nf">on_read</span><span class="p">(</span><span class="n">uv_udp_t</span> <span class="o">*</span><span class="n">req</span><span class="p">,</span> <span class="kt">ssize_t</span> <span class="n">nread</span><span class="p">,</span> <span class="n">uv_buf_t</span> <span class="n">buf</span><span class="p">,</span> <span class="k">struct</span> <span class="n">sockaddr</span> <span class="o">*</span><span class="n">addr</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="n">flags</span><span class="p">)</span> <span class="p">{</span>
+17</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="hll"><span class="kt">void</span> <span class="nf">on_read</span><span class="p">(</span><span class="n">uv_udp_t</span> <span class="o">*</span><span class="n">req</span><span class="p">,</span> <span class="kt">ssize_t</span> <span class="n">nread</span><span class="p">,</span> <span class="n">uv_buf_t</span> <span class="n">buf</span><span class="p">,</span> <span class="k">struct</span> <span class="n">sockaddr</span> <span class="o">*</span><span class="n">addr</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="n">flags</span><span class="p">)</span> <span class="p">{</span>
 </span>    <span class="k">if</span> <span class="p">(</span><span class="n">nread</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;Read error %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">uv_err_name</span><span class="p">(</span><span class="n">uv_last_error</span><span class="p">(</span><span class="n">loop</span><span class="p">)));</span>
         <span class="n">uv_close</span><span class="p">((</span><span class="n">uv_handle_t</span><span class="o">*</span><span class="p">)</span> <span class="n">req</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
@@ -304,32 +298,32 @@ libuv 就会调用设置的回调函数.</li>
 <h3>UDP 选项(UDP Options)<a class="headerlink" href="#udp-udp-options" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="ttl-time-to-live">
 <h4>生存时间TTL(Time-to-live)<a class="headerlink" href="#ttl-time-to-live" title="Permalink to this headline">¶</a></h4>
-<p>可以通过 <tt class="docutils literal"><span class="pre">uv_udp_set_ttl</span></tt> 来设置网络数据包的生存时间(TTL).</p>
+<p>可以通过 <code class="docutils literal"><span class="pre">uv_udp_set_ttl</span></code> 来设置网络数据包的生存时间(TTL).</p>
 </div>
 <div class="section" id="ipv6">
 <h4>仅使用 IPv6 协议<a class="headerlink" href="#ipv6" title="Permalink to this headline">¶</a></h4>
 <p>IPv6 套接字可以同时在 IPv4 和 IPv6 协议下进行通信. 如果你只想使用 IPv6
-套接字, 在调用 <tt class="docutils literal"><span class="pre">uv_udp_bind6</span></tt> <a class="footnote-reference" href="#id7" id="id3">[2]</a> 时请传递 <tt class="docutils literal"><span class="pre">UV_UDP_IPV6ONLY</span></tt> 参数.</p>
+套接字, 在调用 <code class="docutils literal"><span class="pre">uv_udp_bind6</span></code> <a class="footnote-reference" href="#id7" id="id3">[2]</a> 时请传递 <code class="docutils literal"><span class="pre">UV_UDP_IPV6ONLY</span></code> 参数.</p>
 </div>
 <div class="section" id="multicast">
 <h4>多播(Multicast)<a class="headerlink" href="#multicast" title="Permalink to this headline">¶</a></h4>
 <p>套接字可以使用如下函数订阅(取消订阅)一个多播组:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="n">uv_udp_set_membership</span><span class="p">(</span><span class="n">uv_udp_t</span><span class="o">*</span> <span class="n">handle</span><span class="p">,</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="nf">uv_udp_set_membership</span><span class="p">(</span><span class="n">uv_udp_t</span><span class="o">*</span> <span class="n">handle</span><span class="p">,</span>
     <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">multicast_addr</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">interface_addr</span><span class="p">,</span>
     <span class="n">uv_membership</span> <span class="n">membership</span><span class="p">);</span>
 </pre></div>
 </div>
-<p><tt class="docutils literal"><span class="pre">membership</span></tt> 取值可以是 <tt class="docutils literal"><span class="pre">UV_JOIN_GROUP</span></tt> 或 <tt class="docutils literal"><span class="pre">UV_LEAVE_GROUP</span></tt>.</p>
-<p>多播包的本地回路是默认开启的 <a class="footnote-reference" href="#id8" id="id4">[3]</a>, 可以使用 <tt class="docutils literal"><span class="pre">uv_udp_set_multicast_loop</span></tt> 来开启/关闭该特性.</p>
-<p>多播包的生存时间可以使用 <tt class="docutils literal"><span class="pre">uv_udp_set_multicast_ttl</span></tt> 来设置.</p>
+<p><code class="docutils literal"><span class="pre">membership</span></code> 取值可以是 <code class="docutils literal"><span class="pre">UV_JOIN_GROUP</span></code> 或 <code class="docutils literal"><span class="pre">UV_LEAVE_GROUP</span></code>.</p>
+<p>多播包的本地回路是默认开启的 <a class="footnote-reference" href="#id8" id="id4">[3]</a>, 可以使用 <code class="docutils literal"><span class="pre">uv_udp_set_multicast_loop</span></code> 来开启/关闭该特性.</p>
+<p>多播包的生存时间可以使用 <code class="docutils literal"><span class="pre">uv_udp_set_multicast_ttl</span></code> 来设置.</p>
 </div>
 </div>
 </div>
 <div class="section" id="dns-querying-dns">
 <h2>DNS 查询(Querying DNS)<a class="headerlink" href="#dns-querying-dns" title="Permalink to this headline">¶</a></h2>
-<p>libuv 提供了异步解析 DNS 的功能, 用于替代 <tt class="docutils literal"><span class="pre">getaddrinfo</span></tt> <a class="footnote-reference" href="#id9" id="id5">[4]</a>.
+<p>libuv 提供了异步解析 DNS 的功能, 用于替代 <code class="docutils literal"><span class="pre">getaddrinfo</span></code> <a class="footnote-reference" href="#id9" id="id5">[4]</a>.
 在回调函数中, 你可以在获得的 IP 地址上执行普通的套接字操作.
-让我们通过一个简单的 DNS 解析的例子来看看怎么连接 <tt class="docutils literal"><span class="pre">Freenode</span></tt> 吧:</p>
+让我们通过一个简单的 DNS 解析的例子来看看怎么连接 <code class="docutils literal"><span class="pre">Freenode</span></code> 吧:</p>
 <p class="rubric">dns/main.c</p>
 <div class="highlight-c"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
@@ -349,7 +343,7 @@ libuv 就会调用设置的回调函数.</li>
 16
 17
 18
-19</pre></div></td><td class="code"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+19</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
     <span class="n">loop</span> <span class="o">=</span> <span class="n">uv_default_loop</span><span class="p">();</span>
 
     <span class="k">struct</span> <span class="n">addrinfo</span> <span class="n">hints</span><span class="p">;</span>
@@ -370,11 +364,11 @@ libuv 就会调用设置的回调函数.</li>
 <span class="p">}</span>
 </pre></div>
 </td></tr></table></div>
-<p>如果 <tt class="docutils literal"><span class="pre">uv_getaddrinfo</span></tt> 返回非零, 表示在建立连接时出错, 你设置的回调函数不会被调用,
-所有的参数将会在 <tt class="docutils literal"><span class="pre">uv_getaddrinfo</span></tt> 返回后被立即释放. 有关 <cite>hostname</cite>, <cite>servname</cite> 和  <cite>hints</cite>
+<p>如果 <code class="docutils literal"><span class="pre">uv_getaddrinfo</span></code> 返回非零, 表示在建立连接时出错, 你设置的回调函数不会被调用,
+所有的参数将会在 <code class="docutils literal"><span class="pre">uv_getaddrinfo</span></code> 返回后被立即释放. 有关 <cite>hostname</cite>, <cite>servname</cite> 和  <cite>hints</cite>
 结构体的文档可以在 <a class="reference external" href="http://www.kernel.org/doc/man-pages/online/pages/man3/getaddrinfo.3.html">getaddrinfo</a> 帮助页面中找到.</p>
-<p>在解析回调函数中, 你可以在 <tt class="docutils literal"><span class="pre">struct</span> <span class="pre">addrinfo(s)</span></tt> 结构的链表中任取一个 IP.
-这个例子也演示了如何使用 <tt class="docutils literal"><span class="pre">uv_tcp_connect</span></tt>. 你在回调函数中有必要调用 <tt class="docutils literal"><span class="pre">uv_freeaddrinfo</span></tt>.</p>
+<p>在解析回调函数中, 你可以在 <code class="docutils literal"><span class="pre">struct</span> <span class="pre">addrinfo(s)</span></code> 结构的链表中任取一个 IP.
+这个例子也演示了如何使用 <code class="docutils literal"><span class="pre">uv_tcp_connect</span></code>. 你在回调函数中有必要调用 <code class="docutils literal"><span class="pre">uv_freeaddrinfo</span></code>.</p>
 <p class="rubric">dns/main.c</p>
 <div class="highlight-c"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
@@ -394,7 +388,7 @@ libuv 就会调用设置的回调函数.</li>
 16
 17
 18
-19</pre></div></td><td class="code"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">on_resolved</span><span class="p">(</span><span class="n">uv_getaddrinfo_t</span> <span class="o">*</span><span class="n">resolver</span><span class="p">,</span> <span class="kt">int</span> <span class="n">status</span><span class="p">,</span> <span class="k">struct</span> <span class="n">addrinfo</span> <span class="o">*</span><span class="n">res</span><span class="p">)</span> <span class="p">{</span>
+19</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">on_resolved</span><span class="p">(</span><span class="n">uv_getaddrinfo_t</span> <span class="o">*</span><span class="n">resolver</span><span class="p">,</span> <span class="kt">int</span> <span class="n">status</span><span class="p">,</span> <span class="k">struct</span> <span class="n">addrinfo</span> <span class="o">*</span><span class="n">res</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">status</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;getaddrinfo callback error %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">uv_err_name</span><span class="p">(</span><span class="n">uv_last_error</span><span class="p">(</span><span class="n">loop</span><span class="p">)));</span>
         <span class="k">return</span><span class="p">;</span>
@@ -418,7 +412,7 @@ libuv 就会调用设置的回调函数.</li>
 </div>
 <div class="section" id="network-interfaces">
 <h2>网络接口(Network interfaces)<a class="headerlink" href="#network-interfaces" title="Permalink to this headline">¶</a></h2>
-<p>系统网络接口信息可以通过调用 <tt class="docutils literal"><span class="pre">uv_interface_addresses</span></tt> 来获得,
+<p>系统网络接口信息可以通过调用 <code class="docutils literal"><span class="pre">uv_interface_addresses</span></code> 来获得,
 下面的示例程序将打印出机器上所有网络接口的细节信息,
 因此你可以获知网口的哪些域的信息是可以得到的, 这在你的程序启动时绑定 IP 很方便.</p>
 <p class="rubric">interfaces/main.c</p>
@@ -454,8 +448,8 @@ libuv 就会调用设置的回调函数.</li>
 30
 31
 32
-33</pre></div></td><td class="code"><div class="highlight"><pre><span class="cp">#include &lt;stdio.h&gt;</span>
-<span class="cp">#include &lt;uv.h&gt;</span>
+33</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;uv.h&gt;</span><span class="cp"></span>
 
 <span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
     <span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="mi">512</span><span class="p">];</span>
@@ -489,7 +483,7 @@ libuv 就会调用设置的回调函数.</li>
 <span class="p">}</span>
 </pre></div>
 </td></tr></table></div>
-<p><tt class="docutils literal"><span class="pre">is_internal</span></tt> 对于回环接口来说为 true. 请注意如果物理网口使用了多个
+<p><code class="docutils literal"><span class="pre">is_internal</span></code> 对于回环接口来说为 true. 请注意如果物理网口使用了多个
 IPv4/IPv6 地址, 那么它的名称将会被多次报告, 因为每个地址都会报告一次.</p>
 <hr class="docutils" />
 <table class="docutils footnote" frame="void" id="id6" rules="none">
@@ -513,7 +507,7 @@ IPv4/IPv6 地址, 那么它的名称将会被多次报告, 因为每个地址都
 <table class="docutils footnote" frame="void" id="id9" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id5">[4]</a></td><td>libuv 使用线程池调用系统的 <tt class="docutils literal"><span class="pre">getaddrinfo</span></tt> 函数. libuv
+<tr><td class="label"><a class="fn-backref" href="#id5">[4]</a></td><td>libuv 使用线程池调用系统的 <code class="docutils literal"><span class="pre">getaddrinfo</span></code> 函数. libuv
 v0.8.0 及以前的版本引入 <a class="reference external" href="http://c-ares.haxx.se">c-ares</a> 作为异步 DNS 解析器, 但是在 v0.9.0中已经移除 <a class="reference external" href="http://c-ares.haxx.se">c-ares</a> 相关依赖了.</td></tr>
 </tbody>
 </table>
@@ -522,7 +516,7 @@ v0.8.0 及以前的版本引入 <a class="reference external" href="http://c-are
 
 
       </div>
-      <div class="bottomnav">
+      <div class="bottomnav" role="navigation" aria-label="bottom navigation">
       
         <p>
         «&#160;&#160;<a href="filesystem.html">文件系统</a>
@@ -534,9 +528,9 @@ v0.8.0 及以前的版本引入 <a class="reference external" href="http://c-are
 
       </div>
 
-    <div class="footer">
-        &copy; Copyright 2012, Nikhil Marathe.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2012, Nikhil Marathe.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
     </div>
   </body>
 </html>

@@ -1,35 +1,29 @@
 
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>线程 &mdash; An Introduction to libuv</title>
-    
+    <title>线程 &#8212; An Introduction to libuv</title>
     <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/print.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
+        URL_ROOT:    './',
         VERSION:     '1.0.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/javascript" src="_static/theme_extras.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
-    <link rel="top" title="An Introduction to libuv" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="进程" href="processes.html" />
     <link rel="prev" title="网络" href="networking.html" />
 <script type="text/javascript">
@@ -48,11 +42,11 @@
 
   </head>
   <body>
-      <div class="header"><h1 class="heading"><a href="index.html">
+      <div class="header" role="banner"><h1 class="heading"><a href="index.html">
           <span>An Introduction to libuv</span></a></h1>
         <h2 class="heading"><span>线程</span></h2>
       </div>
-      <div class="topnav">
+      <div class="topnav" role="navigation" aria-label="top navigation">
       
         <p>
         «&#160;&#160;<a href="networking.html">网络</a>
@@ -71,25 +65,23 @@
 <p>等等, 我们为什么会提到线程? 事件循环不应该本身就可以应对高并发网络编程么?
 不一定, 线程仍然可以在 CPU 处理任务时来执行一些计算量相对较小的子任务,
 即使在编程多线程程序中你必须编写大量同步原语, 但它们在大多时候还是可以派上大用场的.</p>
-<p>线程通常在 libuv 内部使用, 用于模拟系统调用的异步特性&lt;?&gt;(原文:
-Threads are used internally to fake the asynchronous nature of all the system
-calls). libuv 同样可以利用线程让你异步完成一项本可能阻塞的任务, 通常是创建子线程,
-在子线程完成任务后获取其结果.</p>
+<p>线程在内部用来实现异步的系统调用. libuv 同样可以利用线程让你异步的完成一项会阻塞的任务. 办法是创建子线程,
+并在子线程完成任务后获取其结果.</p>
 <p>目前存在两个主流的线程库, Windows 线程库实现和 <a class="reference external" href="http://man7.org/linux/man-pages/man7/pthreads.7.html">pthreads</a>. libuv 的线程库 API 与
 pthread API 相似, 因此两者具有相同的语义.</p>
 <p>值得注意的是, libuv 中的线程库是自包含的. 而其他特性都直接依赖事件循环或者回调.
 事件循环和回调中的基本原则在线程中是完全不受限制的.
 线程会在必要的时候被阻塞, 信号错误直接通过返回值来确定, 正如例子所示
-<a class="reference internal" href="#thread-create-example"><em>first example</em></a>, 线程中并不需要运行事件循环.</p>
+<a class="reference internal" href="#thread-create-example"><span class="std std-ref">first example</span></a>, 线程中并不需要运行事件循环.</p>
 <p>libuv 的线程 API 也非常有限, 因为不同平台上线程库的语义和语法也不同,
 API 功能的完善程度也不尽相同.</p>
 <p>本节做了如下假设: <strong>一个线程里面(主线程)只有一个事件循环在运行**(**There is only one event loop,
 running in one thread (the main thread)</strong>). 没有其他的线程与事件循环交互
-(除非使用 <tt class="docutils literal"><span class="pre">uv_async_send</span></tt>). <a class="reference internal" href="multiple.html"><em>多路事件循环(Multiple event loops)</em></a> 介绍了如何在多个线程中运行并管理事件循环.</p>
+(除非使用 <code class="docutils literal"><span class="pre">uv_async_send</span></code>). <a class="reference internal" href="multiple.html"><span class="doc">多路事件循环(Multiple event loops)</span></a> 介绍了如何在多个线程中运行并管理事件循环.</p>
 <div class="section" id="core-thread-operations">
 <h2>线程核心操作(Core thread operations)<a class="headerlink" href="#core-thread-operations" title="Permalink to this headline">¶</a></h2>
-<p>下面的例子程序并没有太多代码, 只是通过 <tt class="docutils literal"><span class="pre">uv_thread_create</span></tt> 创建了线程, 然后调用
-<tt class="docutils literal"><span class="pre">uv_thread_join</span></tt> 等待线程退出.</p>
+<p>下面的例子程序并没有太多代码, 只是通过 <code class="docutils literal"><span class="pre">uv_thread_create</span></code> 创建了线程, 然后调用
+<code class="docutils literal"><span class="pre">uv_thread_join</span></code> 等待线程退出.</p>
 <p class="rubric" id="thread-create-example">thread-create/main.c</p>
 <div class="highlight-c"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
@@ -101,7 +93,7 @@ running in one thread (the main thread)</strong>). 没有其他的线程与事�
  8
  9
 10
-11</pre></div></td><td class="code"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+11</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
     <span class="kt">int</span> <span class="n">tracklen</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
 <span class="hll">    <span class="n">uv_thread_t</span> <span class="n">hare_id</span><span class="p">;</span>
 </span><span class="hll">    <span class="n">uv_thread_t</span> <span class="n">tortoise_id</span><span class="p">;</span>
@@ -116,10 +108,10 @@ running in one thread (the main thread)</strong>). 没有其他的线程与事�
 </td></tr></table></div>
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
-<p class="last">在 Unix 平台上 <tt class="docutils literal"><span class="pre">uv_thread_t</span></tt> 只是 <tt class="docutils literal"><span class="pre">pthread_t</span></tt> 的别名,但是在实现细节上也避免依赖 pthread.</p>
+<p class="last">在 Unix 平台上 <code class="docutils literal"><span class="pre">uv_thread_t</span></code> 只是 <code class="docutils literal"><span class="pre">pthread_t</span></code> 的别名,但是在实现细节上也避免依赖 pthread.</p>
 </div>
-<p>第二个参数是线程执行任务的入口函数地址, 最后 <tt class="docutils literal"><span class="pre">void</span> <span class="pre">*</span></tt> 类型的参数用来向线程传递自定义参数.
-函数 <tt class="docutils literal"><span class="pre">hare</span></tt> 现在可以在另外一个单独线程中运行, 并由操作系统进行调度.</p>
+<p>第二个参数是线程执行任务的入口函数地址, 最后 <code class="docutils literal"><span class="pre">void</span> <span class="pre">*</span></code> 类型的参数用来向线程传递自定义参数.
+函数 <code class="docutils literal"><span class="pre">hare</span></code> 现在可以在另外一个单独线程中运行, 并由操作系统进行调度.</p>
 <p class="rubric">thread-create/main.c</p>
 <div class="highlight-c"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
@@ -129,7 +121,7 @@ running in one thread (the main thread)</strong>). 没有其他的线程与事�
 6
 7
 8
-9</pre></div></td><td class="code"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">hare</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">arg</span><span class="p">)</span> <span class="p">{</span>
+9</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">hare</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">arg</span><span class="p">)</span> <span class="p">{</span>
 <span class="hll">    <span class="kt">int</span> <span class="n">tracklen</span> <span class="o">=</span> <span class="o">*</span><span class="p">((</span><span class="kt">int</span> <span class="o">*</span><span class="p">)</span> <span class="n">arg</span><span class="p">);</span>
 </span>    <span class="k">while</span> <span class="p">(</span><span class="n">tracklen</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">tracklen</span><span class="o">--</span><span class="p">;</span>
@@ -140,9 +132,9 @@ running in one thread (the main thread)</strong>). 没有其他的线程与事�
 <span class="p">}</span>
 </pre></div>
 </td></tr></table></div>
-<p>与 <tt class="docutils literal"><span class="pre">pthread_join()</span></tt> 允许目标线程通过 <tt class="docutils literal"><span class="pre">pthread_join()</span></tt>
-的第二个函数传回给调用线程一个返回值不同, <tt class="docutils literal"><span class="pre">uv_thread_join()</span></tt>
-并不允许调用/被调用线程之间通过这样的方式传值. 你应该使用 <a class="reference internal" href="#inter-thread-communication"><em>线程间通信(Inter-thread communication)</em></a>.</p>
+<p>与 <code class="docutils literal"><span class="pre">pthread_join()</span></code> 允许目标线程通过 <code class="docutils literal"><span class="pre">pthread_join()</span></code>
+的第二个函数传回给调用线程一个返回值不同, <code class="docutils literal"><span class="pre">uv_thread_join()</span></code>
+并不允许调用/被调用线程之间通过这样的方式传值. 你应该使用 <a class="reference internal" href="#inter-thread-communication"><span class="std std-ref">线程间通信(Inter-thread communication)</span></a>.</p>
 </div>
 <div class="section" id="synchronization-primitives">
 <h2>同步原语(Synchronization Primitives)<a class="headerlink" href="#synchronization-primitives" title="Permalink to this headline">¶</a></h2>
@@ -152,30 +144,30 @@ API 比较特殊的地方,  剩下的你可以参看 pthread 的帮助页面 <a 
 <h3>互斥量(Mutexes)<a class="headerlink" href="#mutexes" title="Permalink to this headline">¶</a></h3>
 <p>libuv 中的互斥函数可以看作是 pthread 相关函数(pthread_mutex_*)的 <strong>直接</strong> 映射.</p>
 <p class="rubric">libuv mutex functions</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="n">uv_mutex_init</span><span class="p">(</span><span class="n">uv_mutex_t</span><span class="o">*</span> <span class="n">handle</span><span class="p">);</span>
-<span class="n">UV_EXTERN</span> <span class="kt">void</span> <span class="n">uv_mutex_destroy</span><span class="p">(</span><span class="n">uv_mutex_t</span><span class="o">*</span> <span class="n">handle</span><span class="p">);</span>
-<span class="n">UV_EXTERN</span> <span class="kt">void</span> <span class="n">uv_mutex_lock</span><span class="p">(</span><span class="n">uv_mutex_t</span><span class="o">*</span> <span class="n">handle</span><span class="p">);</span>
-<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="n">uv_mutex_trylock</span><span class="p">(</span><span class="n">uv_mutex_t</span><span class="o">*</span> <span class="n">handle</span><span class="p">);</span>
-<span class="n">UV_EXTERN</span> <span class="kt">void</span> <span class="n">uv_mutex_unlock</span><span class="p">(</span><span class="n">uv_mutex_t</span><span class="o">*</span> <span class="n">handle</span><span class="p">);</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="nf">uv_mutex_init</span><span class="p">(</span><span class="n">uv_mutex_t</span><span class="o">*</span> <span class="n">handle</span><span class="p">);</span>
+<span class="n">UV_EXTERN</span> <span class="kt">void</span> <span class="nf">uv_mutex_destroy</span><span class="p">(</span><span class="n">uv_mutex_t</span><span class="o">*</span> <span class="n">handle</span><span class="p">);</span>
+<span class="n">UV_EXTERN</span> <span class="kt">void</span> <span class="nf">uv_mutex_lock</span><span class="p">(</span><span class="n">uv_mutex_t</span><span class="o">*</span> <span class="n">handle</span><span class="p">);</span>
+<span class="n">UV_EXTERN</span> <span class="kt">int</span> <span class="nf">uv_mutex_trylock</span><span class="p">(</span><span class="n">uv_mutex_t</span><span class="o">*</span> <span class="n">handle</span><span class="p">);</span>
+<span class="n">UV_EXTERN</span> <span class="kt">void</span> <span class="nf">uv_mutex_unlock</span><span class="p">(</span><span class="n">uv_mutex_t</span><span class="o">*</span> <span class="n">handle</span><span class="p">);</span>
 </pre></div>
 </div>
-<p><tt class="docutils literal"><span class="pre">uv_mutex_init()</span></tt> 和 <tt class="docutils literal"><span class="pre">uv_mutex_trylock()</span></tt> 在调用成功时返回 0,
+<p><code class="docutils literal"><span class="pre">uv_mutex_init()</span></code> 和 <code class="docutils literal"><span class="pre">uv_mutex_trylock()</span></code> 在调用成功时返回 0,
 若出错则返回 -1.</p>
-<p>如果 <cite>libuv</cite> 以调试(debugging)模式进行编译, <tt class="docutils literal"><span class="pre">uv_mutex_destroy()</span></tt>,
-<tt class="docutils literal"><span class="pre">uv_mutex_lock()</span></tt> 和 <tt class="docutils literal"><span class="pre">uv_mutex_unlock()</span></tt> 函数在出错时将会调用 <tt class="docutils literal"><span class="pre">abort()</span></tt>.
-同样地在调用 <tt class="docutils literal"><span class="pre">uv_mutex_trylock()</span></tt> 时, 除非错误码是 <tt class="docutils literal"><span class="pre">EAGAIN</span></tt>,
+<p>如果 <cite>libuv</cite> 以调试(debugging)模式进行编译, <code class="docutils literal"><span class="pre">uv_mutex_destroy()</span></code>,
+<code class="docutils literal"><span class="pre">uv_mutex_lock()</span></code> 和 <code class="docutils literal"><span class="pre">uv_mutex_unlock()</span></code> 函数在出错时将会调用 <code class="docutils literal"><span class="pre">abort()</span></code>.
+同样地在调用 <code class="docutils literal"><span class="pre">uv_mutex_trylock()</span></code> 时, 除非错误码是 <code class="docutils literal"><span class="pre">EAGAIN</span></code>,
 否则也会导致程序中止(abort).</p>
 <p>某些平台支持递归锁, 但是你不应该依赖某个特定平台的实现. BSD 互斥锁的实现规定:
 如果在一个线程已经锁住了互斥量以后再次试图对该互斥量进行上锁, 则程序会抛出错误.
 举个例子, 如下代码:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="n">uv_mutex_lock</span><span class="p">(</span><span class="n">a_mutex</span><span class="p">);</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">uv_mutex_lock</span><span class="p">(</span><span class="n">a_mutex</span><span class="p">);</span>
 <span class="n">uv_thread_create</span><span class="p">(</span><span class="n">thread_id</span><span class="p">,</span> <span class="n">entry</span><span class="p">,</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="p">)</span><span class="n">a_mutex</span><span class="p">);</span>
 <span class="n">uv_mutex_lock</span><span class="p">(</span><span class="n">a_mutex</span><span class="p">);</span>
 <span class="c1">// more things here</span>
 </pre></div>
 </div>
 <p>原本可以等待另外一个线程初始化后解锁, 但是在调试模式下该段代码会使你的程序崩溃,
-或者在第二次调用 <tt class="docutils literal"><span class="pre">uv_mutex_lock</span></tt> 时出错.</p>
+或者在第二次调用 <code class="docutils literal"><span class="pre">uv_mutex_lock</span></code> 时出错.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Linux 平台的互斥锁支持递归, 但是 libuv 并没有暴露相关的 API.</p>
@@ -244,8 +236,8 @@ API 比较特殊的地方,  剩下的你可以参看 pthread 的帮助页面 <a 
 54
 55
 56
-57</pre></div></td><td class="code"><div class="highlight"><pre><span class="cp">#include &lt;stdio.h&gt;</span>
-<span class="cp">#include &lt;uv.h&gt;</span>
+57</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;uv.h&gt;</span><span class="cp"></span>
 
 <span class="n">uv_barrier_t</span> <span class="n">blocker</span><span class="p">;</span>
 <span class="n">uv_rwlock_t</span> <span class="n">numlock</span><span class="p">;</span>
@@ -312,10 +304,10 @@ API 比较特殊的地方,  剩下的你可以参看 pthread 的帮助页面 <a 
 <p>libuv 也支持信号量 <a class="reference external" href="http://en.wikipedia.org/wiki/Semaphore_(programming)">semaphores</a>, 条件变量 <a class="reference external" href="http://en.wikipedia.org/wiki/Condition_variable#Waiting_and_signaling">condition variables</a> 和屏障 <a class="reference external" href="http://en.wikipedia.org/wiki/Barrier_(computer_science)">barriers</a>,
 相关的 API 也和 pthread 中的相似.</p>
 <p>在使用条件变量时, libuv 也可以在等待上设置超时时间, 不同平台超时设置可能会有所不同 <a class="footnote-reference" href="#id5" id="id3">[1]</a>.</p>
-<p>另外, libuv 也提供了一个便于使用的函数``uv_once()`` (不要和 <tt class="docutils literal"><span class="pre">uv_run_once()</span></tt> 混淆).
-多个线程以指定的函数指针为参数调用 <tt class="docutils literal"><span class="pre">uv_once</span></tt> 时,
+<p>另外, libuv 也提供了一个便于使用的函数``uv_once()`` (不要和 <code class="docutils literal"><span class="pre">uv_run_once()</span></code> 混淆).
+多个线程以指定的函数指针为参数调用 <code class="docutils literal"><span class="pre">uv_once</span></code> 时,
 <strong>只有一个线程会成功调用, 并且仅被调用一次</strong></p>
-<div class="highlight-c"><div class="highlight"><pre><span class="cm">/* Initialize guard */</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cm">/* Initialize guard */</span>
 <span class="k">static</span> <span class="n">uv_once_t</span> <span class="n">once_only</span> <span class="o">=</span> <span class="n">UV_ONCE_INIT</span><span class="p">;</span>
 
 <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
@@ -339,19 +331,19 @@ API 比较特殊的地方,  剩下的你可以参看 pthread 的帮助页面 <a 
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>所有的线程都完成任务后, <tt class="docutils literal"><span class="pre">i</span> <span class="pre">==</span> <span class="pre">1</span></tt>.</p>
+<p>所有的线程都完成任务后, <code class="docutils literal"><span class="pre">i</span> <span class="pre">==</span> <span class="pre">1</span></code>.</p>
 </div>
 </div>
 <div class="section" id="libuv">
 <span id="libuv-work-queue"></span><h2>libuv 工作队列<a class="headerlink" href="#libuv" title="Permalink to this headline">¶</a></h2>
-<p><tt class="docutils literal"><span class="pre">uv_queue_work()</span></tt> 是一个辅助函数, 它可以使得应用程序在单独的线程中运行某一任务,
-并在任务完成后触发回调函数. <tt class="docutils literal"><span class="pre">uv_queue_work</span></tt> 看似简单, 但是在某些情况下却很实用,
+<p><code class="docutils literal"><span class="pre">uv_queue_work()</span></code> 是一个辅助函数, 它可以使得应用程序在单独的线程中运行某一任务,
+并在任务完成后触发回调函数. <code class="docutils literal"><span class="pre">uv_queue_work</span></code> 看似简单, 但是在某些情况下却很实用,
 因为该函数使得第三方库可以以事件循环的方式在你的程序中被使用.当你使用事件循环时,
 应该 <em>确保在事件循环中运行的函数执行 I/O 任务时不被阻塞,
 或者事件循环的回调函数不会占用太多 CPU 的计算能力</em>.
 因为一旦发生了上述情况, 则意味着事件循环的执行速度会减慢, 事件得不到及时的处理.</p>
 <p>但是也有一些代码在线程的事件循环的回调中使用了阻塞函数(例如执行 I/O 任务),
-(典型的 &#8216;one thread per client&#8217; 服务器模型), 并在单独的线程中运行某一任务.
+(典型的 ‘one thread per client’ 服务器模型), 并在单独的线程中运行某一任务.
 libuv 只是提供了一层抽象而已.</p>
 <p>下面是一个简单的例子(原型为 <a class="reference external" href="https://raw.github.com/teddziuba/teddziuba.github.com/master/_posts/2011-10-01-node-js-is-cancer.html">node.js is cancer</a>). 我们程序计算 fibonacci 数,
 中途也会休眠一会,但是由于是在单独的线程中运行的, 所以阻塞和 CPU
@@ -369,7 +361,7 @@ libuv 只是提供了一层抽象而已.</p>
 10
 11
 12
-13</pre></div></td><td class="code"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">fib</span><span class="p">(</span><span class="n">uv_work_t</span> <span class="o">*</span><span class="n">req</span><span class="p">)</span> <span class="p">{</span>
+13</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">fib</span><span class="p">(</span><span class="n">uv_work_t</span> <span class="o">*</span><span class="n">req</span><span class="p">)</span> <span class="p">{</span>
     <span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="p">)</span> <span class="n">req</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">;</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">random</span><span class="p">()</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span>
         <span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
@@ -384,10 +376,10 @@ libuv 只是提供了一层抽象而已.</p>
 <span class="p">}</span>
 </pre></div>
 </td></tr></table></div>
-<p>真正的执行任务的函数比较简单, 只是在单独的线程中执行. <tt class="docutils literal"><span class="pre">uv_work_t</span></tt> 结构是线索,
-你可以通过 <tt class="docutils literal"><span class="pre">void*</span> <span class="pre">date</span></tt> 传递任意数据, 并且利用该指针和执行线程通信(数据传递).
+<p>真正的执行任务的函数比较简单, 只是在单独的线程中执行. <code class="docutils literal"><span class="pre">uv_work_t</span></code> 结构是线索,
+你可以通过 <code class="docutils literal"><span class="pre">void*</span> <span class="pre">date</span></code> 传递任意数据, 并且利用该指针和执行线程通信(数据传递).
 但注意, 如果在多个线程中同时修改某个变量, 就应该使用合适的锁来保护共享变量.</p>
-<p><em>触发器</em> 是 <tt class="docutils literal"><span class="pre">uv_queue_work</span></tt>:</p>
+<p><em>触发器</em> 是 <code class="docutils literal"><span class="pre">uv_queue_work</span></code>:</p>
 <p class="rubric">queue-work/main.c</p>
 <div class="highlight-c"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
@@ -402,7 +394,7 @@ libuv 只是提供了一层抽象而已.</p>
 11
 12
 13
-14</pre></div></td><td class="code"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+14</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
     <span class="n">loop</span> <span class="o">=</span> <span class="n">uv_default_loop</span><span class="p">();</span>
 
     <span class="kt">int</span> <span class="n">data</span><span class="p">[</span><span class="n">FIB_UNTIL</span><span class="p">];</span>
@@ -418,15 +410,15 @@ libuv 只是提供了一层抽象而已.</p>
 <span class="p">}</span>
 </pre></div>
 </td></tr></table></div>
-<p>线程函数会在单独的线程中被启动, 并传入 <tt class="docutils literal"><span class="pre">uv_work_t</span></tt> 结构, 一旦函数返回,
-就会调用 <tt class="docutils literal"><span class="pre">after_fib</span></tt> 函数, 同时也传入 <tt class="docutils literal"><span class="pre">uv_work_t</span></tt> 结构的指针.</p>
-<p>如果需要封装程序库的接口, 请参考 <a class="reference internal" href="utilities.html#baton"><em>pattern</em></a>
+<p>线程函数会在单独的线程中被启动, 并传入 <code class="docutils literal"><span class="pre">uv_work_t</span></code> 结构, 一旦函数返回,
+就会调用 <code class="docutils literal"><span class="pre">after_fib</span></code> 函数, 同时也传入 <code class="docutils literal"><span class="pre">uv_work_t</span></code> 结构的指针.</p>
+<p>如果需要封装程序库的接口, 请参考 <a class="reference internal" href="utilities.html#baton"><span class="std std-ref">pattern</span></a>
 一节如何向线程传递数据.</p>
 </div>
 <div class="section" id="inter-thread-communication">
 <span id="id4"></span><h2>线程间通信(Inter-thread communication)<a class="headerlink" href="#inter-thread-communication" title="Permalink to this headline">¶</a></h2>
 <p>某些时候你想在同时运行的各个线程之间传递数据.
-例如你可能在一个单独的线程中运行一个长时间任务(可能是通过 <tt class="docutils literal"><span class="pre">uv_queue_work</span></tt>),
+例如你可能在一个单独的线程中运行一个长时间任务(可能是通过 <code class="docutils literal"><span class="pre">uv_queue_work</span></code>),
 但是需要向主线程汇报任务进度. 一个简单的例子是下载管理器向用户汇报当前的下载任务的状态.</p>
 <p class="rubric">progress/main.c</p>
 <div class="highlight-c"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
@@ -443,7 +435,7 @@ libuv 只是提供了一层抽象而已.</p>
 12
 13
 14
-15</pre></div></td><td class="code"><div class="highlight"><pre><span class="n">uv_loop_t</span> <span class="o">*</span><span class="n">loop</span><span class="p">;</span>
+15</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">uv_loop_t</span> <span class="o">*</span><span class="n">loop</span><span class="p">;</span>
 <span class="hll"><span class="n">uv_async_t</span> <span class="n">async</span><span class="p">;</span>
 </span>
 <span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
@@ -462,16 +454,16 @@ libuv 只是提供了一层抽象而已.</p>
 </td></tr></table></div>
 <p>异步线程通信是在事件循环上进行的, 因此尽管任何线程都可能成为消息发送者,
 但是只有 libuv 事件循环的线程可以是接收者(或者事件循环本身是接收者).
-在任何时候异步监视器接受到了一个消息后, libuv 就会调用(<tt class="docutils literal"><span class="pre">print_progress</span></tt>)回调函数.</p>
+在任何时候异步监视器接受到了一个消息后, libuv 就会调用(<code class="docutils literal"><span class="pre">print_progress</span></code>)回调函数.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
 <p class="last">应该注意: 消息的发送是异步的,回调函数应该在另外一个线程调用了
-<tt class="docutils literal"><span class="pre">uv_async_send</span></tt> 后立即被调用, 或者在稍后的某个时刻被调用.
-libuv 也有可能多次调用 <tt class="docutils literal"><span class="pre">uv_async_send</span></tt> 而只调用了一次回调函数.
-libuv 可以保证: 线程在调用了 <tt class="docutils literal"><span class="pre">uv_async_send</span></tt> 之后回调函数可至少被调用一次.
-如果你没有未调用的 <tt class="docutils literal"><span class="pre">uv_async_send</span></tt>, 那么回调函数也不会被调用.
-如果你调用了两次(以上)的 <tt class="docutils literal"><span class="pre">uv_async_send</span></tt>, 而 libuv
-暂时还没有机会运行回调函数, 则 libuv <em>可能</em> 会在多次调用 <tt class="docutils literal"><span class="pre">uv_async_send</span></tt> 后
+<code class="docutils literal"><span class="pre">uv_async_send</span></code> 后立即被调用, 或者在稍后的某个时刻被调用.
+libuv 也有可能多次调用 <code class="docutils literal"><span class="pre">uv_async_send</span></code> 而只调用了一次回调函数.
+libuv 可以保证: 线程在调用了 <code class="docutils literal"><span class="pre">uv_async_send</span></code> 之后回调函数可至少被调用一次.
+如果你没有未调用的 <code class="docutils literal"><span class="pre">uv_async_send</span></code>, 那么回调函数也不会被调用.
+如果你调用了两次(以上)的 <code class="docutils literal"><span class="pre">uv_async_send</span></code>, 而 libuv
+暂时还没有机会运行回调函数, 则 libuv <em>可能</em> 会在多次调用 <code class="docutils literal"><span class="pre">uv_async_send</span></code> 后
 <em>只调用一次</em> 回调函数, 你的回调函数绝对不会在一次事件中被调用两次(或多次).</p>
 </div>
 <p class="rubric">progress/main.c</p>
@@ -488,7 +480,7 @@ libuv 可以保证: 线程在调用了 <tt class="docutils literal"><span class=
 11
 12
 13
-14</pre></div></td><td class="code"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">fake_download</span><span class="p">(</span><span class="n">uv_work_t</span> <span class="o">*</span><span class="n">req</span><span class="p">)</span> <span class="p">{</span>
+14</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">fake_download</span><span class="p">(</span><span class="n">uv_work_t</span> <span class="o">*</span><span class="n">req</span><span class="p">)</span> <span class="p">{</span>
     <span class="kt">int</span> <span class="n">size</span> <span class="o">=</span> <span class="o">*</span><span class="p">((</span><span class="kt">int</span><span class="o">*</span><span class="p">)</span> <span class="n">req</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">);</span>
     <span class="kt">int</span> <span class="n">downloaded</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
     <span class="kt">double</span> <span class="n">percentage</span><span class="p">;</span>
@@ -504,13 +496,13 @@ libuv 可以保证: 线程在调用了 <tt class="docutils literal"><span class=
 <span class="p">}</span>
 </pre></div>
 </td></tr></table></div>
-<p>在下载函数中我们修改下载进度指示器, 并将消息写入 <tt class="docutils literal"><span class="pre">uv_async_send</span></tt> 发送队列,
-记住: <tt class="docutils literal"><span class="pre">uv_async_send</span></tt> 也是非阻塞的, 它会立即返回.</p>
+<p>在下载函数中我们修改下载进度指示器, 并将消息写入 <code class="docutils literal"><span class="pre">uv_async_send</span></code> 发送队列,
+记住: <code class="docutils literal"><span class="pre">uv_async_send</span></code> 也是非阻塞的, 它会立即返回.</p>
 <p class="rubric">progress/main.c</p>
 <div class="highlight-c"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3
-4</pre></div></td><td class="code"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">print_progress</span><span class="p">(</span><span class="n">uv_async_t</span> <span class="o">*</span><span class="n">handle</span><span class="p">,</span> <span class="kt">int</span> <span class="n">status</span> <span class="cm">/*UNUSED*/</span><span class="p">)</span> <span class="p">{</span>
+4</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">print_progress</span><span class="p">(</span><span class="n">uv_async_t</span> <span class="o">*</span><span class="n">handle</span><span class="p">,</span> <span class="kt">int</span> <span class="n">status</span> <span class="cm">/*UNUSED*/</span><span class="p">)</span> <span class="p">{</span>
     <span class="kt">double</span> <span class="n">percentage</span> <span class="o">=</span> <span class="o">*</span><span class="p">((</span><span class="kt">double</span><span class="o">*</span><span class="p">)</span> <span class="n">handle</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">);</span>
     <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;Downloaded %.2f%%</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">percentage</span><span class="p">);</span>
 <span class="p">}</span>
@@ -522,40 +514,41 @@ libuv 可以保证: 线程在调用了 <tt class="docutils literal"><span class=
 <div class="highlight-c"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
 2
 3
-4</pre></div></td><td class="code"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">after</span><span class="p">(</span><span class="n">uv_work_t</span> <span class="o">*</span><span class="n">req</span><span class="p">,</span> <span class="kt">int</span> <span class="n">status</span><span class="p">)</span> <span class="p">{</span>
+4</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">after</span><span class="p">(</span><span class="n">uv_work_t</span> <span class="o">*</span><span class="n">req</span><span class="p">,</span> <span class="kt">int</span> <span class="n">status</span><span class="p">)</span> <span class="p">{</span>
     <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;Download complete</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
 <span class="hll">    <span class="n">uv_close</span><span class="p">((</span><span class="n">uv_handle_t</span><span class="o">*</span><span class="p">)</span> <span class="o">&amp;</span><span class="n">async</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
 </span><span class="p">}</span>
 </pre></div>
 </td></tr></table></div>
-<p>上面的例子滥用了 <tt class="docutils literal"><span class="pre">data</span></tt> 参数, <a class="reference external" href="https://github.com/bnoordhuis">bnoordhuis</a> 指出使用 <tt class="docutils literal"><span class="pre">data</span></tt> 参数并不是线程安全的.
-<tt class="docutils literal"><span class="pre">uv_async_send()</span></tt> 实际上只会唤醒事件循环.
+<p>上面的例子滥用了 <code class="docutils literal"><span class="pre">data</span></code> 参数, <a class="reference external" href="https://github.com/bnoordhuis">bnoordhuis</a> 指出使用 <code class="docutils literal"><span class="pre">data</span></code> 参数并不是线程安全的.
+<code class="docutils literal"><span class="pre">uv_async_send()</span></code> 实际上只会唤醒事件循环.
 所以应该使用互斥量或者读写锁来保证对共享变量访问的顺序是正确的.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p class="last">互斥量和读写锁 <strong>不能</strong> 在信号处理函数中正常工作, 但是 <tt class="docutils literal"><span class="pre">uv_async_send</span></tt> 却可以.</p>
+<p class="last">互斥量和读写锁 <strong>不能</strong> 在信号处理函数中正常工作, 但是 <code class="docutils literal"><span class="pre">uv_async_send</span></code> 却可以.</p>
 </div>
-<p><tt class="docutils literal"><span class="pre">uv_async_send</span></tt> 的应用场景之一是不同功能的程序库之间需要线程级别的交互.
+<p><code class="docutils literal"><span class="pre">uv_async_send</span></code> 的应用场景之一是不同功能的程序库之间需要线程级别的交互.
 例如, node.js 的 v8 引擎实例, 上下文以及在 v8 示例启动时绑定的对象之间需要进行交互.
 从另外一个线程直接访问 v8 执行引擎中的数据结构可能会导致程序不确定的行为.
 考虑到 node.js 会绑定第三方库, 他们可能会如下工作:</p>
 <ol class="arabic">
 <li><p class="first">在 node 中, 创建第三方库的对象实例时会设置一个 JavaScript 回调函数用于获取更多信息:</p>
-<div class="highlight-c"><pre>var lib = require('lib');
+<div class="highlight-c"><div class="highlight"><pre><span></span>var lib = require(&#39;lib&#39;);
 lib.on_progress(function() {
-    console.log("Progress");
+    console.log(&quot;Progress&quot;);
 });
 
 lib.do();
 
-// do other stuff</pre>
+// do other stuff
+</pre></div>
 </div>
 </li>
-<li><p class="first"><tt class="docutils literal"><span class="pre">lib.do</span></tt> 本来应该是非阻塞的, 但是第三方库却是阻塞的, 所以应该使用
-<tt class="docutils literal"><span class="pre">uv_queue_work</span></tt>.</p>
+<li><p class="first"><code class="docutils literal"><span class="pre">lib.do</span></code> 本来应该是非阻塞的, 但是第三方库却是阻塞的, 所以应该使用
+<code class="docutils literal"><span class="pre">uv_queue_work</span></code>.</p>
 </li>
 <li><p class="first">在单独线程中完成的工作需要调用 progress 回调函数. 但是不能通过 JavaScript
-直接访问 v8 引擎, 以使用 <tt class="docutils literal"><span class="pre">uv_async_send</span></tt> 与 v8 进行交互.</p>
+直接访问 v8 引擎, 以使用 <code class="docutils literal"><span class="pre">uv_async_send</span></code> 与 v8 进行交互.</p>
 </li>
 <li><p class="first">在主线程(v8 线程)设置的异步回调函数就可以通过 JavaScript 回调函数和 v8 引擎进行通行.</p>
 </li>
@@ -572,7 +565,7 @@ lib.do();
 
 
       </div>
-      <div class="bottomnav">
+      <div class="bottomnav" role="navigation" aria-label="bottom navigation">
       
         <p>
         «&#160;&#160;<a href="networking.html">网络</a>
@@ -584,9 +577,9 @@ lib.do();
 
       </div>
 
-    <div class="footer">
-        &copy; Copyright 2012, Nikhil Marathe.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2012, Nikhil Marathe.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
     </div>
   </body>
 </html>

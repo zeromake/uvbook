@@ -1,35 +1,29 @@
 
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>多路事件循环(Multiple event loops) &mdash; An Introduction to libuv</title>
-    
+    <title>多路事件循环(Multiple event loops) &#8212; An Introduction to libuv</title>
     <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/print.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
+        URL_ROOT:    './',
         VERSION:     '1.0.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/javascript" src="_static/theme_extras.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
-    <link rel="top" title="An Introduction to libuv" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="工具集" href="utilities.html" />
     <link rel="prev" title="进程" href="processes.html" />
 <script type="text/javascript">
@@ -48,11 +42,11 @@
 
   </head>
   <body>
-      <div class="header"><h1 class="heading"><a href="index.html">
+      <div class="header" role="banner"><h1 class="heading"><a href="index.html">
           <span>An Introduction to libuv</span></a></h1>
         <h2 class="heading"><span>多路事件循环(Multiple event loops)</span></h2>
       </div>
-      <div class="topnav">
+      <div class="topnav" role="navigation" aria-label="top navigation">
       
         <p>
         «&#160;&#160;<a href="processes.html">进程</a>
@@ -69,7 +63,7 @@
   <div class="section" id="multiple-event-loops">
 <h1>多路事件循环(Multiple event loops)<a class="headerlink" href="#multiple-event-loops" title="Permalink to this headline">¶</a></h1>
 <p>你也可以在同一个线程中使用多路事件循环, 但意义并不大, 因为调用其中某一个事件循环的
-<tt class="docutils literal"><span class="pre">uv_run</span></tt> 会使得程序阻塞, 其他事件循环不能同时运行.
+<code class="docutils literal"><span class="pre">uv_run</span></code> 会使得程序阻塞, 其他事件循环不能同时运行.
 不过也可以小心地通过多次调用 <cite>uv_run_once()</cite> 来完成一些有趣的工作.</p>
 <div class="section" id="modality">
 <h2>多路事件循环的形式(Modality)<a class="headerlink" href="#modality" title="Permalink to this headline">¶</a></h2>
@@ -78,8 +72,8 @@
 </div>
 <div class="section" id="one-loop-per-thread">
 <h2>各线程拥有自己的事件循环(One loop per thread)<a class="headerlink" href="#one-loop-per-thread" title="Permalink to this headline">¶</a></h2>
-<p><tt class="docutils literal"><span class="pre">One</span> <span class="pre">loop</span> <span class="pre">per</span> <span class="pre">thread</span></tt> 才是多路事件循环的&#8217;标准模型&#8217;, 它和我们在
-<a class="reference internal" href="processes.html"><em>进程</em></a> 一章中介绍的产生多个进程方式并无太大区别.</p>
+<p><code class="docutils literal"><span class="pre">One</span> <span class="pre">loop</span> <span class="pre">per</span> <span class="pre">thread</span></code> 才是多路事件循环的’标准模型’, 它和我们在
+<a class="reference internal" href="processes.html"><span class="doc">进程</span></a> 一章中介绍的产生多个进程方式并无太大区别.</p>
 <div class="section" id="sing-two-loops-for-synchronization">
 <h3>使用两个事件循环来同步(sing two loops for synchronization)<a class="headerlink" href="#sing-two-loops-for-synchronization" title="Permalink to this headline">¶</a></h3>
 <p>也有一些比较特殊的应用场景需要两个事件循环来进行同步(而不是使用条件变量),
@@ -92,7 +86,7 @@
 </ol>
 <p>如果使用条件变量来实现:</p>
 <ol class="arabic simple">
-<li>工作线程并不直接调用自定义函数, 而是创建一个 <tt class="docutils literal"><span class="pre">uv_async_t</span></tt> 句柄,
+<li>工作线程并不直接调用自定义函数, 而是创建一个 <code class="docutils literal"><span class="pre">uv_async_t</span></code> 句柄,
 然后由该句柄的回调函数调用自定义函数.</li>
 <li>初始化条件变量.</li>
 <li>使用 <cite>uv_async_send()</cite> 获得主线程(运行事件循环的线程)并由主线程调用该函数.</li>
@@ -105,7 +99,7 @@
 <li>将 <cite>uv_async_t</cite> 与事件循环相关联.</li>
 <li>将该句柄通过 <cite>uv_async_t</cite> 结构 <cite>data</cite> 字段传递给主线程.</li>
 <li><cite>uv_run()</cite> 运行事件循环, 此时程序会阻塞, 因为异步句柄自增了它的
-<a class="reference internal" href="utilities.html#reference-count"><em>refcount</em></a>.</li>
+<a class="reference internal" href="utilities.html#reference-count"><span class="std std-ref">refcount</span></a>.</li>
 <li>主线程的回调函数再调用自定义函数,然后调用 <cite>uv_async_send</cite>
 向事件循环的异步句柄发送消息.</li>
 <li>异步句柄的回调函数关闭自己, 然后事件循环的引用计数减为 0, <cite>uv_run</cite> 返回, 工作线程得以继续下去.</li>
@@ -116,7 +110,7 @@
 
 
       </div>
-      <div class="bottomnav">
+      <div class="bottomnav" role="navigation" aria-label="bottom navigation">
       
         <p>
         «&#160;&#160;<a href="processes.html">进程</a>
@@ -128,9 +122,9 @@
 
       </div>
 
-    <div class="footer">
-        &copy; Copyright 2012, Nikhil Marathe.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2012, Nikhil Marathe.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
     </div>
   </body>
 </html>
